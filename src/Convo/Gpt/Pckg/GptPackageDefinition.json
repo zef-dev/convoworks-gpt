@@ -1,0 +1,10 @@
+{
+    "namespace": "convo-gpt",
+    "author": "ZEF Development",
+    "email": "tihomir@convoworks.com",
+    "source_for": [
+        "templates", "elements"
+    ],
+    "description": "Contains components for GPT",
+    "stability": "stable"
+}
