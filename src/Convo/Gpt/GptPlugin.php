@@ -42,18 +42,17 @@ class GptPlugin
      * @param \Psr\Container\ContainerInterface $container
      */
     public function gptPackageRegister( $packageProviderFactory, $container) {
-        $packageProviderFactory->registerPackage( $this->getGptPackage());
+        $packageProviderFactory->registerPackage( $this->getGptPackage( $container));
     }
     
-    public function getGptPackage()
+    public function getGptPackage( $container)
     {
         if ( !isset( $this->_package))
         {
             $this->_package = new \Convo\Core\Factory\FunctionPackageDescriptor(
                 '\Convo\Gpt\Pckg\GptPackageDefinition',
-                function() {
-                    $container = $this->getContainer();
-                    $logger = $this->getLogger();
+                function() use ( $container) {
+                    $logger = $container->get( 'logger');
                     $logger->debug( 'Registering package ['.GptPackageDefinition::NAMESPACE.']');
                     return new GptPackageDefinition(
                         $logger, $container->get('packageProviderFactory'));
