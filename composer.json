@@ -16,7 +16,6 @@
         }
     },
     "require-dev": {
-        "zef-dev/convoworks-core": "^0.22",
         "phpunit/phpunit": "^8"
     },
     "autoload-dev": {
