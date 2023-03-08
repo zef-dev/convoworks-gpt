@@ -8,43 +8,46 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\GptApi;
 use Convo\Core\Params\IServiceParamsScope;
+use Convo\Gpt\GptApiFactory;
 
 class CompletionElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
     
     
     /**
-     * @var GptApi
+     * @var string
      */
-    private $_gptApi;
-
+    private $_apiKey;
+    
     /**
-     * @var IPromptBuilder
+     * @var string
      */
     private $_prompt;
-
-    /**
-     * @var IResponseParser
-     */
-    private $_response;
     
-    public function __construct( $properties, $gptApi)
+    /**
+     * @var GptApiFactory
+     */
+    private $_gptApiFactory;
+
+    public function __construct( $properties, $gptApiFactory)
     {
         parent::__construct( $properties);
         
-        $this->_gptApi         =	$gptApi;
+        $this->_gptApiFactory  =	$gptApiFactory;
+        $this->_prompt         =	$properties['prompt'];
+        $this->_apiKey         =	$properties['api_key'];
     }
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        $prompt     =   $this->_prompt->build();
+        $prompt     =   $this->evaluateString( $this->_prompt);
+        $api_key    =   $this->evaluateString( $this->_apiKey);
         
-        $response   =   $this->_gptApi->completion( $prompt);
-        
-        $parsed     =   $this->_response->parse( $response);
+        $api        =   $this->_gptApiFactory->getApi( $api_key);
+        $response   =   $api->completion( $prompt);
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( 'response', $parsed);
+        $params->setServiceParam( 'response', $response);
     }
     
     // UTIL

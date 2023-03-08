@@ -43,116 +43,113 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 'GPT Completion',
                 'GPT Completion API call',
                 [
-                    'text' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => null,
-                        'name' => 'Text',
-                        'description' => 'Text to be spoken',
-                        'valueType' => 'string'
-                    ],
-                    'buffer' => [
-                        'editor_type' => 'boolean',
-                        'editor_properties' => [
-                            'dependency' => "!component.properties.speech"
-                        ],
-                        'defaultValue' => false,
-                        'name' => 'Buffer',
-                        'description' => 'Buffer response until first GATHER instruction is issued',
-                        'valueType' => 'boolean'
-                    ],
-                    'break' => [
+                    'api_key' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '100ms',
-                        'name' => 'Break',
-                        'description' => 'Pause after speeh (e.g. 100ms)',
+                        'defaultValue' => '${API_KEY}',
+                        'name' => 'API key',
+                        'description' => '',
                         'valueType' => 'string'
                     ],
-                    'numDigits' => [
+                    'model' => [
+                        'editor_type' => 'select',
+                        'editor_properties' => [
+                            'options' => [ 
+                                'text-davinci-003' => 'text-davinci-003', 
+                                'text-curie-001' => 'text-curie-001', 
+                                'text-babbage-001' => 'text-babbage-001',
+                                'text-ada-001' => 'text-ada-001',
+                            ],
+                        ],
+                        'defaultValue' => 'text-davinci-003',
+                        'name' => 'Model',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'prompt' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => '${request.text}',
+                        'name' => 'Prompt',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'temperature' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 0.7,
+                        'name' => 'Temperature',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'max_tokens' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 256,
+                        'name' => 'Max tokens',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'top_p' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 1,
+                        'name' => 'Top p',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'frequency_penalty' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => 0,
-                        'name' => 'Gather Digits',
-                        'description' => 'How many digits should we gather',
-                        'valueType' => 'int'
-                    ],
-                    'timeout' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [
-                            'dependency' => "component.properties.numDigits > 0"
-                        ],
-                        'defaultValue' => '5',
-                        'name' => 'Timeout',
-                        'description' => 'Timeout allows you to set the limit (in seconds) that Twilio will wait for the caller to press another digit or say another word before it sends data',
+                        'name' => 'Frequency penalty',
+                        'description' => '',
                         'valueType' => 'string'
                     ],
-                    'speech' => [
-                        'editor_type' => 'boolean',
+                    'presence_penalty' => [
+                        'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => false,
-                        'name' => 'Gather Speech',
-                        'description' => 'Should gather speech too',
-                        'valueType' => 'boolean'
-                    ],
-                    'enhanced' => [
-                        'editor_type' => 'boolean',
-                        'editor_properties' => [
-                            'dependency' => "component.properties.speech"
-                        ],
-                        'defaultValue' => false,
-                        'name' => 'Enhanced',
-                        'description' => 'The enhanced attribute instructs <Gather> to use a premium speech model that will improve the accuracy of transcription results',
-                        'valueType' => 'boolean'
-                    ],
-                    'speechModel' => [
-                        'editor_type' => 'select',
-                        'editor_properties' => [
-                            'options' => [ 'default' => 'Default', 'numbers_and_commands' => 'Numbers and commands', 'phone_call' => 'Phone call'],
-                            'dependency' => "component.properties.speech"
-                        ],
-                        'defaultValue' => 'numbers_and_commands',
-                        'name' => 'Speech Model',
-                        'description' => 'speechModel allows you to select a specific model that is best suited for your use case to improve the accuracy of speech to text.',
+                        'defaultValue' => 0,
+                        'name' => 'Presence penalty',
+                        'description' => '',
                         'valueType' => 'string'
                     ],
-                    'speechTimeout' => [
-                        'editor_type' => 'text',
+                    'ok' => [
+                        'editor_type' => 'service_components',
                         'editor_properties' => [
-                            'dependency' => "component.properties.speech"
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
                         ],
-                        'defaultValue' => 'auto',
-                        'name' => 'Speech timeout',
-                        'description' => 'When collecting speech from your caller, speechTimeout sets the limit (in seconds) that Twilio will wait before it stops its speech recognition.',
-                        'valueType' => 'string'
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'valueType' => 'class'
                     ],
-                    'hints' => [
-                        'editor_type' => 'text',
+                    'empty' => [
+                        'editor_type' => 'service_components',
                         'editor_properties' => [
-                            'multiple' => false,
-                            'dependency' => "component.properties.speech"
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
                         ],
-                        'defaultValue' => '',
-                        'name' => 'Hints',
-                        'description' => 'Hints for expected speech phrases',
-                        'valueType' => 'string'
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'Empty response',
+                        'description' => 'Flow to be executed if response was empty',
+                        'valueType' => 'class'
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="we-say">Say: <span class="we-say-text">' .
-                        ' {{component.properties.text}} </span>' .
-                        '<div class="code" ng-if="component.properties.numDigits > 0 || component.properties.speech">' .
-                        ' <span class="statement" ng-if="component.properties.numDigits > 0">GATHER DTMF</span>' .
-                        ' <span class="statement" ng-if="component.properties.speech">GATHER speech</span> {{component.properties.hints}}' .
-                        '</div>' .
+                        'template' => '<div class="code"><span class="statement">COMPLETION</span>' .
+                        ' <br>  {{component.properties.prompt}} ' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_help' =>  [
-                        'type' => 'file',
-                        'filename' => 'voice-response-element.html'
-                    ],
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'voice-response-element.html'
+//                     ],
                 ]
             ),
         ];
