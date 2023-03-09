@@ -6,23 +6,11 @@ use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
-use Convo\Gpt\GptApi;
 use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\GptApiFactory;
 
 class CompletionElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
-    
-    
-    /**
-     * @var string
-     */
-    private $_apiKey;
-    
-    /**
-     * @var string
-     */
-    private $_prompt;
     
     /**
      * @var GptApiFactory
@@ -34,20 +22,25 @@ class CompletionElement extends AbstractWorkflowContainerComponent implements IC
         parent::__construct( $properties);
         
         $this->_gptApiFactory  =	$gptApiFactory;
-        $this->_prompt         =	$properties['prompt'];
-        $this->_apiKey         =	$properties['api_key'];
     }
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        $prompt     =   $this->evaluateString( $this->_prompt);
-        $api_key    =   $this->evaluateString( $this->_apiKey);
+        $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         
         $api        =   $this->_gptApiFactory->getApi( $api_key);
-        $response   =   $api->completion( $prompt);
+        $response   =   $api->completion( [
+            'model' => $this->evaluateString( $this->_properties['model']),
+            'prompt' => $this->evaluateString( $this->_properties['prompt']),
+            'temperature' => $this->evaluateString( $this->_properties['temperature']),
+            'max_tokens' => $this->evaluateString( $this->_properties['max_tokens']),
+            'top_p' => $this->evaluateString( $this->_properties['top_p']),
+            'frequency_penalty' => $this->evaluateString( $this->_properties['frequency_penalty']),
+            'presence_penalty' => $this->evaluateString( $this->_properties['presence_penalty']),
+        ]);
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( 'response', $response);
+        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $response);
     }
     
     // UTIL

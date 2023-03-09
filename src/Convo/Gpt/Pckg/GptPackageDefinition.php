@@ -51,6 +51,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => '',
                         'valueType' => 'string'
                     ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Status variable containing completion response',
+                        'valueType' => 'string'
+                    ],
                     'model' => [
                         'editor_type' => 'select',
                         'editor_properties' => [
