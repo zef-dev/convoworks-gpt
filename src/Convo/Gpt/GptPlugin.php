@@ -55,7 +55,7 @@ class GptPlugin
                     $logger = $container->get( 'logger');
                     $logger->debug( 'Registering package ['.GptPackageDefinition::NAMESPACE.']');
                     return new GptPackageDefinition(
-                        $logger, $container->get('packageProviderFactory'));
+                        $logger, $container->get('packageProviderFactory'), new GptApiFactory());
                 });
         }
         

@@ -4,6 +4,7 @@ namespace Convo\Gpt\Pckg;
 
 use Convo\Core\Factory\AbstractPackageDefinition;
 use Convo\Core\Factory\PackageProviderFactory;
+use Convo\Gpt\GptApiFactory;
 
 class GptPackageDefinition extends AbstractPackageDefinition 
 {
@@ -14,10 +15,16 @@ class GptPackageDefinition extends AbstractPackageDefinition
      */
     private $_packageProviderFactory;
     
+    /**
+     * @var GptApiFactory
+     */
+    private $_gptApiFactory;
+    
     public function __construct(
-        \Psr\Log\LoggerInterface $logger, $packageProviderFactory
+        \Psr\Log\LoggerInterface $logger, $packageProviderFactory, $gptApiFactory
     ) {
         $this->_packageProviderFactory  =   $packageProviderFactory;
+        $this->_gptApiFactory           =   $gptApiFactory;
         
         parent::__construct( $logger, self::NAMESPACE, __DIR__);
     }
@@ -154,6 +161,19 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new CompletionElement( $properties, $this->_gptApiFactory);
+                        }
+        }
 //                     '_help' =>  [
 //                         'type' => 'file',
 //                         'filename' => 'voice-response-element.html'
