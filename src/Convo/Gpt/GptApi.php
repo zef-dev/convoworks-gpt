@@ -14,37 +14,48 @@ class GptApi
      */
     private $_httpFactory;
     
-    public function __construct( $httpFactory, $apiKey)
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    private $_logger;
+    
+    public function __construct( $logger, $httpFactory, $apiKey)
     {
+        $this->_logger = $logger;
         $this->_httpFactory = $httpFactory;
         $this->_apiKey = $apiKey;
     }
 
-    public function completion( $prompt)
+    public function completion( $data)
     {
         $headers = [
-            'Content-Type' => 'application/json',
             'Authorization' => 'Bearer '.$this->_apiKey,
         ];
         
-        $data = [
-            'model' => 'text-davinci-003',
-            'prompt' => $prompt,
-            'temperature' => 0.7,
-            'max_tokens' => 256,
-            'top_p' => 1,
-            'frequency_penalty' => 0,
-            'presence_penalty' => 0,
-        ];
+//         $data = [
+//             'model' => 'text-davinci-003',
+//             'prompt' => $prompt,
+//             'temperature' => 0.7,
+//             'max_tokens' => 256,
+//             'top_p' => 1,
+//             'frequency_penalty' => 0,
+//             'presence_penalty' => 0,
+//         ];
+        
+        $this->_logger->debug( 'Http request data ['.print_r( $data, true).']');
         
         $config = [];
         
         $client = $this->_httpFactory->getHttpClient( $config);
-        $request = $this->_httpFactory->buildRequest( 'POST', 'https://api.openai.com/v1/completions', $headers, $data);
+        $request = $this->_httpFactory->buildRequest( IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/completions', $headers, $data);
         
         $response = $client->sendRequest( $request);
         
-        return json_decode( $response->getBody(), true);
+        $response_data = json_decode( $response->getBody()->getContents(), true);
+        
+        $this->_logger->debug( 'Http response data ['.print_r( $response_data, true).']');
+        
+        return $response_data;
     }
     
     

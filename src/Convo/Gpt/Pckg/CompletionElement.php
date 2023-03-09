@@ -17,30 +17,47 @@ class CompletionElement extends AbstractWorkflowContainerComponent implements IC
      */
     private $_gptApiFactory;
 
+    /**
+     * @var IConversationElement[]
+     */
+    private $_ok = [];
+    
     public function __construct( $properties, $gptApiFactory)
     {
         parent::__construct( $properties);
         
         $this->_gptApiFactory  =	$gptApiFactory;
+        
+        foreach ( $properties['ok'] as $element) {
+            $this->_ok[] = $element;
+            $this->addChild($element);
+        }
     }
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+        $prompt     =   $this->evaluateString( $this->_properties['prompt']);
+        $prompt     .=  "\n\n";
+
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
-        
         $api        =   $this->_gptApiFactory->getApi( $api_key);
-        $response   =   $api->completion( [
+        
+        $http_response   =   $api->completion( [
             'model' => $this->evaluateString( $this->_properties['model']),
-            'prompt' => $this->evaluateString( $this->_properties['prompt']),
-            'temperature' => $this->evaluateString( $this->_properties['temperature']),
-            'max_tokens' => $this->evaluateString( $this->_properties['max_tokens']),
-            'top_p' => $this->evaluateString( $this->_properties['top_p']),
-            'frequency_penalty' => $this->evaluateString( $this->_properties['frequency_penalty']),
-            'presence_penalty' => $this->evaluateString( $this->_properties['presence_penalty']),
+            'prompt' => json_encode( $prompt),
+            'temperature' => (float)$this->evaluateString( $this->_properties['temperature']),
+            'max_tokens' => (int)$this->evaluateString( $this->_properties['max_tokens']),
+            'top_p' => (float)$this->evaluateString( $this->_properties['top_p']),
+            'frequency_penalty' => (float)$this->evaluateString( $this->_properties['frequency_penalty']),
+            'presence_penalty' => (float)$this->evaluateString( $this->_properties['presence_penalty']),
         ]);
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $response);
+        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
+        
+        foreach ( $this->_ok as $elem)   {
+            $elem->read( $request, $response);
+        }
     }
     
     // UTIL
