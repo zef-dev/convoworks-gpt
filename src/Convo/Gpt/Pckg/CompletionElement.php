@@ -36,8 +36,8 @@ class CompletionElement extends AbstractWorkflowContainerComponent implements IC
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+//         $prompt     =   "\n\n".$this->evaluateString( $this->_properties['prompt']);
         $prompt     =   $this->evaluateString( $this->_properties['prompt']);
-        $prompt     .=  "\n\n";
 
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
