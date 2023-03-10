@@ -215,6 +215,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => '',
                         'valueType' => 'string'
                     ],
+                    'system_message' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
+                        'name' => 'System message',
+                        'description' => 'Main prompt',
+                        'valueType' => 'string'
+                    ],
                     'messages' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
@@ -278,7 +286,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT COMPLETION</span>' .
-                        ' <br>  {{component.properties.prompt}} ' .
+                        ' <br>  {{component.properties.system_message}} ' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',

@@ -36,8 +36,13 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        $messages     =   $this->evaluateString( $this->_properties['messages']);
+        $system_message =   $this->evaluateString( $this->_properties['system_message']);
+        $messages       =   $this->evaluateString( $this->_properties['messages']);
 
+        $messages       =   array_merge(
+            [[ 'role' => 'system', 'content' => $system_message]],
+            $messages);
+        
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
         
