@@ -33,7 +33,7 @@ class GptApiFactory
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'[]';
+        return get_class( $this).'[]';
     }
 
 
