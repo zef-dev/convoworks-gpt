@@ -6,5 +6,6 @@ namespace Convo\Gpt;
 
 interface IChatAction extends IChatPrompt
 {
+    public function getActionId();
     public function executeAction( $data);
 }
