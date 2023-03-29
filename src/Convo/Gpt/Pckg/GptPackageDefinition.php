@@ -310,6 +310,95 @@ class GptPackageDefinition extends AbstractPackageDefinition
 //                     ],
                 ]
             ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ChatAppElement',
+                'Chat App',
+                'Extendable chat handler',
+                [
+                    'api_key' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${API_KEY}',
+                        'name' => 'API key',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'user_message' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'User message',
+                        'description' => 'The new user message to append to the conversation.',
+                        'valueType' => 'string'
+                    ],
+                    'system_message' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
+                        'name' => 'System message',
+                        'description' => 'Main prompt',
+                        'valueType' => 'string'
+                    ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Status variable containing completion response',
+                        'valueType' => 'string'
+                    ],
+                    'actions' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Gpt\IChatAction'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'Actions',
+                        'description' => 'Available actions that bot can perform',
+                        'valueType' => 'class'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">CHAT APP</span>' .
+                        ' <br>  {{component.properties.system_message}} ' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new ChatAppElement( $properties, $this->_gptApiFactory);
+                        }
+                    }
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'voice-response-element.html'
+//                     ],
+                ]
+            ),
         ];
     }
 }
