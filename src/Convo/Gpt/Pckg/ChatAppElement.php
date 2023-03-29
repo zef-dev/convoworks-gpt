@@ -23,6 +23,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
      * @var IConversationElement[]
      */
     private $_ok = [];
+
+    /**
+     * @var IChatAction[]
+     */
+    private $_actions = [];
     
     public function __construct( $properties, $gptApiFactory)
     {
@@ -34,6 +39,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
             $this->_ok[] = $element;
             $this->addChild($element);
         }
+        
+        foreach ( $properties['actions'] as $element) {
+            $this->_actions[] = $element;
+            $this->addChild($element);
+        }
     }
     
     public function read( IConvoRequest $request, IConvoResponse $response)
@@ -41,24 +51,42 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api            =   $this->_gptApiFactory->getApi( $api_key);
         
+        $messages       =   $this->evaluateString( $this->_properties['messages']);
+        $user_message   =   $this->evaluateString( $this->_properties['user_message']);
+        $messages[]     =   'User: '.trim( $user_message);
+        $conversation   =   implode( "\n", $messages);
+        
+        
         $prompt     =   $this->_getPrompt();
         $prompt     .=  "\n\n";
         $prompt     .=  "---------------------------------";
         $prompt     .=  "\n\n";
-        $prompt     .=  $this->_getConversation();
+        $prompt     .=  $conversation;
+        $prompt     .=  "\n";
+        $prompt     .=  'Bot: ';
+        
+        $this->_logger->debug( 'Got prompt ['.$prompt.']');
         
         $http_response   =   $api->completion( [
-            'model' => $this->evaluateString( $this->_properties['model']),
+            'model' => 'text-davinci-003',
             'prompt' => json_encode( $prompt),
-            'temperature' => (float)$this->evaluateString( $this->_properties['temperature']),
-            'max_tokens' => (int)$this->evaluateString( $this->_properties['max_tokens']),
-            'top_p' => (float)$this->evaluateString( $this->_properties['top_p']),
-            'frequency_penalty' => (float)$this->evaluateString( $this->_properties['frequency_penalty']),
-            'presence_penalty' => (float)$this->evaluateString( $this->_properties['presence_penalty']),
+            'temperature' => 0.7,
+            'max_tokens' => 256,
+            'top_p' => 1,
+            'frequency_penalty' => 0,
+            'presence_penalty' => 0,
+            'stop' => ['User:','Website:'],
         ]);
+
+        $bot_response  =    $http_response['choices'][0]['text'];
+        
+        $messages[]    =   'Bot: '.trim( $bot_response);
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
+        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
+            'messages' => $messages,
+            'bot_response' => $bot_response,
+        ]);
         
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
@@ -67,12 +95,13 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
     
     private function _getPrompt()
     {
-//         $system_message =   $this->evaluateString( $this->_properties['system_message']);
-        $actions        =   $this->_getWebsiteActions();
-        $definitions    =   $this->_getPromptDefinitions( $actions);
+        $system_message =   $this->evaluateString( $this->_properties['system_message']);
+        $definitions    =   $this->_getPromptDefinitions( $this->_actions);
         
-        $str = '';
+        $str = $system_message;
+        $str .= "\n\n";
         foreach ( $definitions as $prompt) {
+            $str .= "\n";
             $str .= $prompt->getPrompt();
         }
         
@@ -82,18 +111,18 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
 
     /**
      * @param IChatAction[] $actions
-     * @return IChatPrompt
+     * @return IChatPrompt[]
      */
     private function _getPromptDefinitions( $actions)
-    {}
-    
-    /**
-     * @return IChatAction[]
-     */
-    private function _getWebsiteActions()
     {
-        return [];
+        $prompts = [];
+        
+        foreach ( $actions as $action) {
+            $prompts[] = $action;
+        }
+        return $prompts;
     }
+    
 
     private function _getConversation()
     {
