@@ -56,9 +56,9 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
         $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER);
-      
+        
         $this->_logger->debug( 'Got bot response ['.$bot_response.']');
-        $bot_response   =   stripslashes( $bot_response);
+        $bot_response   =   $this->_fixBotJsonResponse( $bot_response);
         $this->_logger->debug( 'Got bot response 2 ['.$bot_response.']');
         $json           =   json_decode( trim( $bot_response), true);
         $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
@@ -94,6 +94,13 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
+    }
+    
+    private function _fixBotJsonResponse( $original)
+    {
+        $trimmed   =   stripslashes( $original);
+        $trimmed   =   trim( $trimmed, '"n');
+        return $trimmed;
     }
     
     private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix)
