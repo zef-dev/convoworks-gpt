@@ -48,12 +48,46 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        $api_key    =   $this->evaluateString( $this->_properties['api_key']);
-        $api            =   $this->_gptApiFactory->getApi( $api_key);
-        
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
-        $messages[]     =   'User: '.trim( $user_message);
+        $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), 'User: ');
+        $this->_logger->debug( 'Got bot response ['.$bot_response.']');
+        $json           =   json_decode( trim( $bot_response), true);
+        
+        if ( $json !== false) {
+            $messages[]    =   'Bot: '.trim( $bot_response);
+            foreach ( $this->_actions as $action) {
+                $this->_logger->debug( 'Handling parsed action data ['.$action->getActionId().']['.print_r( $json, true).']');
+                if ( $action->getActionId() !== $json['action']) {
+                    continue;
+                }
+                $action_response = $action->executeAction( $json);
+                $this->_logger->debug( 'Got action response ['.print_r( $action_response, true).']');
+                
+                $action_response = json_encode( $action_response);
+                $bot_response   =   $this->_getCompletion( $messages, $action_response, 'Website: ');
+            }
+        }
+        
+        $messages[]    =   'Bot: '.trim( $bot_response);
+        
+        $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
+            'messages' => $messages,
+            'bot_response' => $bot_response,
+        ]);
+        
+        foreach ( $this->_ok as $elem)   {
+            $elem->read( $request, $response);
+        }
+    }
+    
+    private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix)
+    {
+        $api_key        =   $this->evaluateString( $this->_properties['api_key']);
+        $api            =   $this->_gptApiFactory->getApi( $api_key);
+        
+        $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         
         
@@ -77,20 +111,9 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
             'presence_penalty' => 0,
             'stop' => ['User:','Website:'],
         ]);
-
+        
         $bot_response  =    $http_response['choices'][0]['text'];
-        
-        $messages[]    =   'Bot: '.trim( $bot_response);
-        
-        $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
-            'messages' => $messages,
-            'bot_response' => $bot_response,
-        ]);
-        
-        foreach ( $this->_ok as $elem)   {
-            $elem->read( $request, $response);
-        }
+        return $bot_response;
     }
     
     private function _getPrompt()
