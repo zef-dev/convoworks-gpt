@@ -13,6 +13,9 @@ use Convo\Gpt\IChatPrompt;
 
 class ChatAppElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
+    const PREFIX_BOT        =   'User:';
+    const PREFIX_USER       =   'User:';
+    const PREFIX_WEBSITE    =   'User:';
     
     /**
      * @var GptApiFactory
@@ -50,26 +53,29 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
     {
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
-        $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), 'User: ');
+        $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER);
         $this->_logger->debug( 'Got bot response ['.$bot_response.']');
         $json           =   json_decode( trim( $bot_response), true);
         
-        if ( $json !== false) {
-            $messages[]    =   'Bot: '.trim( $bot_response);
-            foreach ( $this->_actions as $action) {
+        if ( $json !== false && isset( $json['action'])) 
+        {
+            foreach ( $this->_actions as $action) 
+            {
                 $this->_logger->debug( 'Handling parsed action data ['.$action->getActionId().']['.print_r( $json, true).']');
                 if ( $action->getActionId() !== $json['action']) {
                     continue;
                 }
+                
+                $messages[]    =  self::PREFIX_BOT.trim( $bot_response);
                 $action_response = $action->executeAction( $json);
                 $this->_logger->debug( 'Got action response ['.print_r( $action_response, true).']');
                 
                 $action_response = json_encode( $action_response);
-                $bot_response   =   $this->_getCompletion( $messages, $action_response, 'Website: ');
+                $bot_response   =   $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);
             }
         }
         
-        $messages[]    =   'Bot: '.trim( $bot_response);
+        $messages[]    =   self::PREFIX_BOT.' '.trim( $bot_response);
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
@@ -87,7 +93,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $api_key        =   $this->evaluateString( $this->_properties['api_key']);
         $api            =   $this->_gptApiFactory->getApi( $api_key);
         
-        $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
+        $messages[]     =   $lastMessagePrefix.' '.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         
         
@@ -97,9 +103,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $prompt     .=  "\n\n";
         $prompt     .=  $conversation;
         $prompt     .=  "\n";
-        $prompt     .=  'Bot: ';
+        $prompt     .=  self::PREFIX_BOT;
         
-        $this->_logger->debug( 'Got prompt ['.$prompt.']');
+        $this->_logger->debug( 'Got prompt ============');
+        $this->_logger->debug( $prompt);
+        $this->_logger->debug( '============');
         
         $http_response   =   $api->completion( [
             'model' => 'text-davinci-003',
