@@ -13,9 +13,9 @@ use Convo\Gpt\IChatPrompt;
 
 class ChatAppElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
-    const PREFIX_BOT        =   'User:';
+    const PREFIX_BOT        =   'Bot:';
     const PREFIX_USER       =   'User:';
-    const PREFIX_WEBSITE    =   'User:';
+    const PREFIX_WEBSITE    =   'Website:';
     
     /**
      * @var GptApiFactory
@@ -51,11 +51,17 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+        $params         =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
         $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER);
+      
         $this->_logger->debug( 'Got bot response ['.$bot_response.']');
+        $bot_response   =   stripslashes( $bot_response);
+        $this->_logger->debug( 'Got bot response 2 ['.$bot_response.']');
         $json           =   json_decode( trim( $bot_response), true);
+        $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
         
         if ( $json !== false && isset( $json['action'])) 
         {
@@ -67,7 +73,10 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
                 }
                 
                 $messages[]    =  self::PREFIX_BOT.trim( $bot_response);
-                $action_response = $action->executeAction( $json);
+                
+                $params->setServiceParam( 'data', $json);
+                
+                $action_response = $action->executeAction( $json, $request, $response);
                 $this->_logger->debug( 'Got action response ['.print_r( $action_response, true).']');
                 
                 $action_response = json_encode( $action_response);
@@ -76,8 +85,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         }
         
         $messages[]    =   self::PREFIX_BOT.' '.trim( $bot_response);
-        
-        $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'messages' => $messages,
             'bot_response' => $bot_response,
@@ -117,7 +125,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
             'top_p' => 1,
             'frequency_penalty' => 0,
             'presence_penalty' => 0,
-            'stop' => ['User:','Website:'],
+            'stop' => [ self::PREFIX_USER, self::PREFIX_WEBSITE],
         ]);
         
         $bot_response  =    $http_response['choices'][0]['text'];
