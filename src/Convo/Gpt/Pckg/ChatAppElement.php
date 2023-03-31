@@ -31,6 +31,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
      * @var IChatAction[]
      */
     private $_actions = [];
+
+    /**
+     * @var IChatPrompt[]
+     */
+    private $_prompts = [];
     
     public function __construct( $properties, $gptApiFactory)
     {
@@ -45,6 +50,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         
         foreach ( $properties['actions'] as $element) {
             $this->_actions[] = $element;
+            $this->addChild($element);
+        }
+        
+        foreach ( $properties['prompts'] as $element) {
+            $this->_prompts[] = $element;
             $this->addChild($element);
         }
     }
@@ -145,9 +155,9 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $definitions    =   $this->_getPromptDefinitions( $this->_actions);
         
         $str = $system_message;
-        $str .= "\n\n";
+        $str .= "\n\n\n";
         foreach ( $definitions as $prompt) {
-            $str .= "\n";
+            $str .= "\n\n\n";
             $str .= $prompt->getPrompt();
         }
         
@@ -161,7 +171,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
      */
     private function _getPromptDefinitions( $actions)
     {
-        $prompts = [];
+        $prompts = $this->_prompts;
         
         foreach ( $actions as $action) {
             $prompts[] = $action;

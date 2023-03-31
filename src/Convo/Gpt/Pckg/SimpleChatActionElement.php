@@ -49,7 +49,7 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
     {
         $title      =   $this->evaluateString( $this->_properties['title']);
         $content    =   $this->evaluateString( $this->_properties['content']);
-        return $title."\n".$content;
+        return $title."\n\n".$content;
     }
     
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response)
