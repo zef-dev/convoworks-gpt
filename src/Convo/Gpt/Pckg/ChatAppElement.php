@@ -37,6 +37,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
      */
     private $_prompts = [];
     
+    /**
+     * @var string
+     */
+    private $_lastPrompt;
+    
     public function __construct( $properties, $gptApiFactory)
     {
         parent::__construct( $properties);
@@ -99,6 +104,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'messages' => $messages,
             'bot_response' => $bot_response,
+            'last_prompt' => $this->_lastPrompt
         ]);
         
         foreach ( $this->_ok as $elem)   {
@@ -144,6 +150,8 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
             'presence_penalty' => 0,
             'stop' => [ self::PREFIX_USER, self::PREFIX_WEBSITE],
         ]);
+        
+        $this->_lastPrompt = $prompt;
         
         $bot_response  =    $http_response['choices'][0]['text'];
         return $bot_response;
