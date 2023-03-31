@@ -10,6 +10,7 @@ use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IChatAction;
 use Convo\Gpt\IChatPrompt;
+use Convo\Core\DataItemNotFoundException;
 
 class ChatAppElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
@@ -80,22 +81,22 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         
         if ( $json !== false && isset( $json['action'])) 
         {
-            foreach ( $this->_actions as $action) 
+            try 
             {
-                $this->_logger->debug( 'Handling parsed action data ['.$action->getActionId().']['.print_r( $json, true).']');
-                if ( $action->getActionId() !== $json['action']) {
-                    continue;
-                }
+                $action         =   $this->_getAction( $json['action']);
                 
-                $messages[]    =  self::PREFIX_BOT.trim( $bot_response);
-                
+                $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
                 $params->setServiceParam( 'data', $json);
                 
                 $action_response = $action->executeAction( $json, $request, $response);
                 $this->_logger->debug( 'Got action response ['.print_r( $action_response, true).']');
                 
-                $action_response = json_encode( $action_response);
-                $bot_response   =   $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);
+                $action_response    =   json_encode( $action_response);
+                $bot_response       =   $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);
+            } 
+            catch ( DataItemNotFoundException $e) 
+            {
+                $bot_response   =   $this->_getCompletion( $messages, json_encode( ['message'=>'Action ['.$json['action'].'] is not defined']), self::PREFIX_WEBSITE);
             }
         }
         
@@ -110,6 +111,17 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
+    }
+    
+    private function _getAction( $actionId)
+    {
+        foreach ( $this->_actions as $action)
+        {
+            if ( $action->getActionId() === $actionId) {
+                return $action;
+            }
+        }
+        throw new DataItemNotFoundException( 'Action ['.$actionId.'] not found');
     }
     
     private function _fixBotJsonResponse( $original)
