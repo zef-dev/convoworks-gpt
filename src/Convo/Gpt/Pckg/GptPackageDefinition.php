@@ -555,6 +555,69 @@ class GptPackageDefinition extends AbstractPackageDefinition
 //                     ],
                 ]
             ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ActionsPromptElement',
+                'Actions Prompt',
+                'Actions Prompt',
+                [
+                    'title' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '## Available Website actions',
+                        'name' => 'Title',
+                        'description' => 'Prompt part title',
+                        'valueType' => 'string'
+                    ],
+                    'content' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Content',
+                        'description' => 'Prompt part main content',
+                        'valueType' => 'string'
+                    ],
+//                     'childPrompts' => [
+//                         'editor_type' => 'service_components',
+//                         'editor_properties' => [
+//                             'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+//                             'multiple' => true
+//                         ],
+//                         'defaultValue' => [],
+//                         'defaultOpen' => false,
+//                         'name' => 'Child prompts',
+//                         'description' => 'Flow to be executed if operation is finished with result variable available for use',
+//                         'valueType' => 'class'
+//                     ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">ACTIONS PROMPT</span>' .
+                        '   <b> {{component.properties.title}} </b>' .
+//                         ' <br>  {{component.properties.content}} ' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => true,
+//                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+//                     {
+//                         private $_gptApiFactory;
+                        
+//                         public function __construct( $gptApiFactory)
+//                         {
+//                             $this->_gptApiFactory	   =   $gptApiFactory;
+//                         }
+//                         public function createComponent( $properties, $service)
+//                         {
+//                             return new ChatAppElement( $properties, $this->_gptApiFactory);
+//                         }
+//                     }
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'voice-response-element.html'
+//                     ],
+                ]
+            ),
         ];
     }
 }

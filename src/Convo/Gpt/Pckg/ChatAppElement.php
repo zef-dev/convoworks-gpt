@@ -143,9 +143,14 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         }
     }
     
+    public function getActions()
+    {
+        return $this->_chatActions;
+    }
+    
     private function _getAction( $actionId)
     {
-        foreach ( $this->_actions as $action)
+        foreach ( $this->_chatActions as $action)
         {
             if ( $action->getActionId() === $actionId) {
                 return $action;
@@ -204,11 +209,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     private function _getPrompt()
     {
         $system_message =   $this->evaluateString( $this->_properties['system_message']);
-        $definitions    =   array_merge( $this->_chatPrompts, $this->_chatActions);
+//         $definitions    =   array_merge( $this->_chatPrompts, $this->_chatActions);
         
-        $str = $system_message;
+        $str    = $system_message;
 //         $str .= "\n";
-        foreach ( $definitions as $prompt) {
+        foreach ( $this->_chatPrompts as $prompt) {
             $str .= "\n\n\n";
             $str .= $prompt->getPrompt();
         }

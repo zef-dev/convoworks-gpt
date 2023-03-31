@@ -13,6 +13,11 @@ interface IChatApp extends IConversationElement
     public function registerAction( $action);
     
     /**
+     * @return IChatAction[]
+     */
+    public function getActions();
+    
+    /**
      * @param IChatPrompt $prompt
      */
     public function registerPrompt( $prompt);
