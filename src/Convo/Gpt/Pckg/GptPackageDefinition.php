@@ -359,7 +359,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     'prompts' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Gpt\IChatPrompt'],
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
                             'multiple' => true
                         ],
                         'defaultValue' => [],
@@ -371,7 +371,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     'actions' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Gpt\IChatAction'],
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
                             'multiple' => true
                         ],
                         'defaultValue' => [],
@@ -464,8 +464,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT ACTION</span>' .
-                        ' <b>{{component.properties.action_id}}</b> ' .
-                        ' <br>  {{component.properties.title}} ' .
+                        
+                        '  <b> {{component.properties.title}} </b>' .
+                        ' <br> action_id = {{component.properties.action_id}} ' .
 //                        ' <br>  {{component.properties.content}} ' .
                         '</div>'
                     ],
@@ -513,22 +514,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Prompt part main content',
                         'valueType' => 'string'
                     ],
-                    'childPrompts' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Child prompts',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
-                        'valueType' => 'class'
-                    ],
+//                     'childPrompts' => [
+//                         'editor_type' => 'service_components',
+//                         'editor_properties' => [
+//                             'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+//                             'multiple' => true
+//                         ],
+//                         'defaultValue' => [],
+//                         'defaultOpen' => false,
+//                         'name' => 'Child prompts',
+//                         'description' => 'Flow to be executed if operation is finished with result variable available for use',
+//                         'valueType' => 'class'
+//                     ],
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT PROMPT</span>' .
-                        ' <br>  {{component.properties.title}} ' .
+                        '   <b> {{component.properties.title}} </b>' .
 //                         ' <br>  {{component.properties.content}} ' .
                         '</div>'
                     ],

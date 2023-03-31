@@ -11,8 +11,9 @@ use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IChatAction;
 use Convo\Gpt\IChatPrompt;
 use Convo\Core\DataItemNotFoundException;
+use Convo\Gpt\IChatApp;
 
-class ChatAppElement extends AbstractWorkflowContainerComponent implements IConversationElement
+class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatApp
 {
     const PREFIX_BOT        =   'Bot:';
     const PREFIX_USER       =   'User:';
@@ -29,14 +30,25 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
     private $_ok = [];
 
     /**
-     * @var IChatAction[]
+     * @var IConversationElement[]
      */
     private $_actions = [];
 
     /**
-     * @var IChatPrompt[]
+     * @var IConversationElement[]
      */
     private $_prompts = [];
+
+    /**
+     * @var IChatAction[]
+     */
+    private $_chatActions = [];
+
+    /**
+     * @var IChatPrompt[]
+     */
+    private $_chatPrompts = [];
+    
     
     /**
      * @var string
@@ -65,8 +77,26 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         }
     }
     
+    public function registerPrompt( $prompt)
+    {
+        $this->_chatPrompts[] = $prompt;
+    }
+    
+    public function registerAction( $action)
+    {
+        $this->_chatActions[] = $action;
+    }
+    
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+        foreach ( $this->_actions as $action) {
+            $action->read( $request, $response);
+        }
+        
+        foreach ( $this->_prompts as $prompt) {
+            $prompt->read( $request, $response);
+        }
+        
         $params         =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         
         $messages       =   $this->evaluateString( $this->_properties['messages']);
@@ -149,7 +179,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         $prompt     .=  self::PREFIX_BOT;
         
         $this->_logger->debug( 'Got prompt ============');
-        $this->_logger->debug( $prompt);
+        $this->_logger->debug( "\n".$prompt);
         $this->_logger->debug( '============');
         
         $http_response   =   $api->completion( [
@@ -169,13 +199,15 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         return $bot_response;
     }
     
+    
+    
     private function _getPrompt()
     {
         $system_message =   $this->evaluateString( $this->_properties['system_message']);
-        $definitions    =   $this->_getPromptDefinitions( $this->_actions);
+        $definitions    =   array_merge( $this->_chatPrompts, $this->_chatActions);
         
         $str = $system_message;
-        $str .= "\n\n\n";
+//         $str .= "\n";
         foreach ( $definitions as $prompt) {
             $str .= "\n\n\n";
             $str .= $prompt->getPrompt();
@@ -183,37 +215,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IConv
         
         return $str;
     }
-    
 
-    /**
-     * @param IChatAction[] $actions
-     * @return IChatPrompt[]
-     */
-    private function _getPromptDefinitions( $actions)
-    {
-        $prompts = $this->_prompts;
-        
-        foreach ( $actions as $action) {
-            $prompts[] = $action;
-        }
-        return $prompts;
-    }
-    
-
-    private function _getConversation()
-    {
-        $str             =   '';
-        $user_message    =   $this->evaluateString( $this->_properties['user_message']);
-        $str            .=   "\n";
-        $str            .=   "User: ".$user_message;
-        return $str;
-    }
-    
     // UTIL
     public function __toString()
     {
         return parent::__toString().'[]';
     }
-
 
 }

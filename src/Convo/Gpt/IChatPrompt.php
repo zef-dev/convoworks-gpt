@@ -4,7 +4,9 @@ namespace Convo\Gpt;
 
 
 
-interface IChatPrompt
+use Convo\Core\Workflow\IConversationElement;
+
+interface IChatPrompt extends IConversationElement 
 {
 
     public function getPrompt();

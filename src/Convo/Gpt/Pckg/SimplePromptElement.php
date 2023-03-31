@@ -6,6 +6,7 @@ use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\IChatPrompt;
+use Convo\Core\DataItemNotFoundException;
 
 class SimplePromptElement extends AbstractWorkflowContainerComponent implements IChatPrompt
 {
@@ -34,9 +35,30 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+        $app = $this->findAncestor( '\Convo\Gpt\IChatApp');
+        /* @var \Convo\Gpt\IChatApp $app */
+        
+        $app->registerPrompt( $this);
+        
 //         foreach ( $this->_childPrompts as $elem) {
 //             $elem->read( $request, $response);
 //         }
+    }
+        
+    public function findAncestor( $class) 
+    {
+        $parent = $this;
+        while ( $parent = $parent->getParent()) {
+            if ( is_a( $parent, $class)) {
+                return $parent;
+            }
+            
+            if ( $parent === $this->getService()) {
+                break;
+            }
+        }
+        
+        throw new DataItemNotFoundException( 'Ancestro with class ['.$class.'] not found');
     }
     
     public function getPrompt()

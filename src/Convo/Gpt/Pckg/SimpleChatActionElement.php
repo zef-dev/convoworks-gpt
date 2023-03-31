@@ -8,6 +8,7 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\IChatAction;
 use Convo\Core\Params\IServiceParamsScope;
+use Convo\Core\DataItemNotFoundException;
 
 class SimpleChatActionElement extends AbstractWorkflowContainerComponent implements IChatAction
 {
@@ -39,11 +40,29 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        $this->_logger->debug( 'Executing action ['.$this->getActionId().']');
-        foreach ( $this->_ok as $elem) {
-            $elem->read( $request, $response);
-        }
+        $app = $this->findAncestor( '\Convo\Gpt\IChatApp');
+        /* @var \Convo\Gpt\IChatApp $app */
+        
+        $app->registerAction( $this);
     }
+    
+    public function findAncestor( $class)
+    {
+        $parent = $this;
+        while ( $parent = $parent->getParent()) {
+            if ( is_a( $parent, $class)) {
+                return $parent;
+            }
+            
+            if ( $parent === $this->getService()) {
+                break;
+            }
+        }
+        
+        throw new DataItemNotFoundException( 'Ancestro with class ['.$class.'] not found');
+    }
+    
+    
     
     public function getPrompt()
     {
@@ -57,7 +76,10 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->_actionRequestDataVar, $data);
         
-        $this->read( $request, $response);
+        $this->_logger->debug( 'Executing action ['.$this->getActionId().']');
+        foreach ( $this->_ok as $elem) {
+            $elem->read( $request, $response);
+        }
         
         $params        =    $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
         
