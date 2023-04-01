@@ -110,11 +110,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $json           =   json_decode( trim( $bot_response), true);
         $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
         
-        if ( $json !== false && isset( $json['action'])) 
+        if ( $json !== false && isset( $json['action_id'])) 
         {
             try 
             {
-                $action         =   $this->_getAction( $json['action']);
+                $action         =   $this->_getAction( $json['action_id']);
                 
                 $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
                 $params->setServiceParam( 'data', $json);
@@ -127,7 +127,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
             } 
             catch ( DataItemNotFoundException $e) 
             {
-                $bot_response   =   $this->_getCompletion( $messages, json_encode( ['message'=>'Action ['.$json['action'].'] is not defined']), self::PREFIX_WEBSITE);
+                $bot_response   =   $this->_getCompletion( $messages, json_encode( ['message'=>'Action ['.$json['action_id'].'] is not defined']), self::PREFIX_WEBSITE);
             }
         }
         
@@ -177,8 +177,6 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         
         
         $prompt     =   $this->_getPrompt();
-        $prompt     .=  "\n\n";
-        $prompt     .=  "---------------------------------";
         $prompt     .=  "\n\n";
         $prompt     .=  $conversation;
         $prompt     .=  "\n";
