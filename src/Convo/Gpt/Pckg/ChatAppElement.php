@@ -112,11 +112,12 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         
         if ( $json !== false && isset( $json['action_id'])) 
         {
+            $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
+            
             try 
             {
                 $action         =   $this->_getAction( $json['action_id']);
                 
-                $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
                 $params->setServiceParam( 'data', $json);
                 
                 $action_response = $action->executeAction( $json, $request, $response);
