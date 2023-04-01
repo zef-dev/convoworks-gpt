@@ -12,7 +12,6 @@ use Convo\Core\DataItemNotFoundException;
 
 class SimpleChatActionElement extends AbstractWorkflowContainerComponent implements IChatAction
 {
-    
 
     private $_title;
     private $_content;
@@ -76,31 +75,25 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->_actionRequestDataVar, $data);
         
-        $this->_logger->debug( 'Executing action ['.$this->getActionId().']');
+        $this->_logger->debug( 'Executing action');
+        
         foreach ( $this->_ok as $elem) {
             $elem->read( $request, $response);
         }
         
         $params        =    $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
-        
         return $this->evaluateString( $this->_actionResultData);
     }
     
-    public function getActionId()
+    public function accepts( $actionId)
     {
-        return $this->evaluateString( $this->_properties['action_id']);
+        return $this->evaluateString( $this->_properties['action_id']) === $actionId;
     }
-    
     
     // UTIL
     public function __toString()
     {
         return parent::__toString().'[]';
     }
-
-
-
-
-
 
 }

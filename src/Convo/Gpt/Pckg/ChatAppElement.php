@@ -55,6 +55,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
      */
     private $_lastPrompt;
     
+    
     public function __construct( $properties, $gptApiFactory)
     {
         parent::__construct( $properties);
@@ -152,7 +153,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     {
         foreach ( $this->_chatActions as $action)
         {
-            if ( $action->getActionId() === $actionId) {
+            if ( $action->accepts( $actionId)) {
                 return $action;
             }
         }

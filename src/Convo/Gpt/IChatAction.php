@@ -7,7 +7,13 @@ use Convo\Core\Workflow\IConvoResponse;
 
 interface IChatAction extends IChatPrompt
 {
-    public function getActionId();
+    
+    /**
+     * @param string $actionId
+     * @return bool
+     */
+    public function accepts( $actionId);
+    
     
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response);
 }
