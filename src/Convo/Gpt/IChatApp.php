@@ -2,9 +2,8 @@
 
 namespace Convo\Gpt;
 
-use Convo\Core\Workflow\IConversationElement;
 
-interface IChatApp extends IConversationElement 
+interface IChatApp 
 {
 
     /**

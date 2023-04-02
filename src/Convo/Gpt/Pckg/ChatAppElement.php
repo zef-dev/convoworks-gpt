@@ -13,7 +13,7 @@ use Convo\Gpt\IChatPrompt;
 use Convo\Core\DataItemNotFoundException;
 use Convo\Gpt\IChatApp;
 
-class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatApp
+class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatApp, IConversationElement
 {
     const PREFIX_BOT        =   'Bot:';
     const PREFIX_USER       =   'User:';

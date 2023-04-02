@@ -10,7 +10,7 @@ use Convo\Gpt\IChatAction;
 use Convo\Core\Params\IServiceParamsScope;
 use Convo\Core\DataItemNotFoundException;
 
-class SimpleChatActionElement extends AbstractWorkflowContainerComponent implements IChatAction
+class SimpleChatActionElement extends AbstractWorkflowContainerComponent implements IChatAction, IConversationElement
 {
 
     private $_title;

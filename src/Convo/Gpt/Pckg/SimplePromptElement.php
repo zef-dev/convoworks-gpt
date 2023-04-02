@@ -7,8 +7,9 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\IChatPrompt;
 use Convo\Core\DataItemNotFoundException;
+use Convo\Core\Workflow\IConversationElement;
 
-class SimplePromptElement extends AbstractWorkflowContainerComponent implements IChatPrompt
+class SimplePromptElement extends AbstractWorkflowContainerComponent implements IChatPrompt, IConversationElement
 {
     
 
