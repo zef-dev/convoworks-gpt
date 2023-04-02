@@ -173,11 +173,11 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         {
                             return new CompletionElement( $properties, $this->_gptApiFactory);
                         }
-        }
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'voice-response-element.html'
-//                     ],
+                    },
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'completion-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
