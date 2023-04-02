@@ -324,6 +324,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => '',
                         'valueType' => 'string'
                     ],
+                    'model_options' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => null,
+                        'name' => 'Model options',
+                        'description' => 'Completion api options to overwrite defaults',
+                        'valueType' => 'string'
+                    ],
                     'user_message' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],

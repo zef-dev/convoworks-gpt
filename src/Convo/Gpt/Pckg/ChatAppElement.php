@@ -187,7 +187,17 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $this->_logger->debug( "\n".$prompt);
         $this->_logger->debug( '============');
         
-        $http_response   =   $api->completion( [
+        $http_response   =   $api->completion( $this->_getModelOptions( $prompt));
+        
+        $this->_lastPrompt = $prompt;
+        
+        $bot_response  =    $http_response['choices'][0]['text'];
+        return $bot_response;
+    }
+    
+    private function _getModelOptions( $prompt)
+    {
+        $default_options = [
             'model' => 'text-davinci-003',
             'prompt' => json_encode( $prompt),
             'temperature' => 0.7,
@@ -196,12 +206,14 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
             'frequency_penalty' => 0,
             'presence_penalty' => 0,
             'stop' => [ self::PREFIX_USER, self::PREFIX_WEBSITE],
-        ]);
+        ];
         
-        $this->_lastPrompt = $prompt;
+        $override_options = [];
+        if ( isset( $this->_properties['model_options']) && $this->_properties['model_options']) {
+            $override_options   =   $this->evaluateString( $this->_properties['model_options']);
+        }
         
-        $bot_response  =    $http_response['choices'][0]['text'];
-        return $bot_response;
+        return array_merge( $default_options, $override_options);
     }
     
     
