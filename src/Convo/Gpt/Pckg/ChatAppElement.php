@@ -137,7 +137,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
             }
         }
         
-        $messages[]    =   self::PREFIX_BOT.' '.trim( $bot_response);
+        $messages[]    =   self::PREFIX_BOT.trim( $bot_response);
 
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'messages' => $messages,
@@ -173,7 +173,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $api_key        =   $this->evaluateString( $this->_properties['api_key']);
         $api            =   $this->_gptApiFactory->getApi( $api_key);
         
-        $messages[]     =   $lastMessagePrefix.' '.trim( $lastMessge);
+        $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         
         
@@ -187,7 +187,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $this->_logger->debug( "\n".$prompt);
         $this->_logger->debug( '============');
         
-        $http_response   =   $api->completion( $this->_getModelOptions( $prompt));
+        $http_response   =   $api->completion( $this->_getApiOptions( json_encode( $prompt)));
         
         $this->_lastPrompt = $prompt;
         
@@ -195,27 +195,12 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $bot_response;
     }
     
-    private function _getModelOptions( $prompt)
+    private function _getApiOptions( $prompt)
     {
-        $default_options = [
-            'model' => 'text-davinci-003',
-            'prompt' => json_encode( $prompt),
-            'temperature' => 0.7,
-            'max_tokens' => 256,
-            'top_p' => 1,
-            'frequency_penalty' => 0,
-            'presence_penalty' => 0,
-            'stop' => [ self::PREFIX_USER, self::PREFIX_WEBSITE],
-        ];
-        
-        $override_options = [];
-        if ( isset( $this->_properties['model_options']) && $this->_properties['model_options']) {
-            $override_options   =   $this->evaluateString( $this->_properties['model_options']);
-        }
-        
-        return array_merge( $default_options, $override_options);
+        $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
+        $options['prompt'] = $prompt;
+        return $options;
     }
-    
     
     private function _getPrompt()
     {
