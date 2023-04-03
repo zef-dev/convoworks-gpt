@@ -46,15 +46,11 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
         
-        $http_response   =   $api->chatCompletion( [
-            'model' => $this->evaluateString( $this->_properties['model']),
-            'messages' => $messages,
-            'temperature' => (float)$this->evaluateString( $this->_properties['temperature']),
-            'max_tokens' => (int)$this->evaluateString( $this->_properties['max_tokens']),
-            'top_p' => (float)$this->evaluateString( $this->_properties['top_p']),
-            'frequency_penalty' => (float)$this->evaluateString( $this->_properties['frequency_penalty']),
-            'presence_penalty' => (float)$this->evaluateString( $this->_properties['presence_penalty']),
-        ]);
+        $this->_logger->debug( 'Got messages ============');
+        $this->_logger->debug( "\n".json_encode( $messages, JSON_PRETTY_PRINT));
+        $this->_logger->debug( '============');
+        
+        $http_response   =   $api->chatCompletion( $this->_getApiOptions( $messages));
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
@@ -62,6 +58,13 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
+    }
+    
+    private function _getApiOptions( $messages)
+    {
+        $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
+        $options['messages'] = $messages;
+        return $options;
     }
     
     // UTIL

@@ -43,6 +43,15 @@ class GptPackageDefinition extends AbstractPackageDefinition
     
     protected function _initDefintions()
     {
+        $API_KEY = [
+            'editor_type' => 'text',
+            'editor_properties' => [],
+            'defaultValue' => null,
+            'name' => 'API key',
+            'description' => 'Your OpenAI API key',
+            'valueType' => 'string'
+        ];
+        
         return [
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
@@ -66,28 +75,21 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Status variable containing completion response',
                         'valueType' => 'string'
                     ],
-                    'api_key' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => null,
-                        'name' => 'API key',
-                        'description' => 'Your OpenAI API key',
-                        'valueType' => 'string'
-                    ],
-                    'apiOptions' => array(
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
                         'editor_type' => 'params',
-                        'editor_properties' => array(
+                        'editor_properties' => [
                             'multiple' => true
-                        ),
-                        'defaultValue' => array(
+                        ],
+                        'defaultValue' => [
                             'model' => 'text-davinci-003',
                             'temperature' => '${0.7}',
                             'max_tokens' => '${256}',
-                        ),
+                        ],
                         'name' => 'API options',
                         'description' => 'Completion API options that you can use',
                         'valueType' => 'array'
-                    ),
+                    ],
                     'ok' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -130,15 +132,23 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatCompletionElement',
-                'GPT Chat Completion',
-                'GPT Chat Completion API call',
+                'GPT Chat Completion API',
+                'Allows you to execute chat completion API calls',
                 [
-                    'api_key' => [
+                    'system_message' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
+                        'name' => 'System message',
+                        'description' => 'Main, system prompt to be added at the beginning of the conversation.',
+                        'valueType' => 'string'
+                    ],
+                    'messages' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${API_KEY}',
-                        'name' => 'API key',
-                        'description' => '',
+                        'defaultValue' => '${[]}',
+                        'name' => 'Messages',
+                        'description' => 'The messages to generate chat completions for, in the chat format.',
                         'valueType' => 'string'
                     ],
                     'result_var' => [
@@ -149,74 +159,20 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Status variable containing completion response',
                         'valueType' => 'string'
                     ],
-                    'model' => [
-                        'editor_type' => 'select',
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
                         'editor_properties' => [
-                            'options' => [ 
-                                'gpt-3.5-turbo' => 'gpt-3.5-turbo', 
-                                'gpt-3.5-turbo-0301' => 'gpt-3.5-turbo-0301', 
-                            ],
+                            'multiple' => true
                         ],
-                        'defaultValue' => 'gpt-3.5-turbo',
-                        'name' => 'Model',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'system_message' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
-                        'name' => 'System message',
-                        'description' => 'Main prompt',
-                        'valueType' => 'string'
-                    ],
-                    'messages' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'messages',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'temperature' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 0.7,
-                        'name' => 'Temperature',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'max_tokens' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 256,
-                        'name' => 'Max tokens',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'top_p' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 1,
-                        'name' => 'Top p',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'frequency_penalty' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 0,
-                        'name' => 'Frequency penalty',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'presence_penalty' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 0,
-                        'name' => 'Presence penalty',
-                        'description' => '',
-                        'valueType' => 'string'
+                        'defaultValue' => [
+                            'model' => 'gpt-3.5-turbo',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Chat completion API options that you can use',
+                        'valueType' => 'array'
                     ],
                     'ok' => [
                         'editor_type' => 'service_components',
@@ -232,7 +188,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">CHAT COMPLETION</span>' .
+                        'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
                         ' <br>  {{component.properties.system_message}} ' .
                         '</div>'
                     ],
@@ -250,11 +206,11 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         {
                             return new ChatCompletionElement( $properties, $this->_gptApiFactory);
                         }
-                    }
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'voice-response-element.html'
-//                     ],
+                    },
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'chat-completion-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
