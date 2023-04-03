@@ -15,9 +15,9 @@ use Convo\Gpt\IChatApp;
 
 class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatApp, IConversationElement
 {
-    const PREFIX_BOT        =   'Bot:';
-    const PREFIX_USER       =   'User:';
-    const PREFIX_WEBSITE    =   'Website:';
+    const PREFIX_BOT        =   'Bot: ';
+    const PREFIX_USER       =   'User: ';
+    const PREFIX_WEBSITE    =   'Website: ';
     
     /**
      * @var GptApiFactory
@@ -88,6 +88,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $this->_chatActions[] = $action;
     }
     
+    public function getActions()
+    {
+        return $this->_chatActions;
+    }
+    
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
         foreach ( $this->_actions as $action) {
@@ -143,11 +148,6 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
-    }
-    
-    public function getActions()
-    {
-        return $this->_chatActions;
     }
     
     private function _getAction( $actionId)
@@ -217,14 +217,10 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     }
     
     
-    
     private function _getPrompt()
     {
-        $system_message =   $this->evaluateString( $this->_properties['system_message']);
-//         $definitions    =   array_merge( $this->_chatPrompts, $this->_chatActions);
-        
-        $str    = $system_message;
-//         $str .= "\n";
+        $str    = $this->evaluateString( $this->_properties['system_message']);
+
         foreach ( $this->_chatPrompts as $prompt) {
             $str .= "\n\n\n";
             $str .= $prompt->getPrompt();
