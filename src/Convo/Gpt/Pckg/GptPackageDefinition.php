@@ -47,15 +47,15 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\CompletionElement',
-                'GPT Completion',
-                'GPT Completion API call',
+                'GPT Completion API',
+                'Allows you to execute completion API calls',
                 [
-                    'api_key' => [
-                        'editor_type' => 'text',
+                    'prompt' => [
+                        'editor_type' => 'desc',
                         'editor_properties' => [],
-                        'defaultValue' => '${API_KEY}',
-                        'name' => 'API key',
-                        'description' => '',
+                        'defaultValue' => null,
+                        'name' => 'Prompt',
+                        'description' => 'The prompt(s) to generate completions for',
                         'valueType' => 'string'
                     ],
                     'result_var' => [
@@ -66,69 +66,28 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Status variable containing completion response',
                         'valueType' => 'string'
                     ],
-                    'model' => [
-                        'editor_type' => 'select',
-                        'editor_properties' => [
-                            'options' => [ 
-                                'text-davinci-003' => 'text-davinci-003', 
-                                'text-curie-001' => 'text-curie-001', 
-                                'text-babbage-001' => 'text-babbage-001',
-                                'text-ada-001' => 'text-ada-001',
-                            ],
-                        ],
-                        'defaultValue' => 'text-davinci-003',
-                        'name' => 'Model',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'prompt' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => '${request.text}',
-                        'name' => 'Prompt',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'temperature' => [
+                    'api_key' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => 0.7,
-                        'name' => 'Temperature',
-                        'description' => '',
+                        'defaultValue' => null,
+                        'name' => 'API key',
+                        'description' => 'Your OpenAI API key',
                         'valueType' => 'string'
                     ],
-                    'max_tokens' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 256,
-                        'name' => 'Max tokens',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'top_p' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 1,
-                        'name' => 'Top p',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'frequency_penalty' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 0,
-                        'name' => 'Frequency penalty',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'presence_penalty' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 0,
-                        'name' => 'Presence penalty',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
+                    'apiOptions' => array(
+                        'editor_type' => 'params',
+                        'editor_properties' => array(
+                            'multiple' => true
+                        ),
+                        'defaultValue' => array(
+                            'model' => 'text-davinci-003',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ),
+                        'name' => 'API options',
+                        'description' => 'Completion API options that you can use',
+                        'valueType' => 'array'
+                    ),
                     'ok' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -141,21 +100,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Flow to be executed if operation is finished with result variable available for use',
                         'valueType' => 'class'
                     ],
-                    'empty' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Empty response',
-                        'description' => 'Flow to be executed if response was empty',
-                        'valueType' => 'class'
-                    ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">COMPLETION</span>' .
+                        'template' => '<div class="code"><span class="statement">COMPLETION API</span>' .
                         ' <br>  {{component.properties.prompt}} ' .
                         '</div>'
                     ],

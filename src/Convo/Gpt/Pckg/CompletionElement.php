@@ -42,15 +42,21 @@ class CompletionElement extends AbstractWorkflowContainerComponent implements IC
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
         
-        $http_response   =   $api->completion( [
-            'model' => $this->evaluateString( $this->_properties['model']),
-            'prompt' => json_encode( $prompt),
-            'temperature' => (float)$this->evaluateString( $this->_properties['temperature']),
-            'max_tokens' => (int)$this->evaluateString( $this->_properties['max_tokens']),
-            'top_p' => (float)$this->evaluateString( $this->_properties['top_p']),
-            'frequency_penalty' => (float)$this->evaluateString( $this->_properties['frequency_penalty']),
-            'presence_penalty' => (float)$this->evaluateString( $this->_properties['presence_penalty']),
-        ]);
+//         $http_response   =   $api->completion( [
+//             'model' => $this->evaluateString( $this->_properties['model']),
+//             'prompt' => json_encode( $prompt),
+//             'temperature' => (float)$this->evaluateString( $this->_properties['temperature']),
+//             'max_tokens' => (int)$this->evaluateString( $this->_properties['max_tokens']),
+//             'top_p' => (float)$this->evaluateString( $this->_properties['top_p']),
+//             'frequency_penalty' => (float)$this->evaluateString( $this->_properties['frequency_penalty']),
+//             'presence_penalty' => (float)$this->evaluateString( $this->_properties['presence_penalty']),
+//         ]);
+
+        $this->_logger->debug( 'Got prompt ============');
+        $this->_logger->debug( "\n".$prompt);
+        $this->_logger->debug( '============');
+        
+        $http_response   =   $api->completion( $this->_getApiOptions( json_encode( $prompt)));
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
@@ -58,6 +64,13 @@ class CompletionElement extends AbstractWorkflowContainerComponent implements IC
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
+    }
+    
+    private function _getApiOptions( $prompt)
+    {
+        $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
+        $options['prompt'] = $prompt;
+        return $options;
     }
     
     // UTIL
