@@ -408,40 +408,28 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SimplePromptElement',
-                'Simple Prompt',
-                'Simple Prompt',
+                'Prompt Section',
+                'This element allows you to split complex prompt into several, managable sections.',
                 [
                     'title' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Title',
-                        'description' => 'Prompt part title',
+                        'name' => 'Prompt Title',
+                        'description' => 'Title for the prompt section',
                         'valueType' => 'string'
                     ],
                     'content' => [
                         'editor_type' => 'desc',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Content',
-                        'description' => 'Prompt part main content',
+                        'name' => 'Prompt Content',
+                        'description' => 'Content of the prompt section',
                         'valueType' => 'string'
                     ],
-//                     'childPrompts' => [
-//                         'editor_type' => 'service_components',
-//                         'editor_properties' => [
-//                             'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-//                             'multiple' => true
-//                         ],
-//                         'defaultValue' => [],
-//                         'defaultOpen' => false,
-//                         'name' => 'Child prompts',
-//                         'description' => 'Flow to be executed if operation is finished with result variable available for use',
-//                         'valueType' => 'class'
-//                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">CHAT PROMPT</span>' .
+                        'template' => '<div class="code"><span class="statement">PROMPT SECTION</span>' .
                         '   <b> {{component.properties.title}} </b>' .
 //                         ' <br>  {{component.properties.content}} ' .
                         '</div>'
@@ -449,23 +437,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-//                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
-//                     {
-//                         private $_gptApiFactory;
-                        
-//                         public function __construct( $gptApiFactory)
-//                         {
-//                             $this->_gptApiFactory	   =   $gptApiFactory;
-//                         }
-//                         public function createComponent( $properties, $service)
-//                         {
-//                             return new ChatAppElement( $properties, $this->_gptApiFactory);
-//                         }
-//                     }
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'voice-response-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'simple-prompt-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(

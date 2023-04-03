@@ -5,9 +5,8 @@ namespace Convo\Gpt\Pckg;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
-use Convo\Gpt\IChatPrompt;
-use Convo\Core\DataItemNotFoundException;
 use Convo\Core\Workflow\IConversationElement;
+use Convo\Gpt\IChatPrompt;
 
 class SimplePromptElement extends AbstractWorkflowContainerComponent implements IChatPrompt, IConversationElement
 {
@@ -16,22 +15,12 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
     private $_title;
     private $_content;
     
-    /**
-     * @var IChatPrompt[]
-     */
-    private $_childPrompts = [];
-    
     public function __construct( $properties)
     {
         parent::__construct( $properties);
         
         $this->_title = $properties['title'];
         $this->_content = $properties['content'];
-        
-        foreach ( $properties['childPrompts'] as $element) {
-            $this->_childPrompts[] = $element;
-            $this->addChild($element);
-        }
     }
     
     public function read( IConvoRequest $request, IConvoResponse $response)
@@ -40,28 +29,8 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
         /* @var \Convo\Gpt\IChatApp $app */
         
         $app->registerPrompt( $this);
-        
-//         foreach ( $this->_childPrompts as $elem) {
-//             $elem->read( $request, $response);
-//         }
     }
         
-    public function findAncestor( $class) 
-    {
-        $parent = $this;
-        while ( $parent = $parent->getParent()) {
-            if ( is_a( $parent, $class)) {
-                return $parent;
-            }
-            
-            if ( $parent === $this->getService()) {
-                break;
-            }
-        }
-        
-        throw new DataItemNotFoundException( 'Ancestro with class ['.$class.'] not found');
-    }
-    
     public function getPrompt()
     {
         $title      =   $this->evaluateString( $this->_properties['title']);
