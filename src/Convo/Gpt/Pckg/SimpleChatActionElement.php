@@ -8,7 +8,6 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\IChatAction;
 use Convo\Core\Params\IServiceParamsScope;
-use Convo\Core\DataItemNotFoundException;
 
 class SimpleChatActionElement extends AbstractWorkflowContainerComponent implements IChatAction, IConversationElement
 {
@@ -16,8 +15,8 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
     private $_title;
     private $_content;
     
-    private $_actionRequestDataVar  =   'action';
-    private $_actionResultData      =   '${action_result}';
+    private $_actionRequestDataVar;
+    private $_actionResultData;
     
     /**
      * @var IConversationElement[]
@@ -28,8 +27,10 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
     {
         parent::__construct( $properties);
         
-        $this->_title = $properties['title'];
-        $this->_content = $properties['content'];
+        $this->_title                   =   $properties['title'];
+        $this->_content                 =   $properties['content'];
+        $this->_actionRequestDataVar    =   $properties['action_var'];
+        $this->_actionResultData        =   $properties['result'];
         
         foreach ( $properties['ok'] as $element) {
             $this->_ok[] = $element;
@@ -45,24 +46,6 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
         $app->registerAction( $this);
     }
     
-    public function findAncestor( $class)
-    {
-        $parent = $this;
-        while ( $parent = $parent->getParent()) {
-            if ( is_a( $parent, $class)) {
-                return $parent;
-            }
-            
-            if ( $parent === $this->getService()) {
-                break;
-            }
-        }
-        
-        throw new DataItemNotFoundException( 'Ancestro with class ['.$class.'] not found');
-    }
-    
-    
-    
     public function getPrompt()
     {
         $title      =   $this->evaluateString( $this->_properties['title']);
@@ -73,7 +56,7 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response)
     {
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( $this->_actionRequestDataVar, $data);
+        $params->setServiceParam( $this->evaluateString( $this->_actionRequestDataVar), $data);
         
         $this->_logger->debug( 'Executing action');
         

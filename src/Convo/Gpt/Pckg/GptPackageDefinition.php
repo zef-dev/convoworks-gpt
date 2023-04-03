@@ -333,30 +333,46 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SimpleChatActionElement',
                 'Simple Chat Action',
-                'Simple Chat Action',
+                'Allows you to define definition (prompt) and execute action in the workflow',
                 [
                     'action_id' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
                         'name' => 'Action ID',
-                        'description' => '',
+                        'description' => 'Unique action identifier',
                         'valueType' => 'string'
                     ],
                     'title' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Title',
-                        'description' => 'Prompt part title',
+                        'name' => 'Prompt Title',
+                        'description' => 'Title for the prompt section',
                         'valueType' => 'string'
                     ],
                     'content' => [
                         'editor_type' => 'desc',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Content',
-                        'description' => 'Prompt part main content',
+                        'name' => 'Prompt Content',
+                        'description' => 'Content of the prompt section',
+                        'valueType' => 'string'
+                    ],
+                    'action_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'action',
+                        'name' => 'Action Variable Name',
+                        'description' => 'Status variable containing completion response',
+                        'valueType' => 'string'
+                    ],
+                    'result' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${[]}',
+                        'name' => 'Result',
+                        'description' => 'Variable which evaluates to a result of the executed action',
                         'valueType' => 'string'
                     ],
                     'ok' => [
@@ -368,7 +384,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => false,
                         'name' => 'OK flow',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'description' => 'Flow to be executed when action is requested',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -383,23 +399,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-//                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
-//                     {
-//                         private $_gptApiFactory;
-                        
-//                         public function __construct( $gptApiFactory)
-//                         {
-//                             $this->_gptApiFactory	   =   $gptApiFactory;
-//                         }
-//                         public function createComponent( $properties, $service)
-//                         {
-//                             return new ChatAppElement( $properties, $this->_gptApiFactory);
-//                         }
-//                     }
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'voice-response-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'simple-chat-action-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
