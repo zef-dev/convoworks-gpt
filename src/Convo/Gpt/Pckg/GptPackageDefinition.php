@@ -216,29 +216,21 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatAppElement',
-                'Chat App',
-                'Extendable chat handler',
+                'Autonomous Chat',
+                'Chat handler which can be configured to autonomously execute actions in the workflow',
                 [
-                    'api_key' => [
-                        'editor_type' => 'text',
+                    'system_message' => [
+                        'editor_type' => 'desc',
                         'editor_properties' => [],
-                        'defaultValue' => '${API_KEY}',
-                        'name' => 'API key',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'model_options' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => null,
-                        'name' => 'Model options',
-                        'description' => 'Completion api options to overwrite defaults',
+                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
+                        'name' => 'Main prompt',
+                        'description' => 'The main prompt to generate completions for. It will be appended with eventual child Prompt elements.',
                         'valueType' => 'string'
                     ],
                     'user_message' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
+                        'defaultValue' => '${request.text}',
                         'name' => 'User message',
                         'description' => 'The new user message to append to the conversation.',
                         'valueType' => 'string'
@@ -246,17 +238,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     'messages' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
+                        'defaultValue' => '${[]}',
                         'name' => 'All messages',
-                        'description' => '',
-                        'valueType' => 'string'
-                    ],
-                    'system_message' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
-                        'name' => 'System message',
-                        'description' => 'Main prompt',
+                        'description' => 'Array containing all messages in the current conversation',
                         'valueType' => 'string'
                     ],
                     'result_var' => [
@@ -267,6 +251,21 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Status variable containing completion response',
                         'valueType' => 'string'
                     ],
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [
+                            'model' => 'text-davinci-003',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Completion API options that you can override',
+                        'valueType' => 'array'
+                    ],
                     'prompts' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -276,7 +275,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => false,
                         'name' => 'Prompts',
-                        'description' => '',
+                        'description' => 'Prompt definition',
                         'valueType' => 'class'
                     ],
                     'actions' => [
@@ -305,7 +304,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">CHAT APP</span>' .
+                        'template' => '<div class="code"><span class="statement">AUTONOMOUS CHAT</span>' .
                         ' <br>  {{component.properties.system_message}} ' .
                         '</div>'
                     ],
@@ -323,11 +322,11 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         {
                             return new ChatAppElement( $properties, $this->_gptApiFactory);
                         }
-                    }
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'voice-response-element.html'
-//                     ],
+                    },
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'chat-app-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
