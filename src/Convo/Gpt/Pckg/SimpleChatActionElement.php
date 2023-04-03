@@ -5,16 +5,12 @@ namespace Convo\Gpt\Pckg;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
-use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
-use Convo\Gpt\IChatAction;
 use Convo\Core\Params\IServiceParamsScope;
+use Convo\Gpt\IChatAction;
 
-class SimpleChatActionElement extends AbstractWorkflowContainerComponent implements IChatAction, IConversationElement
+class SimpleChatActionElement extends SimplePromptElement implements IChatAction, IConversationElement
 {
 
-    private $_title;
-    private $_content;
-    
     private $_actionRequestDataVar;
     private $_actionResultData;
     
@@ -27,8 +23,6 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
     {
         parent::__construct( $properties);
         
-        $this->_title                   =   $properties['title'];
-        $this->_content                 =   $properties['content'];
         $this->_actionRequestDataVar    =   $properties['action_var'];
         $this->_actionResultData        =   $properties['result'];
         
@@ -44,13 +38,6 @@ class SimpleChatActionElement extends AbstractWorkflowContainerComponent impleme
         /* @var \Convo\Gpt\IChatApp $app */
         
         $app->registerAction( $this);
-    }
-    
-    public function getPrompt()
-    {
-        $title      =   $this->evaluateString( $this->_properties['title']);
-        $content    =   $this->evaluateString( $this->_properties['content']);
-        return $title."\n\n".$content;
     }
     
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response)
