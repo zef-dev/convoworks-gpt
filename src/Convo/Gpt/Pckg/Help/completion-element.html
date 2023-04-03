@@ -2,11 +2,22 @@
     <h3>Completion element</h3>
 
     <p>
-        This is OpenAI Completion API warpper element which allows you to make calls and get out response.
+        This is OpenAI Completion API warpper element which allows you to make calls and get out the completion API response.
+    </p>
+
+    <h3>Status variable</h3>
+    <p>
+        Status variable contains the complete completion API response.
+    </p>
+    <p>
+        You can access completion itself like this: <code>${status["choices"][0]["text"]}</code>
     </p>
     
+    <hr>
+    
     <p>
-        Check for more on <a href="https://platform.openai.com/docs/api-reference/completions" target="_blank">API Reference - OpenAI API</a>
+        Check for more on available API options at <a href="https://platform.openai.com/docs/api-reference/completions" target="_blank">API Reference - OpenAI API</a>
     </p>
+    
     
 </div>
