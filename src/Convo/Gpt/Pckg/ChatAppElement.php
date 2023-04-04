@@ -107,29 +107,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
         
         $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER);
+        $bot_response   =   $this->_handleBotResponse( $bot_response, $messages, $request, $response);
         
-        if ( $this->_isJsonCandidate( $bot_response)) 
-        {
-            $corrected_response   =   $this->_fixBotJsonResponse( $bot_response);
-            try
-            {
-                $json           =   $this->_parseActionJson( $corrected_response);
-                
-                $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
-                
-                $messages[]     =   self::PREFIX_BOT.trim( $corrected_response);
-                $bot_response   =   $this->_executeAction( $json, $messages, $request, $response);
-            }
-            catch ( \InvalidArgumentException $e)
-            {
-                // NO JSON FOUND
-                $this->_logger->warning( $e->getMessage());
-            }
-        }
-        
-        $messages[] =   self::PREFIX_BOT.trim( $bot_response);
+        $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
 
-        $params     =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        $params         =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'messages' => $messages,
             'bot_response' => $bot_response,
@@ -139,6 +121,30 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
+    }
+    
+    private function _handleBotResponse( $botResponse, &$messages, IConvoRequest $request, IConvoResponse $response)
+    {
+        if ( $this->_isJsonCandidate( $botResponse))
+        {
+            $corrected_response   =   $this->_fixBotJsonResponse( $botResponse);
+            try
+            {
+                $json           =   $this->_parseActionJson( $corrected_response);
+                
+                $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
+                
+                $messages[]     =   self::PREFIX_BOT.trim( $corrected_response);
+                $botResponse    =   $this->_executeAction( $json, $messages, $request, $response);
+                $botResponse    =   $this->_handleBotResponse( $botResponse, $messages, $request, $response);
+            }
+            catch ( \InvalidArgumentException $e)
+            {
+                // NO JSON FOUND
+                $this->_logger->warning( $e->getMessage());
+            }
+        }
+        return $botResponse;
     }
     
     
@@ -154,7 +160,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $str;
     }
     
-    private function _executeAction( $json, $messages, IConvoRequest $request, IConvoResponse $response)
+    private function _executeAction( $json, &$messages, IConvoRequest $request, IConvoResponse $response)
     {
         $this->_logger->info( 'Executing action ['.$json['action_id'].']');
         
