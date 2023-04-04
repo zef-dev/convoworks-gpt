@@ -103,42 +103,33 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
             $prompt->read( $request, $response);
         }
         
-        $params         =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
+        
         $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER);
         
-        $this->_logger->debug( 'Got bot response ['.$bot_response.']');
-        $bot_response   =   $this->_fixBotJsonResponse( $bot_response);
-        $this->_logger->debug( 'Got bot response 2 ['.$bot_response.']');
-        $json           =   json_decode( trim( $bot_response), true);
-        $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
-        
-        if ( $json !== false && isset( $json['action_id'])) 
+        if ( $this->_isJsonCandidate( $bot_response)) 
         {
-            $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
-            
-            try 
+            $corrected_response   =   $this->_fixBotJsonResponse( $bot_response);
+            try
             {
-                $action         =   $this->_getAction( $json['action_id']);
+                $json           =   $this->_parseActionJson( $corrected_response);
                 
-                $params->setServiceParam( 'data', $json);
+                $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
                 
-                $action_response = $action->executeAction( $json, $request, $response);
-                $this->_logger->debug( 'Got action response ['.print_r( $action_response, true).']');
-                
-                $action_response    =   json_encode( $action_response);
-                $bot_response       =   $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);
-            } 
-            catch ( DataItemNotFoundException $e) 
+                $messages[]     =   self::PREFIX_BOT.trim( $corrected_response);
+                $bot_response   =   $this->_executeAction( $json, $messages, $request, $response);
+            }
+            catch ( \InvalidArgumentException $e)
             {
-                $bot_response   =   $this->_getCompletion( $messages, json_encode( ['message'=>'Action ['.$json['action_id'].'] is not defined']), self::PREFIX_WEBSITE);
+                // NO JSON FOUND
+                $this->_logger->warning( $e->getMessage());
             }
         }
         
-        $messages[]    =   self::PREFIX_BOT.trim( $bot_response);
+        $messages[] =   self::PREFIX_BOT.trim( $bot_response);
 
+        $params     =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'messages' => $messages,
             'bot_response' => $bot_response,
@@ -148,6 +139,39 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
+    }
+    
+    
+    private function _getPrompt()
+    {
+        $str    = $this->evaluateString( $this->_properties['system_message']);
+        
+        foreach ( $this->_chatPrompts as $prompt) {
+            $str .= "\n\n\n";
+            $str .= $prompt->getPrompt();
+        }
+        
+        return $str;
+    }
+    
+    private function _executeAction( $json, $messages, IConvoRequest $request, IConvoResponse $response)
+    {
+        $this->_logger->info( 'Executing action ['.$json['action_id'].']');
+        
+        try
+        {
+            $action             =   $this->_getAction( $json['action_id']);
+            $action_response    =   $action->executeAction( $json, $request, $response);
+            $action_response    =   json_encode( $action_response);
+            
+            $this->_logger->debug( 'Got action response ['.$action_response.']');
+        }
+        catch ( DataItemNotFoundException $e)
+        {
+            $action_response    =   json_encode( ['message'=>'Action ['.$json['action_id'].'] is not defined']);
+        }
+        
+        return $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);;
     }
     
     private function _getAction( $actionId)
@@ -165,7 +189,28 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     {
         $trimmed   =   stripslashes( $original);
         $trimmed   =   trim( $trimmed, '"n');
+        $trimmed   =   trim( $trimmed, '"');
         return $trimmed;
+    }
+    
+    private function _isJsonCandidate( $message)
+    {
+        if ( strpos( $message, '{') !== false && strpos( $message, '}') !== false) {
+            return true;
+        }
+        return false;
+    }
+    
+    private function _parseActionJson( $message)
+    {
+        $json           =   json_decode( trim( $message), true);
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \InvalidArgumentException( 'No valid JSON found in message ['.$message.']');
+        }
+        if ( !isset( $json['action_id']) || empty( $json['action_id'])) {
+            throw new \InvalidArgumentException( 'No action_id in JSON found in message ['.$message.']');
+        }
+        return $json;
     }
     
     private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix)
@@ -200,18 +245,6 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         $options['prompt'] = $prompt;
         return $options;
-    }
-    
-    private function _getPrompt()
-    {
-        $str    = $this->evaluateString( $this->_properties['system_message']);
-
-        foreach ( $this->_chatPrompts as $prompt) {
-            $str .= "\n\n\n";
-            $str .= $prompt->getPrompt();
-        }
-        
-        return $str;
     }
 
     // UTIL
