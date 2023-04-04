@@ -364,7 +364,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => 'action',
                         'name' => 'Action Variable Name',
-                        'description' => 'Status variable containing completion response',
+                        'description' => 'Variable containing action data which is available in OK flow',
                         'valueType' => 'string'
                     ],
                     'result' => [
