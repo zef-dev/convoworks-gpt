@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "version": "1.00.00",
+    "scripts": {},
+    "devDependencies": {
+        "yargs": "^17.0.1",
+        "archiver": "^5.3.1"
+    }
+}
