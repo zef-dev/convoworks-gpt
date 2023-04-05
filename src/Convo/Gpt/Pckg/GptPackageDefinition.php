@@ -248,7 +248,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => 'status',
                         'name' => 'Result Variable Name',
-                        'description' => 'Status variable containing completion response',
+                        'description' => 'Status variable containing additional operation result information',
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
