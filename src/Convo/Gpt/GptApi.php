@@ -51,8 +51,11 @@ class GptApi
         
         $response = $client->sendRequest( $request);
         
-        $response_data = json_decode( $response->getBody()->getContents(), true);
+        $response_raw = $response->getBody()->getContents();
         
+        $response_data = json_decode( $response_raw, true);
+        
+        $this->_logger->debug( 'Http response raw ['.$response_raw.']');
         $this->_logger->debug( 'Http response data ['.print_r( $response_data, true).']');
         
         return $response_data;
