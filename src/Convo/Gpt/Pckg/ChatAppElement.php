@@ -127,14 +127,13 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     {
         if ( $this->_isActionCandidate( $botResponse))
         {
-            $corrected_response   =   $this->_fixBotJsonResponse( $botResponse);
             try
             {
-                $json           =   $this->_parseActionJson( $corrected_response);
+                $json           =   $this->_parseActionJson( $botResponse);
                 
                 $this->_logger->debug( 'Got bot response as data ['.print_r( $json, true).']');
                 
-                $messages[]     =   self::PREFIX_BOT.trim( $corrected_response);
+                $messages[]     =   self::PREFIX_BOT.json_encode( $json);
                 $botResponse    =   $this->_executeAction( $json, $messages, $request, $response);
                 $botResponse    =   $this->_handleBotResponse( $botResponse, $messages, $request, $response);
             }
@@ -148,7 +147,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     }
     
     
-    private function _getPrompt()
+    private function _generatePrompt()
     {
         $str    = $this->evaluateString( $this->_properties['system_message']);
         
@@ -191,6 +190,64 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         throw new DataItemNotFoundException( 'Action ['.$actionId.'] not found');
     }
     
+    private function _isActionCandidate( $message)
+    {
+        if ( strpos( $message, 'action_id') !== false) {
+            return true;
+        }
+        return false;
+    }
+    
+    private function _parseActionJson( $message)
+    {
+        $json       =   json_decode( trim( $message), true);
+        
+        if ( JSON_ERROR_NONE !== json_last_error()) {
+            $json       =   $this->_parseActionJsonWithGpt( $message);
+        }
+        
+        if ( !isset( $json['action_id']) || empty( $json['action_id'])) {
+            throw new \InvalidArgumentException( 'No action_id in JSON found in message ['.$message.']');
+        }
+        
+        return $json;
+    }
+    
+    private function _parseActionJsonWithGpt( $message)
+    {
+        $prompt     =   'There are one or more JSON formatted data chunks in the following message. Write me the first valid JSON information from it.
+
+Message:';
+        $prompt     .=  $message;
+        $prompt     .=  "\n\nParsed: ";
+        
+        $this->_logger->debug( 'Got action prompt ============');
+        $this->_logger->debug( "\n".$prompt);
+        $this->_logger->debug( '============');
+        
+        $http_response  =   $this->_getGptApi()->completion( [
+            'model' => 'text-davinci-003',
+            'temperature' => 0.7,
+            'max_tokens' => 256,
+            'prompt' => $prompt,
+        ]);
+        $bot_response   =   $http_response['choices'][0]['text'];
+        
+        $json           =   json_decode( trim( $bot_response), true);
+        
+        if ( JSON_ERROR_NONE !== json_last_error()) {
+            throw new \InvalidArgumentException( 'No valid JSON found in message ['.$message.']');
+        }
+        
+        return $json;
+    }
+    
+    
+    /**
+     * @param string $original
+     * @return string
+     * @deprecated
+     */
     private function _fixBotJsonResponse( $original)
     {
         $trimmed   =   stripslashes( $original);
@@ -204,36 +261,13 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $trimmed;
     }
     
-    private function _isActionCandidate( $message)
-    {
-        if ( strpos( $message, 'action_id') !== false) {
-            return true;
-        }
-        return false;
-    }
-    
-    private function _parseActionJson( $message)
-    {
-        $json           =   json_decode( trim( $message), true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \InvalidArgumentException( 'No valid JSON found in message ['.$message.']');
-        }
-        if ( !isset( $json['action_id']) || empty( $json['action_id'])) {
-            throw new \InvalidArgumentException( 'No action_id in JSON found in message ['.$message.']');
-        }
-        return $json;
-    }
-    
     private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix)
     {
-        $api_key        =   $this->evaluateString( $this->_properties['api_key']);
-        $api            =   $this->_gptApiFactory->getApi( $api_key);
-        
         $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         
         
-        $prompt     =   $this->_getPrompt();
+        $prompt     =   $this->_generatePrompt();
         $prompt     .=  "\n\n";
         $prompt     .=  $conversation;
         $prompt     .=  "\n";
@@ -243,12 +277,21 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $this->_logger->debug( "\n".$prompt);
         $this->_logger->debug( '============');
         
-        $http_response   =   $api->completion( $this->_getApiOptions( json_encode( $prompt)));
+        $http_response   =   $this->_getGptApi()->completion( $this->_getApiOptions( json_encode( $prompt)));
         
         $this->_lastPrompt = $prompt;
         
         $bot_response  =    $http_response['choices'][0]['text'];
         return $bot_response;
+    }
+    
+    /**
+     * @return \Convo\Gpt\GptApi
+     */
+    private function _getGptApi()
+    {
+        $api_key    =   $this->evaluateString( $this->_properties['api_key']);
+        return $this->_gptApiFactory->getApi( $api_key);
     }
     
     private function _getApiOptions( $prompt)
