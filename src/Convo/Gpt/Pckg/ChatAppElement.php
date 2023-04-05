@@ -123,6 +123,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         }
     }
     
+
     private function _handleBotResponse( $botResponse, &$messages, IConvoRequest $request, IConvoResponse $response)
     {
         if ( $this->_isActionCandidate( $botResponse))
@@ -146,7 +147,6 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $botResponse;
     }
     
-    
     private function _generatePrompt()
     {
         $str    = $this->evaluateString( $this->_properties['system_message']);
@@ -159,13 +159,14 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $str;
     }
     
+    // ACTION HANDLING
     private function _executeAction( $json, &$messages, IConvoRequest $request, IConvoResponse $response)
     {
         $this->_logger->info( 'Executing action ['.$json['action_id'].']');
         
         try
         {
-            $action             =   $this->_getAction( $json['action_id']);
+            $action             =   $this->_getActionById( $json['action_id']);
             $action_response    =   $action->executeAction( $json, $request, $response);
             $action_response    =   json_encode( $action_response);
             
@@ -179,7 +180,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);;
     }
     
-    private function _getAction( $actionId)
+    private function _getActionById( $actionId)
     {
         foreach ( $this->_chatActions as $action)
         {
@@ -242,47 +243,30 @@ Message:';
         return $json;
     }
     
-    
-    /**
-     * @param string $original
-     * @return string
-     * @deprecated
-     */
-    private function _fixBotJsonResponse( $original)
-    {
-        $trimmed   =   stripslashes( $original);
-        $trimmed   =   trim( $trimmed, '"n');
-        $trimmed   =   trim( $trimmed, '"');
-        
-        if ( $original !== $trimmed) {
-            $this->_logger->warning( 'JSON information found, but had to be corrected ['.$original.']['.$trimmed.']');
-        }
-        
-        return $trimmed;
-    }
-    
+    // API
     private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix)
     {
         $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         
-        
-        $prompt     =   $this->_generatePrompt();
-        $prompt     .=  "\n\n";
-        $prompt     .=  $conversation;
-        $prompt     .=  "\n";
-        $prompt     .=  self::PREFIX_BOT;
+        $prompt         =   $this->_generatePrompt();
+        $prompt         .=  "\n\n";
+        $prompt         .=  $conversation;
+        $prompt         .=  "\n";
+        $prompt         .=  self::PREFIX_BOT;
         
         $this->_logger->debug( 'Got prompt ============');
         $this->_logger->debug( "\n".$prompt);
         $this->_logger->debug( '============');
         
-        $http_response   =   $this->_getGptApi()->completion( $this->_getApiOptions( json_encode( $prompt)));
+        $options            =   $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
+        $options['prompt']  =   json_encode( $prompt);
         
-        $this->_lastPrompt = $prompt;
+        $http_response      =   $this->_getGptApi()->completion( $options);
         
-        $bot_response  =    $http_response['choices'][0]['text'];
-        return $bot_response;
+        $this->_lastPrompt  =   $prompt;
+        
+        return $http_response['choices'][0]['text'];
     }
     
     /**
@@ -294,17 +278,9 @@ Message:';
         return $this->_gptApiFactory->getApi( $api_key);
     }
     
-    private function _getApiOptions( $prompt)
-    {
-        $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
-        $options['prompt'] = $prompt;
-        return $options;
-    }
-
     // UTIL
     public function __toString()
     {
         return parent::__toString().'[]';
     }
-
 }
