@@ -125,7 +125,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     
     private function _handleBotResponse( $botResponse, &$messages, IConvoRequest $request, IConvoResponse $response)
     {
-        if ( $this->_isJsonCandidate( $botResponse))
+        if ( $this->_isActionCandidate( $botResponse))
         {
             $corrected_response   =   $this->_fixBotJsonResponse( $botResponse);
             try
@@ -204,9 +204,9 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $trimmed;
     }
     
-    private function _isJsonCandidate( $message)
+    private function _isActionCandidate( $message)
     {
-        if ( strpos( $message, '{') !== false && strpos( $message, '}') !== false) {
+        if ( strpos( $message, 'action_id') !== false) {
             return true;
         }
         return false;
