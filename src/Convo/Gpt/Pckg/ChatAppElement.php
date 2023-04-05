@@ -196,6 +196,11 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $trimmed   =   stripslashes( $original);
         $trimmed   =   trim( $trimmed, '"n');
         $trimmed   =   trim( $trimmed, '"');
+        
+        if ( $original !== $trimmed) {
+            $this->_logger->warning( 'JSON information found, but had to be corrected ['.$original.']['.$trimmed.']');
+        }
+        
         return $trimmed;
     }
     
