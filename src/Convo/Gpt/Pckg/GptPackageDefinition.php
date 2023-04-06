@@ -61,7 +61,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 [
                     'prompt' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => ['large' => true],
+                        'editor_properties' => [],
                         'defaultValue' => null,
                         'name' => 'Prompt',
                         'description' => 'The prompt(s) to generate completions for',
@@ -137,7 +137,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 [
                     'system_message' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => ['large' => true],
+                        'editor_properties' => [],
                         'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
                         'name' => 'System message',
                         'description' => 'Main, system prompt to be added at the beginning of the conversation.',
