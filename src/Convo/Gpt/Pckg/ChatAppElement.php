@@ -128,6 +128,8 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     {
         if ( $this->_isActionCandidate( $botResponse))
         {
+            $this->_logger->debug( 'We have action candidate');
+            
             try
             {
                 $json           =   $this->_parseActionJson( $botResponse);
@@ -194,6 +196,12 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     private function _isActionCandidate( $message)
     {
         if ( strpos( $message, 'action_id') !== false) {
+            return true;
+        }
+        if ( strpos( $message, '{') !== false) {
+            return true;
+        }
+        if ( strpos( $message, '}') !== false) {
             return true;
         }
         return false;
