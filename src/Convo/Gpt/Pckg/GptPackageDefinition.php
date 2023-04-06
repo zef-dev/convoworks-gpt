@@ -61,7 +61,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 [
                     'prompt' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => [],
+                        'editor_properties' => ['large' => true],
                         'defaultValue' => null,
                         'name' => 'Prompt',
                         'description' => 'The prompt(s) to generate completions for',
@@ -137,7 +137,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 [
                     'system_message' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => [],
+                        'editor_properties' => ['large' => true],
                         'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
                         'name' => 'System message',
                         'description' => 'Main, system prompt to be added at the beginning of the conversation.',
@@ -221,7 +221,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 [
                     'system_message' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => [],
+                        'editor_properties' => ['large' => true],
                         'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
                         'name' => 'Main prompt',
                         'description' => 'The main prompt to generate completions for. It will be appended with eventual child Prompt elements.',
@@ -353,7 +353,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     'content' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => [],
+                        'editor_properties' => ['large' => true],
                         'defaultValue' => '',
                         'name' => 'Prompt Content',
                         'description' => 'Content of the prompt section',
@@ -421,7 +421,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     'content' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => [],
+                        'editor_properties' => ['large' => true],
                         'defaultValue' => '',
                         'name' => 'Prompt Content',
                         'description' => 'Content of the prompt section',
@@ -459,7 +459,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     'content' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => [],
+                        'editor_properties' => ['large' => true],
                         'defaultValue' => 'Actions are allowing the Bot to get additional information from, or to perform some action in the website.'.
                         ' Action request is defined as a JSON data, with one required field, "action_id" and additional parameters depending on the chosen action.  '.
                         'Website will respond with action result in JSON format.
