@@ -21,6 +21,8 @@ node build.js
 
 After installing and activating the plugin, you will be able to enable an additional package, **convo-gpt**, in the Convoworks Editor. This package contains several components, allowing for easy access to the OpenAI API. 
 
+Package contains an example service template you can use to see how the components can be used. You can access templates when creating a new service.  
+
 For more information on the OpenAI API and its use, please refer to their [documentation](https://platform.openai.com/docs/).
 
 ### GPT Completion API Element
