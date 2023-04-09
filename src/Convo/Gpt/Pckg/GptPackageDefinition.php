@@ -27,6 +27,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
         $this->_gptApiFactory           =   $gptApiFactory;
         
         parent::__construct( $logger, self::NAMESPACE, __DIR__);
+        
+        $this->addTemplate( $this->_loadFile( __DIR__ .'/gpt-examples.template.json'));
     }
     
     public function getFunctions()
