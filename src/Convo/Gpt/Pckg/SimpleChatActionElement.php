@@ -62,7 +62,7 @@ class SimpleChatActionElement extends SimplePromptElement implements IChatAction
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'[]';
+        return parent::__toString().'['.$this->_properties['action_id'].']';
     }
 
 }

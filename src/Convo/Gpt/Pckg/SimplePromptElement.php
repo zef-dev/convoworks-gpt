@@ -60,7 +60,7 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'[]';
+        return parent::__toString().'['.$this->_title.']';
     }
 
 }
