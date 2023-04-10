@@ -277,19 +277,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => false,
                         'name' => 'Prompts',
-                        'description' => 'Prompt definition',
-                        'valueType' => 'class'
-                    ],
-                    'actions' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Actions',
-                        'description' => 'Available actions that bot can perform',
+                        'description' => 'Child prompts',
                         'valueType' => 'class'
                     ],
                     'ok' => [
