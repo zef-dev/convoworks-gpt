@@ -8,12 +8,11 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\GptApiFactory;
-use Convo\Gpt\IChatAction;
 use Convo\Gpt\IChatPrompt;
 use Convo\Core\DataItemNotFoundException;
-use Convo\Gpt\IChatApp;
+use Convo\Gpt\IChatPromptContainer;
 
-class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatApp, IConversationElement
+class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatPromptContainer, IConversationElement
 {
     const PREFIX_BOT        =   'Bot: ';
     const PREFIX_USER       =   'User: ';
@@ -32,17 +31,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     /**
      * @var IConversationElement[]
      */
-    private $_actions = [];
-
-    /**
-     * @var IConversationElement[]
-     */
     private $_prompts = [];
-
-    /**
-     * @var IChatAction[]
-     */
-    private $_chatActions = [];
 
     /**
      * @var IChatPrompt[]
@@ -67,15 +56,35 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
             $this->addChild($element);
         }
         
-        foreach ( $properties['actions'] as $element) {
-            $this->_actions[] = $element;
-            $this->addChild($element);
-        }
-        
         foreach ( $properties['prompts'] as $element) {
             $this->_prompts[] = $element;
             $this->addChild($element);
         }
+    }
+    
+    // PROMPTS CONTAINER
+    public function getDepth()
+    {
+        return 1;
+    }
+    
+    public function getPrompts()
+    {
+        return $this->_chatPrompts;
+    }
+    
+    /**
+     * {@inheritDoc}
+     * @see \Convo\Gpt\IChatPromptContainer::getActions()
+     */
+    public function getActions()
+    {
+        $actions = [];
+        
+        foreach ( $this->_chatPrompts as $prompt) {
+            $actions = array_merge( $actions, $prompt->getActions());
+        }
+        return $actions;
     }
     
     public function registerPrompt( $prompt)
@@ -83,22 +92,22 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         $this->_chatPrompts[] = $prompt;
     }
     
-    public function registerAction( $action)
+    public function getPromptContent()
     {
-        $this->_chatActions[] = $action;
-    }
-    
-    public function getActions()
-    {
-        return $this->_chatActions;
-    }
-    
-    public function read( IConvoRequest $request, IConvoResponse $response)
-    {
-        foreach ( $this->_actions as $action) {
-            $action->read( $request, $response);
+        $str    = $this->evaluateString( $this->_properties['system_message']);
+        
+        foreach ( $this->_chatPrompts as $prompt) {
+            $str .= "\n\n\n";
+            $str .= $prompt->getPromptContent();
         }
         
+        return $str;
+    }
+    
+    
+    // ELEMENT
+    public function read( IConvoRequest $request, IConvoResponse $response)
+    {
         foreach ( $this->_prompts as $prompt) {
             $prompt->read( $request, $response);
         }
@@ -149,18 +158,6 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         return $botResponse;
     }
     
-    private function _generatePrompt()
-    {
-        $str    = $this->evaluateString( $this->_properties['system_message']);
-        
-        foreach ( $this->_chatPrompts as $prompt) {
-            $str .= "\n\n\n";
-            $str .= $prompt->getPrompt();
-        }
-        
-        return $str;
-    }
-    
     // ACTION HANDLING
     private function _executeAction( $json, &$messages, IConvoRequest $request, IConvoResponse $response)
     {
@@ -184,7 +181,7 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
     
     private function _getActionById( $actionId)
     {
-        foreach ( $this->_chatActions as $action)
+        foreach ( $this->getActions() as $action)
         {
             if ( $action->accepts( $actionId)) {
                 return $action;
@@ -257,7 +254,7 @@ Message:';
         $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         
-        $prompt         =   $this->_generatePrompt();
+        $prompt         =   $this->getPromptContent();
         $prompt         .=  "\n\n";
         $prompt         .=  $conversation;
         $prompt         .=  "\n";
@@ -291,4 +288,8 @@ Message:';
     {
         return parent::__toString().'[]';
     }
+
+
+
+
 }

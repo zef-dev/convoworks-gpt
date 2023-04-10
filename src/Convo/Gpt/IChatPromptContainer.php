@@ -3,17 +3,8 @@
 namespace Convo\Gpt;
 
 
-/**
- * @author Tole
- * @deprecated
- */
-interface IChatApp 
+interface IChatPromptContainer extends IChatPrompt
 {
-
-    /**
-     * @param IChatAction $action
-     */
-    public function registerAction( $action);
     
     /**
      * @return IChatAction[]
@@ -24,5 +15,11 @@ interface IChatApp
      * @param IChatPrompt $prompt
      */
     public function registerPrompt( $prompt);
+    
+    /**
+     * @return IChatPrompt[]
+     */
+    public function getPrompts();
+
     
 }

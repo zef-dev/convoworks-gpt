@@ -5,6 +5,18 @@ namespace Convo\Gpt;
 
 interface IChatPrompt 
 {
-
-    public function getPrompt();
+    /**
+     * @return string
+     */
+    public function getPromptContent();
+    
+    /**
+     * @return IChatAction[]
+     */
+    public function getActions();
+    
+    /**
+     * @return int
+     */
+    public function getDepth();
 }

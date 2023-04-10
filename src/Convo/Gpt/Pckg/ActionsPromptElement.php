@@ -2,6 +2,10 @@
 
 namespace Convo\Gpt\Pckg;
 
+/**
+ * @author Tole
+ * @deprecated
+ */
 class ActionsPromptElement extends SimplePromptElement
 {
     
@@ -10,20 +14,20 @@ class ActionsPromptElement extends SimplePromptElement
         parent::__construct( $properties);
     }
     
-    public function getPrompt()
-    {
-        $prompt =   parent::getPrompt();
+//     public function getPromptContent()
+//     {
+//         $prompt =   parent::getPromptContent();
         
-        $app    =   $this->findAncestor( '\Convo\Gpt\IChatApp');
-        /* @var \Convo\Gpt\IChatApp $app */
+//         $app    =   $this->findAncestor( '\Convo\Gpt\IChatApp');
+//         /* @var \Convo\Gpt\IChatApp $app */
         
-        foreach ( $app->getActions() as $action) {
-            $prompt .= "\n\n\n";
-            $prompt .= $action->getPrompt();
-        }
+//         foreach ( $app->getActions() as $action) {
+//             $prompt .= "\n\n\n";
+//             $prompt .= $action->getPromptContent();
+//         }
         
-        return $prompt;
-    }
+//         return $prompt;
+//     }
     
     
     // UTIL

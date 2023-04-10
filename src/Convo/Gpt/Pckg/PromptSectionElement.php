@@ -4,8 +4,9 @@ namespace Convo\Gpt\Pckg;
 
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Gpt\IChatPrompt;
+use Convo\Gpt\IChatPromptContainer;
 
-class PromptSectionElement extends SimplePromptElement
+class PromptSectionElement extends SimplePromptElement implements IChatPromptContainer
 {
     
 
@@ -29,28 +30,53 @@ class PromptSectionElement extends SimplePromptElement
         }
     }
     
-    public function getPrompt()
+    
+    public function getPromptContent()
     {
-        $str =  parent::getPrompt();
+        $str =  parent::getPromptContent();
         
         foreach ( $this->_chatPrompts as $prompt) {
             $str .= "\n\n\n";
-            $str .= $prompt->getPrompt();
+            $str .= $prompt->getPromptContent();
         }
         
         return $str;
     }
     
-    
+    public function getDepth()
+    {
+        return $this->_promptContainer->getDepth() + 1;
+    }
+
+    public function getPrompts()
+    {
+        return $this->_chatPrompts;
+    }
+
+    public function getActions()
+    {
+        $actions = [];
+        
+        foreach ( $this->_chatPrompts as $prompt) {
+            $actions = array_merge( $actions, $prompt->getActions());
+        }
+        return $actions;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \Convo\Gpt\IChatPromptContainer::registerPrompt()
+     */
+    public function registerPrompt( $prompt)
+    {
+        $this->_chatPrompts[] = $prompt;
+    }
+
+
     // UTIL
     public function __toString()
     {
         return parent::__toString().'[]';
     }
-
-
-
-
-
-
+    
 }
