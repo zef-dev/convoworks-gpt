@@ -107,7 +107,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">COMPLETION API</span>' .
-                        ' <br>  {{component.properties.prompt}} ' .
+                        '<br>{{component.properties.prompt}}' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -191,7 +191,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
-                        ' <br>  {{component.properties.system_message}} ' .
+                        '<br>{{component.properties.system_message}}' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -295,7 +295,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">AUTONOMOUS CHAT</span>' .
-                        ' <br>  {{component.properties.system_message}} ' .
+                        '<br>{{component.properties.system_message}}' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -380,9 +380,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT ACTION</span>' .
-                        
-                        '  <b> {{component.properties.title}} </b>' .
-                        ' <br> action_id = {{component.properties.action_id}} ' .
+                        ' <b>{{component.properties.title}}</b>' .
+                        '<br>action_id = {{component.properties.action_id}}' .
 //                        ' <br>  {{component.properties.content}} ' .
                         '</div>'
                     ],
@@ -420,8 +419,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">PROMPT</span>' .
-                        '   <b> {{component.properties.title}} </b>' .
-//                         ' <br>  {{component.properties.content}} ' .
+                        ' <b>{{component.properties.title}}</b>' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -470,8 +468,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">PROMPT SECTION</span>' .
-                        '   <b> {{component.properties.title}} </b>' .
-//                         ' <br>  {{component.properties.content}} ' .
+                        ' <b>{{component.properties.title}}</b>' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -512,8 +509,7 @@ Below is currently available actions list that the Bot can invoke.',
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">ACTIONS PROMPT GENERATOR</span>' .
-                        '   <b> {{component.properties.title}} </b>' .
-//                         ' <br>  {{component.properties.content}} ' .
+                        ' <b>{{component.properties.title}}</b>' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
