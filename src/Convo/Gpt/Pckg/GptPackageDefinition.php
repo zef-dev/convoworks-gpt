@@ -410,7 +410,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SimplePromptElement',
-                'Prompt Section',
+                'Simple Prompt',
                 'This element allows you to split complex prompt into several, managable sections.',
                 [
                     'title' => [
@@ -428,6 +428,56 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'name' => 'Prompt Content',
                         'description' => 'Content of the prompt section',
                         'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">PROMPT</span>' .
+                        '   <b> {{component.properties.title}} </b>' .
+//                         ' <br>  {{component.properties.content}} ' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'simple-prompt-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\PromptSectionElement',
+                'Prompt Section',
+                'This element allows nesting prompts',
+                [
+                    'title' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Prompt Title',
+                        'description' => 'Title for the prompt section',
+                        'valueType' => 'string'
+                    ],
+                    'content' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => ['large' => true],
+                        'defaultValue' => '',
+                        'name' => 'Prompt Content',
+                        'description' => 'Content of the prompt section',
+                        'valueType' => 'string'
+                    ],
+                    'prompts' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'Prompts',
+                        'description' => 'Child prompt definition which will be appended as a subsection in the resulting prompt',
+                        'valueType' => 'class'
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
