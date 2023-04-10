@@ -483,7 +483,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ActionsPromptElement',
-                'Actions Prompt Generator',
+                'x!Actions Prompt Generator',
                 'This element will collect all defined actions and insert their prompts',
                 [
                     'title' => [
