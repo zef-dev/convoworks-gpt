@@ -43,11 +43,6 @@ class PromptSectionElement extends SimplePromptElement implements IChatPromptCon
         return $str;
     }
     
-    public function getDepth()
-    {
-        return $this->_promptContainer->getDepth() + 1;
-    }
-
     public function getPrompts()
     {
         return $this->_chatPrompts;

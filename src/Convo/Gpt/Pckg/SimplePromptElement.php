@@ -17,7 +17,7 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
     /**
      * @var IChatPromptContainer
      */
-    protected $_promptContainer;
+    private $_promptContainer;
     
     public function __construct( $properties)
     {
@@ -47,6 +47,11 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
         return $title;
     }
     
+    public function getDepth()
+    {
+        return $this->_promptContainer->getDepth() + 1;
+    }
+    
     public function getActions()
     {
         return [];
@@ -57,12 +62,5 @@ class SimplePromptElement extends AbstractWorkflowContainerComponent implements 
     {
         return parent::__toString().'[]';
     }
-
-
-
-
-
-
-
 
 }

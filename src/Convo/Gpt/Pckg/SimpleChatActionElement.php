@@ -8,7 +8,7 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\IChatAction;
 
-class SimpleChatActionElement extends SimplePromptElement implements IChatAction, IConversationElement
+class SimpleChatActionElement extends SimplePromptElement implements IChatAction
 {
 
     private $_actionRequestDataVar;
@@ -32,14 +32,13 @@ class SimpleChatActionElement extends SimplePromptElement implements IChatAction
         }
     }
     
-    public function read( IConvoRequest $request, IConvoResponse $response)
+    // OVERRIDE PROMPT
+    public function getActions()
     {
-        $app = $this->findAncestor( '\Convo\Gpt\IChatApp');
-        /* @var \Convo\Gpt\IChatApp $app */
-        
-        $app->registerAction( $this);
+        return [ $this];
     }
     
+   // ACTIONS INTERFACE
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response)
     {
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
