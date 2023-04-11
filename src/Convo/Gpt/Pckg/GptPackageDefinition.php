@@ -521,6 +521,34 @@ Below is currently available actions list that the Bot can invoke.',
                     ],
                 ]
             ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ValidationErrorElement',
+                'Validation Error',
+                'Breaks the execution and signals the Chat App that action request is not valid',
+                [
+                    'message' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'Not valid request',
+                        'name' => 'Message',
+                        'description' => 'Validation message',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">VALIDATION ERROR</span>' .
+                        ' {{component.properties.message}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'actions-prompt-element.html'
+                    ],
+                ]
+            ),
         ];
     }
 }

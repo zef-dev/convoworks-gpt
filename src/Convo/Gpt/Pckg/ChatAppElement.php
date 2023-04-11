@@ -11,6 +11,7 @@ use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IChatPrompt;
 use Convo\Core\DataItemNotFoundException;
 use Convo\Gpt\IChatPromptContainer;
+use Convo\Gpt\ValidationException;
 
 class ChatAppElement extends AbstractWorkflowContainerComponent implements IChatPromptContainer, IConversationElement
 {
@@ -174,6 +175,10 @@ class ChatAppElement extends AbstractWorkflowContainerComponent implements IChat
         catch ( DataItemNotFoundException $e)
         {
             $action_response    =   json_encode( ['message'=>'Action ['.$json['action_id'].'] is not defined']);
+        }
+        catch ( ValidationException $e)
+        {
+            $action_response    =   json_encode( ['message'=> $e->getMessage()]);
         }
         
         return $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);;

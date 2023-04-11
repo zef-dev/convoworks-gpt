@@ -15,5 +15,11 @@ interface IChatAction extends IChatPrompt
     public function accepts( $actionId);
     
     
+    /**
+     * @param array $data
+     * @param IConvoRequest $request
+     * @param IConvoResponse $response
+     * @throws ValidationException
+     */
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response);
 }
