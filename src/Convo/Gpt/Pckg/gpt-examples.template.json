@@ -30,9 +30,9 @@
             }
         ],
         "variables": {
-            "API_KEY": "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",
+            "API_KEY": "",
             "NEW_LINE": "${\"\\n\\n\"}",
-            "SAVE_PROMPT_PATH": "${'c:\/prompts\/prompt-' ~ time() ~ '.txt'}",
+            "SAVE_PROMPT_PATH": "",
             "POST_TYPE_NEWSLETTER_LIST": "my_newsletter_list"
         },
         "preview_variables": [],
