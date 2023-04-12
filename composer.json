@@ -6,7 +6,7 @@
     "keywords": [
         "convoworks"
     ],
-    "version": "1.00.00",
+    "version": "0.02.00",
     "require": {
         "php": "^7.2",
         "zef-dev/convoworks-core": "^0.22"
