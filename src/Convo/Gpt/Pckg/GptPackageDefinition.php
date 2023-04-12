@@ -489,7 +489,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'simple-prompt-element.html'
+                        'filename' => 'prompt-section-element.html'
                     ],
                 ]
             ),
