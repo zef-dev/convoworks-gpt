@@ -7,11 +7,6 @@ interface IChatPromptContainer extends IChatPrompt
 {
     
     /**
-     * @return IChatAction[]
-     */
-    public function getActions();
-    
-    /**
      * @param IChatPrompt $prompt
      */
     public function registerPrompt( $prompt);
