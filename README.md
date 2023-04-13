@@ -89,11 +89,10 @@ In order to enable this kind of behavior, this element delegates prompt building
 
 **Flows:**
 
-* `prompts` - Prompt definition components (`IChatPrompt` interface) which will participate in the prompt building. 
-* `actions` - Action components (`IChatAction` interface) capable of executing actions. Because the system needs to know about them, they also participate in the prompt building (check the "Actions Prompt Generator Element")  
+* `prompts` - Prompt and Action definition components (`IChatPrompt` and `IChatAction` interfaces) which will participate in the prompt building. 
 * `ok` - Elements to execute after completion. The completion result is accessible via the variable defined with `result_var`
 
-### Prompt Section Element
+### Simple Prompt  Element
 
 This element allows you to split complex prompts into several, manageable sections. Use this element inside the **prompts** flow.
 
@@ -101,6 +100,20 @@ This element allows you to split complex prompts into several, manageable sectio
 
 * `title` - The title for the prompt section.
 * `content` - The content of the prompt section.
+
+
+### Prompt Section  Element
+
+Addition to the Simple Prompt which allows prompts grouping into sections. 
+
+**Parameters:**
+
+* `title` - The title for the prompt section.
+* `content` - The content of the prompt section.
+
+**Flows:**
+
+* `prompts` - Child Prompt and Action definition components which will participate in the prompt building. 
 
 ### Simple Chat Action Element
 
@@ -118,13 +131,13 @@ This element allows you to define an action, with its ID and prompt definition, 
 
 * `ok` - Elements to execute when the action is requested. 
 
-### Actions Prompt Generator Element
+### Validation Error Element
 
-This element will collect all defined actions and append their prompts to its own. This way, each enabled action will be listed and the bot will be aware of it. Use this element inside the **prompts** flow.
+Stops the execution and signals the Chat App that action request is not valid.
 
 **Parameters:**
 
-* `title` - The title for the prompt section.
-* `content` - The content of the prompt section.
+* `message` - Error message describing why the validation failed.
+
 
 > Written with [StackEdit](https://stackedit.io/).
