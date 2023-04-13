@@ -538,7 +538,7 @@ Below is currently available actions list that the Bot can invoke.',
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ValidationErrorElement',
                 'Validation Error',
-                'Breaks the execution and signals the Chat App that action request is not valid',
+                'Stops the execution and signals the Chat App that action request is not valid',
                 [
                     'message' => [
                         'editor_type' => 'text',
@@ -558,7 +558,7 @@ Below is currently available actions list that the Bot can invoke.',
                     '_workflow' => 'read',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'actions-prompt-element.html'
+                        'filename' => 'validation-error-element.html'
                     ],
                 ]
             ),
