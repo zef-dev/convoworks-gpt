@@ -4,7 +4,10 @@
     "description": "Convoworks GPT",
     "homepage": "https://github.com/zef-dev/convoworks-gpt",
     "keywords": [
-        "convoworks", "gpt", "chatgpt", "wordpress"
+        "convoworks",
+        "gpt",
+        "chatgpt",
+        "wordpress"
     ],
     "version": "0.02.00",
     "require": {
