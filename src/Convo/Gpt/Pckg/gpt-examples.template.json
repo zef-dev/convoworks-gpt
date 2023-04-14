@@ -12,6 +12,14 @@
         ],
         "contexts": [
             {
+                "class": "\\Convo\\Pckg\\Appointments\\DummyAppointmentsContext",
+                "namespace": "convo-appointments",
+                "properties": {
+                    "id": "dummy_appointments",
+                    "_component_id": "jd4zyfzf-hyxr-aftr-er8o-yynfaib4xxfv"
+                }
+            },
+            {
                 "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpQueryContext",
                 "namespace": "convo-wp-core",
                 "properties": {
@@ -33,7 +41,8 @@
             "API_KEY": "",
             "NEW_LINE": "${\"\\n\\n\"}",
             "SAVE_PROMPT_PATH": "",
-            "POST_TYPE_NEWSLETTER_LIST": "my_newsletter_list"
+            "POST_TYPE_NEWSLETTER_LIST": "my_newsletter_list",
+            "APPOINTMENTS_CONTEXT_ID": "dummy_appointments"
         },
         "preview_variables": [],
         "entities": [],
@@ -47,6 +56,15 @@
                     "block_id": "Session_start",
                     "name": "Session start",
                     "pre_dispatch": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "USE THIS GOTO INSTRUCTION TO SELECT WHICH EXAMPLE TO RUN",
+                                "context": null,
+                                "_component_id": "qxnno9of-rvkj-zoyf-trxm-f31fg0mpfbfn"
+                            }
+                        },
                         {
                             "class": "\\Convo\\Pckg\\Core\\Elements\\GoToElement",
                             "namespace": "convo-core",
@@ -472,15 +490,40 @@
                             }
                         },
                         {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\RunOnceElement",
                             "namespace": "convo-core",
                             "properties": {
-                                "scope_type": "request",
-                                "parameters": "service",
-                                "properties": {
-                                    "message": "Hi! How can I help you?"
-                                },
-                                "_component_id": "la4vjjtk-pj0u-w5eo-wly8-e65eccey3czj"
+                                "scope_type": "installation",
+                                "name": null,
+                                "child": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "message": "Hi! How can I help you?"
+                                            },
+                                            "_component_id": "la4vjjtk-pj0u-w5eo-wly8-e65eccey3czj"
+                                        }
+                                    }
+                                ],
+                                "else": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "message": "Welcome back! What can I do for you?"
+                                            },
+                                            "_component_id": "vg3iwci8-cy2s-flhe-pp3y-akzqwdx6vn5k"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "7d80mhxw-smyw-qdr6-h9nf-x4vgyiw667pj"
                             }
                         },
                         {
@@ -575,14 +618,14 @@
                                                                 "namespace": "convo-gpt",
                                                                 "properties": {
                                                                     "title": "Conversation workflow",
-                                                                    "content": "The Bot is communicating with the User in a ordinary way. When there is a need for fetching additional information, the Bot sends the JSON message, to which the Website will response. The Bot can have several turns with the Website before responding to the User. \n\nHere is an excerpt from an imaginary conversation, which only purpose is to demonstrate how can Bot and Website communicate. Action used in this excerpt does not relates to the real Website.\n\n* Bot welcomes the User\nExample - Bot: Hi. How can I help?\n\n* User asks questions\nExample - User: Can I book a Friday?\n\n* Bot asks Website for additional information - formatted as a valid JSON. Just JSON, with no additional message to the User.\nExample - Bot: {\"action_id\":\"check_date\", \"date\":\"Friday\"}\n\n* Website responds to the Bot (JSON)\nExample - Website: {\"available\":true}\n\n* Bot responds to the User in plain English\nExample - Bot: Yes, you can book on Friday. At what time would you like to book a demo?",
+                                                                    "content": "The Bot is communicating with the User in a ordinary way. When there is a need for fetching additional information, the Bot sends the JSON message, to which the Website will response. The Bot can have several turns with the Website before responding to the User. \n\nHere is an excerpt from an imaginary conversation, which only purpose is to demonstrate how can Bot and Website communicate. Action used in this excerpt does not relates to the real Website.\n\n* Bot welcomes the User\nExample - Bot: Hi. How can I help?\n\n* User asks questions\nExample - User: Can I book a Friday?\n\n* Bot asks Website for additional information - formatted as a valid JSON. Just JSON, with no additional message to the User.\nExample - Bot: {\"action_id\":\"demo_check_time\", \"date\":\"Friday\"}\n\n* Website responds to the Bot (JSON)\nExample - Website: {\"available\":true}\n\n* Bot responds to the User in plain English\nExample - Bot: Yes, you can book on Friday. At what time would you like to book a demo?",
                                                                     "prompts": [
                                                                         {
                                                                             "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
                                                                             "namespace": "convo-gpt",
                                                                             "properties": {
                                                                                 "title": "Example 1",
-                                                                                "content": "Bot: Hi how can I help you?\nUser: I would like to book a demo.\nBot: Great when would you like to book it?\nUser: Friday at 4 pm.\nBot: {\"action\":\"check_appointment_slot\", \"date\":\"2023-03-31\", \"time\":\"16:00\"}\nWebsite: {\"available\":true}\nBot: Great! That time is available. Please tell me your name and email.\nUser: I'm John Smith, johnny@gmail.com\nBot: {\"action\":\"create_appointment\", \"date\":\"2023-03-31\", \"time\":\"16:00\", \"name\":\"John Smith\", \"email\":\"johnny@gmail.com\"}\nWebsite: {\"appointment_id\":\"abc344bh43\"}\nBot: Thanks. Your appointment is created. Can I help you with something else?",
+                                                                                "content": "Bot: Hi how can I help you?\nUser: I would like to book a demo.\nBot: Great when would you like to book it?\nUser: Friday at 4 pm.\nBot: {\"action_id\":\"demo_check_time\", \"date\":\"2023-03-31\", \"time\":\"16:00\"}\nWebsite: {\"available\":true}\nBot: Great! That time is available. Please tell me your name and email.\nUser: I'm John Smith, johnny@gmail.com\nBot: {\"action_id\":\"demo_create_appointment\", \"date\":\"2023-03-31\", \"time\":\"16:00\", \"name\":\"John Smith\", \"email\":\"johnny@gmail.com\"}\nWebsite: {\"appointment_id\":\"abc344bh43\"}\nBot: Thanks. Your appointment is created. Can I help you with something else?",
                                                                                 "childPrompts": [],
                                                                                 "_component_id": "xuwawvjw-zd8c-zgux-rlg7-e05b3zrnus2x"
                                                                             }
@@ -592,7 +635,7 @@
                                                                             "namespace": "convo-gpt",
                                                                             "properties": {
                                                                                 "title": "Example 2",
-                                                                                "content": "Bot: Hi how can I help you?\nUser: I would like to book a demo.\nBot: Great when would you like to book it?\nUser: Friday at 4 pm.\nBot: {\"action\":\"check_appointment_slot\", \"date\":\"2023-03-31\", \"time\":\"16:00\"}\nWebsite: {\"available\":false, \"suggestions\" : [{\"date\":\"2023-03-31\", \"time\":\"17:00\"}, {\"date\":\"2023-04-01\", \"time\":\"16:00\"}]}\nBot: Sorry, but that time is not available. Would 5 pm same day, or same time the day after fit better?\nUser: Yes. 5 would be OK too.\nBot: Great! Please tell me your name and email.\nUser: I'm John Smith, johnny@gmail.com\nBot: {\"action\":\"create_appointment\", \"date\":\"2023-03-31\", \"time\":\"17:00\", \"name\":\"John Smith\", \"email\":\"johnny@gmail.com\"}\nWebsite: {\"appointment_id\":\"abc344bh43\"}\nBot: Thanks. Your appointment is created. Can I help you with something else?",
+                                                                                "content": "Bot: Hi how can I help you?\nUser: I would like to book a demo.\nBot: Great when would you like to book it?\nUser: Friday at 4 pm.\nBot: {\"action_id\":\"demo_check_time\", \"date\":\"2023-03-31\", \"time\":\"16:00\"}\nWebsite: {\"available\":false, \"suggestions\" : [{\"date\":\"2023-03-31\", \"time\":\"17:00\"}, {\"date\":\"2023-04-01\", \"time\":\"16:00\"}]}\nBot: Sorry, but that time is not available. Would 5 pm same day, or same time the day after fit better?\nUser: Yes. 5 would be OK too.\nBot: Great! Please tell me your name and email.\nUser: I'm John Smith, johnny@gmail.com\nBot: {\"action_id\":\"demo_create_appointment\", \"date\":\"2023-03-31\", \"time\":\"17:00\", \"name\":\"John Smith\", \"email\":\"johnny@gmail.com\"}\nWebsite: {\"appointment_id\":\"abc344bh43\"}\nBot: Thanks. Your appointment is created. Can I help you with something else?",
                                                                                 "childPrompts": [],
                                                                                 "_component_id": "l0nzn1rg-e565-vt6q-xfye-smkmwthi7jch"
                                                                             }
@@ -617,57 +660,11 @@
                                                                             }
                                                                         },
                                                                         {
-                                                                            "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
-                                                                            "namespace": "convo-gpt",
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                                            "namespace": "convo-core",
                                                                             "properties": {
-                                                                                "action_id": "users_get_current_user",
-                                                                                "title": "Get current user data action",
-                                                                                "content": "This action retrieves current user information. Using this action the Bot can use user's information when required for invoking other actions.\n\nRequest fields:\n* `action_id = \"users_get_current_user\"`\n\nResponse (when logged in):\n* `logged_in`, boolean, true for users which are logged in\n* `ID`, integer, user's database ID\n* `name`, string, user's display name\n* `email`, string, users' email\n\nResponse (when not logged in):\n* `logged_in`, boolean, false for users which are logged in",
-                                                                                "ok": [
-                                                                                    {
-                                                                                        "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
-                                                                                        "namespace": "convo-core",
-                                                                                        "properties": {
-                                                                                            "test": "${user.exists()}",
-                                                                                            "then": [
-                                                                                                {
-                                                                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                                                                                    "namespace": "convo-core",
-                                                                                                    "properties": {
-                                                                                                        "scope_type": "request",
-                                                                                                        "parameters": "service",
-                                                                                                        "properties": {
-                                                                                                            "action_result[\"ID\"]": "${user.ID}",
-                                                                                                            "action_result[\"name\"]": "${user.data.user_nicename}",
-                                                                                                            "action_result[\"email\"]": "${user.data.user_email}",
-                                                                                                            "action_result[\"logged_in\"]": "${true}"
-                                                                                                        },
-                                                                                                        "_component_id": "ewwehypw-frbn-kut5-3nmj-mqp1x0dzojrb"
-                                                                                                    }
-                                                                                                }
-                                                                                            ],
-                                                                                            "else_if": [],
-                                                                                            "else": [
-                                                                                                {
-                                                                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                                                                                    "namespace": "convo-core",
-                                                                                                    "properties": {
-                                                                                                        "scope_type": "request",
-                                                                                                        "parameters": "service",
-                                                                                                        "properties": {
-                                                                                                            "action_result[\"logged_in\"]": "${false}"
-                                                                                                        },
-                                                                                                        "_component_id": "6znju4hu-jcix-klgt-gtok-c9kjthseav1y"
-                                                                                                    }
-                                                                                                }
-                                                                                            ],
-                                                                                            "_component_id": "jtf0r0gf-uxvc-mtdm-kt7n-awvjyx7ybabe"
-                                                                                        }
-                                                                                    }
-                                                                                ],
-                                                                                "_component_id": "i55fepya-3pxl-8rr6-4nnk-ofgpidy8ukgn",
-                                                                                "result": "${action_result}",
-                                                                                "action_var": "action"
+                                                                                "fragment_id": "Action_package_Book_a_demo",
+                                                                                "_component_id": "llvjibvf-fhbu-j9sz-owei-3o7vh0xf11sb"
                                                                             }
                                                                         }
                                                                     ],
@@ -899,8 +896,53 @@
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "fragment_id": "da0aa138-a025-4dc9-9716-4abfe806c2d6",
-                                                        "_component_id": "bbjsy4gb-jlxd-jdyi-zmer-nkzpgsp1jyzu"
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "r5u2j8nk-pz3w-t7rj-jtmn-iszn5ztyubav"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpInsertPostElement",
+                                                    "namespace": "convo-wp-core",
+                                                    "properties": {
+                                                        "created_post_var": "status",
+                                                        "fire_after_hooks": true,
+                                                        "post_args": {
+                                                            "post_type": "${POST_TYPE_NEWSLETTER_LIST}",
+                                                            "post_status": "publish"
+                                                        },
+                                                        "post_tax_input": [],
+                                                        "post_meta_input": {
+                                                            "email": "${action.email}"
+                                                        },
+                                                        "on_success": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"registered\"]": "${true}"
+                                                                    },
+                                                                    "_component_id": "fdlraimj-ixbl-ujwk-a3r0-duxzrwhni6ut"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "on_failure": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"registered\"]": "${false}"
+                                                                    },
+                                                                    "_component_id": "qoxznezz-w9vz-xb5h-rwmr-kdtuuju3ttc2"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "068ylyn7-jv7r-zvlg-yqb4-j4gnobhegwku"
                                                     }
                                                 }
                                             ],
@@ -921,8 +963,57 @@
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "fragment_id": "Action_Check_email_registered",
-                                                        "_component_id": "tsi6ghd8-jbkn-b8on-amm3-ihemq70kp2sp"
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "owuwhwxo-lkux-tcja-dfni-ayxl6ncoguok"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "service",
+                                                        "properties": {
+                                                            "search_email": "${action.email}"
+                                                        },
+                                                        "_component_id": "hs7beugy-7jxn-zc4w-9f2a-xyqvhrmpubir"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpQueryElement",
+                                                    "namespace": "convo-wp-core",
+                                                    "properties": {
+                                                        "context_id": "search_newsletter",
+                                                        "page_info_var": "page_info",
+                                                        "has_results": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"registered\"]": "${true}"
+                                                                    },
+                                                                    "_component_id": "st1fg9zu-yqpi-mtz6-b10c-w2jdkkuyvhsh"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "no_results": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"registered\"]": "${false}"
+                                                                    },
+                                                                    "_component_id": "shcsypfk-zeip-t1mk-spko-3u4rkwcpm9qh"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "zmyngz6k-v1gs-ptg6-fwzu-umtnf5bvpvac"
                                                     }
                                                 }
                                             ],
@@ -943,8 +1034,70 @@
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "fragment_id": "671421fb-a6e2-4784-b527-2d2806ec362f",
-                                                        "_component_id": "4evxhmxj-qk9b-pwio-lnfq-t9k5iaefclwg"
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "tgiaqmzg-csel-x97l-qide-d8yzadnsvlob"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "service",
+                                                        "properties": {
+                                                            "search_email": "${action.email}"
+                                                        },
+                                                        "_component_id": "vozabkeb-bw6e-by38-7osv-b67tkfktl2bs"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpQueryElement",
+                                                    "namespace": "convo-wp-core",
+                                                    "properties": {
+                                                        "context_id": "search_newsletter",
+                                                        "page_info_var": "page_info",
+                                                        "has_results": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "ret": "${wp_delete_post( page_info.query.posts[0].ID, true)}"
+                                                                    },
+                                                                    "_component_id": "qdwvabh8-bom8-jvvz-7h8b-rgjdhiswa2z7"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"registered\"]": "${false}"
+                                                                    },
+                                                                    "_component_id": "z8jtxuyv-9thr-cszc-jefn-lzpgnekioq4a"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "no_results": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"registered\"]": "${true}",
+                                                                        "action_result[\"message\"]": ""
+                                                                    },
+                                                                    "_component_id": "6n0hwszm-jvwj-nhd4-pjo8-s1bdrviw19np"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "vmvmua8q-yrnl-p1y6-8nds-vpdtutnkzbws"
                                                     }
                                                 }
                                             ],
@@ -965,213 +1118,457 @@
                 "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
                 "namespace": "convo-core",
                 "properties": {
-                    "fragment_id": "Action_Check_email_registered",
-                    "name": "Action - Check if subscribed",
+                    "fragment_id": "Action_package_Book_a_demo",
+                    "name": "Action package - Book a demo",
                     "elements": [
                         {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                            "namespace": "convo-core",
+                            "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
+                            "namespace": "convo-gpt",
                             "properties": {
-                                "fragment_id": "Check_action_email",
-                                "_component_id": "yxrjm7qs-6bht-yeee-ovov-mfpdbnlyi9gf"
-                            }
-                        },
-                        {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                            "namespace": "convo-core",
-                            "properties": {
-                                "scope_type": "request",
-                                "parameters": "service",
-                                "properties": {
-                                    "search_email": "${action.email}"
-                                },
-                                "_component_id": "kbdqqo1p-zhsr-hxga-r6ld-b4c8nlwwbv4c"
-                            }
-                        },
-                        {
-                            "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpQueryElement",
-                            "namespace": "convo-wp-core",
-                            "properties": {
-                                "context_id": "search_newsletter",
-                                "page_info_var": "page_info",
-                                "has_results": [
+                                "title": "Book a demo related actions",
+                                "content": "These are actions related to appointment management.",
+                                "prompts": [
                                     {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
+                                        "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
+                                        "namespace": "convo-gpt",
                                         "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "action_result[\"registered\"]": "${true}"
-                                            },
-                                            "_component_id": "u6sxliay-y05j-2dge-jeus-mmp2dcwqpk1m"
-                                        }
-                                    }
-                                ],
-                                "no_results": [
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "action_result[\"registered\"]": "${false}"
-                                            },
-                                            "_component_id": "khu0krd5-kwsu-al1j-wpsw-kaj1tskpjleu"
-                                        }
-                                    }
-                                ],
-                                "_component_id": "dgfccuv1-ytcz-lktl-phwr-nnzfq0iq0gek"
-                            }
-                        }
-                    ],
-                    "_component_id": "womyv7mt-alc5-macg-l8o0-x7jv3mddyrw7"
-                }
-            },
-            {
-                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-                "namespace": "convo-core",
-                "properties": {
-                    "fragment_id": "da0aa138-a025-4dc9-9716-4abfe806c2d6",
-                    "name": "Action - Subscribe to the newsletter",
-                    "elements": [
-                        {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                            "namespace": "convo-core",
-                            "properties": {
-                                "fragment_id": "Check_action_email",
-                                "_component_id": "hzvozs1b-fxda-fuek-z6fu-su01crsywoge"
-                            }
-                        },
-                        {
-                            "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpInsertPostElement",
-                            "namespace": "convo-wp-core",
-                            "properties": {
-                                "created_post_var": "status",
-                                "fire_after_hooks": true,
-                                "post_args": {
-                                    "post_type": "${POST_TYPE_NEWSLETTER_LIST}",
-                                    "post_status": "publish"
-                                },
-                                "post_tax_input": [],
-                                "post_meta_input": {
-                                    "email": "${action.email}"
-                                },
-                                "on_success": [
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "action_result[\"registered\"]": "${true}"
-                                            },
-                                            "_component_id": "u6sxliay-y05j-2dge-jeus-mmp2dcwqpk1m"
-                                        }
-                                    }
-                                ],
-                                "on_failure": [
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "action_result[\"registered\"]": "${false}"
-                                            },
-                                            "_component_id": "spheuu7i-qbob-ohvg-bxzq-ehz1mu43plpp"
-                                        }
-                                    }
-                                ],
-                                "_component_id": "chsxnep2-ihjz-yqzc-s5gn-b2z5fp1yq1gi"
-                            }
-                        }
-                    ],
-                    "_component_id": "060e47ae-89d7-40e5-a946-290298f41bf7"
-                }
-            },
-            {
-                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-                "namespace": "convo-core",
-                "properties": {
-                    "fragment_id": "671421fb-a6e2-4784-b527-2d2806ec362f",
-                    "name": "Action - Unsubscribe from newsletter",
-                    "elements": [
-                        {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                            "namespace": "convo-core",
-                            "properties": {
-                                "fragment_id": "Check_action_email",
-                                "_component_id": "hzvozs1b-fxda-fuek-z6fu-su01crsywoge"
-                            }
-                        },
-                        {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                            "namespace": "convo-core",
-                            "properties": {
-                                "scope_type": "request",
-                                "parameters": "service",
-                                "properties": {
-                                    "search_email": "${action.email}"
-                                },
-                                "_component_id": "dbtrgrva-echl-wog6-lq9a-luyecpvffzus"
-                            }
-                        },
-                        {
-                            "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpQueryElement",
-                            "namespace": "convo-wp-core",
-                            "properties": {
-                                "context_id": "search_newsletter",
-                                "page_info_var": "page_info",
-                                "has_results": [
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "ret": "${wp_delete_post( page_info.query.posts[0].ID, true)}"
-                                            },
-                                            "_component_id": "mo85snvr-sxet-9qld-wnuk-cc6420xcymne"
+                                            "action_id": "demo_check_time",
+                                            "title": "Check appointment time action",
+                                            "content": "This action checks if the requested appointment time is available.\n\nRequest fields:\n* `action_id = \"demo_check_time\"`\n* `date`, string, required\n* `time`, string, required\n\nResponse:\n* `available`, boolean\n* `suggestions`, array of available appointment slots to suggest.",
+                                            "action_var": "action",
+                                            "result": "${action_result}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Appointments\\TimezoneWrapperElement",
+                                                    "namespace": "convo-appointments",
+                                                    "properties": {
+                                                        "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                        "result_var": "status",
+                                                        "elements": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Appointments\\CheckAppointmentTimeElement",
+                                                                "namespace": "convo-appointments",
+                                                                "properties": {
+                                                                    "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                                    "appointment_date": "${date( 'Y-m-d', strtotime( action.date))}",
+                                                                    "appointment_time": "${date( 'H:i:s', strtotime( action.time))}",
+                                                                    "result_var": "status",
+                                                                    "timezone_mode": "DEFAULT",
+                                                                    "timezone": "",
+                                                                    "suggestions_builder": {
+                                                                        "class": "\\Convo\\Pckg\\Appointments\\DefaultFreeSlotQueue",
+                                                                        "namespace": "convo-appointments",
+                                                                        "properties": {
+                                                                            "max_suggestions": "3",
+                                                                            "_component_id": "ig03zfpc-xxdz-mroz-gb4j-miimxzs1uh0s"
+                                                                        }
+                                                                    },
+                                                                    "available_flow": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"available\"]": "${true}"
+                                                                                },
+                                                                                "_component_id": "wuns1zzw-qocy-z8et-oz1k-4hrusy56oepm"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "suggestions_flow": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"available\"]": "${false}",
+                                                                                    "action_result[\"suggestions\"]": "${[]}"
+                                                                                },
+                                                                                "_component_id": "ajtpydvb-awf6-4kae-2v9i-qj2gjcpumd0j"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "name": null,
+                                                                                "data_collection": "${status.suggestions}",
+                                                                                "item": "item",
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                                        "namespace": "convo-core",
+                                                                                        "properties": {
+                                                                                            "scope_type": "request",
+                                                                                            "parameters": "service",
+                                                                                            "properties": {
+                                                                                                "action_result[\"suggestions\"][item.index]": "${date('Y-m-d H:i', item.value.timestamp)}"
+                                                                                            },
+                                                                                            "_component_id": "1qrjcusf-0u0m-ruqx-hpjr-ii2wmnj0tzj7"
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "offset": null,
+                                                                                "limit": null,
+                                                                                "loop_until": "",
+                                                                                "_component_id": "48mysg0b-lxko-2ao0-arkj-be5ajrnidnrc"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "single_suggestion_flow": [],
+                                                                    "no_suggestions_flow": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"available\"]": "${false}"
+                                                                                },
+                                                                                "_component_id": "bpqpuoes-9jcq-k5h7-cwxj-wnskxorqqa4s"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "_component_id": "vjy8yjsq-qeoc-ihg3-0otb-qesvjh5fa2zb",
+                                                                    "_use_var_context_id": true
+                                                                }
+                                                            }
+                                                        ],
+                                                        "timezone_mode": "DEFAULT",
+                                                        "timezone": "",
+                                                        "_component_id": "e105lovz-mrms-eyn9-snfm-nol9hcleulqv",
+                                                        "_use_var_context_id": true
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "8hdhpmgq-vskm-m3hq-vviu-xdj8rl0egv4y"
                                         }
                                     },
                                     {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
+                                        "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
+                                        "namespace": "convo-gpt",
                                         "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "action_result[\"registered\"]": "${false}"
-                                            },
-                                            "_component_id": "ijp6cyzt-e6mo-jnra-w0fq-ss0ofrysnj2g"
+                                            "action_id": "demo_create_appointment",
+                                            "title": "Create appointment action",
+                                            "content": "This action create a new appointment.\n\nRequest fields:\n* `action_id = \"demo_create_appointment\"`\n* `date`, string, required\n* `time`, string, required\n* `email`, string, required\n* `name`, string, required\n\nResponse:\n* `appointment_id`, string",
+                                            "action_var": "action",
+                                            "result": "${action_result}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "mvtwhcm4-midu-ubi7-lq4a-9u2xo0qaywws",
+                                                        "context_id": "${APPOINTMENTS_CONTEXT_ID}"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Appointments\\TimezoneWrapperElement",
+                                                    "namespace": "convo-appointments",
+                                                    "properties": {
+                                                        "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                        "result_var": "status",
+                                                        "elements": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Appointments\\CreateAppointmentElement",
+                                                                "namespace": "convo-appointments",
+                                                                "properties": {
+                                                                    "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                                    "email": "${action.email}",
+                                                                    "appointment_date": "${date( 'Y-m-d', strtotime( action.date))}",
+                                                                    "appointment_time": "${date( 'H:i:s', strtotime( action.time))}",
+                                                                    "payload": {
+                                                                        "email": "${action.email}",
+                                                                        "name": "${action.name}"
+                                                                    },
+                                                                    "result_var": "status",
+                                                                    "timezone_mode": "DEFAULT",
+                                                                    "timezone": "",
+                                                                    "ok": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"appointment_id\"]": "${status.appointment_id}"
+                                                                                },
+                                                                                "_component_id": "ehlyald4-w08t-h1gl-21l3-irdwiacima3w"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "not_available": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"available\"]": "${false}"
+                                                                                },
+                                                                                "_component_id": "ob4lwoue-cs6s-qsac-tn09-vaidsg241sfd"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "_component_id": "7oecd1zr-5lvd-yrgg-3rgp-lkgc11mmm5cd",
+                                                                    "_use_var_context_id": true
+                                                                }
+                                                            }
+                                                        ],
+                                                        "timezone_mode": "DEFAULT",
+                                                        "timezone": "",
+                                                        "_component_id": "5ck7avzp-ntzr-rhq8-o81p-fbepairovtzc",
+                                                        "_use_var_context_id": true
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "lmjgyrx2-q6rh-4fh7-owxd-p19zttrz7bbu"
                                         }
-                                    }
-                                ],
-                                "no_results": [
+                                    },
                                     {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
+                                        "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
+                                        "namespace": "convo-gpt",
                                         "properties": {
-                                            "scope_type": "request",
-                                            "parameters": "service",
-                                            "properties": {
-                                                "action_result[\"registered\"]": "${true}",
-                                                "action_result[\"message\"]": ""
-                                            },
-                                            "_component_id": "ryhtgcvg-itdb-hba2-5rlo-mjo3ayvckd8t"
+                                            "action_id": "demo_reschedule_appointment",
+                                            "title": "Reschedule appointment action",
+                                            "content": "This action will update an existing appointment.\n\nRequest fields:\n* `action_id = \"demo_reschedule_appointment\"`\n* `appointment_id`, string, required, existing appointment id\n* `date`, string, required\n* `time`, string, required\n* `email`, string, required\n\nResponse:\n* `available`, boolean",
+                                            "action_var": "action",
+                                            "result": "${action_result}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "eb9uppav-gugn-3kjv-35zg-2jvprlyecyc8"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Appointments\\TimezoneWrapperElement",
+                                                    "namespace": "convo-appointments",
+                                                    "properties": {
+                                                        "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                        "result_var": "status",
+                                                        "elements": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Appointments\\UpdateAppointmentElement",
+                                                                "namespace": "convo-appointments",
+                                                                "properties": {
+                                                                    "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                                    "appointment_id": "${action.appointment_id}",
+                                                                    "email": "${action.email}",
+                                                                    "appointment_date": "${date( 'Y-m-d', strtotime( action.date))}",
+                                                                    "appointment_time": "${date( 'H:i:s', strtotime( action.time))}",
+                                                                    "payload": [],
+                                                                    "result_var": "status",
+                                                                    "timezone_mode": "DEFAULT",
+                                                                    "timezone": "",
+                                                                    "ok": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"available\"]": "${true}"
+                                                                                },
+                                                                                "_component_id": "cwabsjes-0sr0-cybx-fw8h-tpx0nxwfws71"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "not_available": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"available\"]": "${false}"
+                                                                                },
+                                                                                "_component_id": "l4otgmrm-wkff-niz0-thuz-2olqbffsgny7"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "_component_id": "vim0kdat-tgwn-wabr-kuuw-wpr9tnmkx8lg",
+                                                                    "_use_var_context_id": true
+                                                                }
+                                                            }
+                                                        ],
+                                                        "timezone_mode": "DEFAULT",
+                                                        "timezone": "",
+                                                        "_component_id": "fj16gp7j-4bgb-hh3p-usu1-xzzkw0yd9efw",
+                                                        "_use_var_context_id": true
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "0oemyzao-cjtt-jdkx-xepw-r88gnrbindi4"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "action_id": "demo_load_appointments",
+                                            "title": "Load user's appointments action",
+                                            "content": "This action will load user's appointments.\n\nRequest fields:\n* `action_id = \"demo_load_appointments\"`\n* `email`, string, required\n\nResponse:\n* `appointments`, array of appointments",
+                                            "action_var": "action",
+                                            "result": "${action_result}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "05rmvqhq-wphl-xeyj-a9jo-vurcgwfd5lgz"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Appointments\\TimezoneWrapperElement",
+                                                    "namespace": "convo-appointments",
+                                                    "properties": {
+                                                        "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                        "result_var": "status",
+                                                        "elements": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Appointments\\LoadAppointmentsElement",
+                                                                "namespace": "convo-appointments",
+                                                                "properties": {
+                                                                    "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                                    "email": "${action.email}",
+                                                                    "mode": "current",
+                                                                    "limit": "10",
+                                                                    "return_var": "status",
+                                                                    "timezone_mode": "DEFAULT",
+                                                                    "timezone": "",
+                                                                    "multiple": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "scope_type": "request",
+                                                                                "parameters": "service",
+                                                                                "properties": {
+                                                                                    "action_result[\"appointments\"]": "${[]}"
+                                                                                },
+                                                                                "_component_id": "cm3rppkp-r4vg-uj4d-dkv9-7r7ryltdiunn"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "name": null,
+                                                                                "data_collection": "${status.appointments}",
+                                                                                "item": "item",
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                                        "namespace": "convo-core",
+                                                                                        "properties": {
+                                                                                            "scope_type": "request",
+                                                                                            "parameters": "service",
+                                                                                            "properties": {
+                                                                                                "action_result[\"appointments\"][${item.index}][\"appointment_id\"]": "${item.value.appointment_id}",
+                                                                                                "action_result[\"appointments\"][${item.index}][\"date\"]": "${date('Y-m-d', item.value.timestamp)}",
+                                                                                                "action_result[\"appointments\"][${item.index}][\"time\"]": "${date('H:i', item.value.timestamp)}",
+                                                                                                "action_result[\"appointments\"][${item.index}][\"payload\"]": "${item.value.payload}",
+                                                                                                "action_result[\"appointments\"][${item.index}][\"email\"]": "${item.value.email}"
+                                                                                            },
+                                                                                            "_component_id": "jj9qld2p-tuck-opug-jpuo-gyseyd64hoaj"
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "offset": null,
+                                                                                "limit": null,
+                                                                                "loop_until": "",
+                                                                                "_component_id": "9ycgjegc-eksy-oi6w-bvhm-y5nl68fzsz1v"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "single": [],
+                                                                    "empty": [],
+                                                                    "_component_id": "eicm3hqd-0ba9-xqcm-dyor-nrnnw71gjtgi",
+                                                                    "_use_var_limit": false,
+                                                                    "_use_var_context_id": true
+                                                                }
+                                                            }
+                                                        ],
+                                                        "timezone_mode": "DEFAULT",
+                                                        "timezone": "",
+                                                        "_component_id": "pbf04xgd-lw1s-0go5-6nxs-rcs4w3uf6lu2",
+                                                        "_use_var_context_id": true
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "qa3zzxwm-qj5e-hwoa-3pg7-qfay2gqphf3j"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "action_id": "demo_cancel_appointment",
+                                            "title": "Cancel appointment action",
+                                            "content": "This action will cancel selected appointment .\n\nRequest fields:\n* `action_id = \"demo_cancel_appointment\"`\n* `appointment_id`, string, required\n* `email`, string, required\n\nResponse:\n* `canceled`, boolean",
+                                            "action_var": "action",
+                                            "result": "${action_result}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Check_action_email",
+                                                        "_component_id": "mtadyumg-4tyk-krdk-lgd1-asqufes8jn0b"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Appointments\\CancelAppointmentElement",
+                                                    "namespace": "convo-appointments",
+                                                    "properties": {
+                                                        "context_id": "${APPOINTMENTS_CONTEXT_ID}",
+                                                        "appointment_id": "${action.appointment_id}",
+                                                        "email": "${action.email}",
+                                                        "result_var": "status",
+                                                        "timezone_mode": "DEFAULT",
+                                                        "timezone": "",
+                                                        "ok": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"canceled\"]": "${true}"
+                                                                    },
+                                                                    "_component_id": "4d4odscy-g49w-byz1-x2pw-tfex6g6rvyok"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "hzf9v015-2hou-q0bi-guox-im3i9efohffu",
+                                                        "_use_var_context_id": true
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "njmsawsl-lcyk-zatc-ratp-j58aqpp830sq"
                                         }
                                     }
                                 ],
-                                "_component_id": "tkpf1nez-8kcd-jwon-yygo-yu9i00pc7qa8"
+                                "_component_id": "czdonrpn-y5m8-gllu-emvi-plwhr5ioohci"
                             }
                         }
                     ],
-                    "_component_id": "71782f75-0503-497d-a4f8-da92af4c0334"
+                    "_component_id": "lsua5fcl-u6rr-kzyk-6tho-b8unhadqokmp"
                 }
             },
             {
