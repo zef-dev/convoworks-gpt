@@ -3,7 +3,11 @@
 
 Convoworks GPT is an extension package for [Convoworks framework](https://github.com/zef-dev/convoworks-core). It is in the form of a WordPress plugin so you can use it with the [Convoworks WP](https://wordpress.org/plugins/convoworks-wp/).
 
+This is a development version and it is yet decided will this package be part of the Convoworks core or will it stay as a separate plugin.
+
 ## Building the Plugin
+
+You can use prebuilt plugin version (in the `./build` folder) or you can build it by yourself.
 
 When using it for the first time, you have to install the node packages. Navigate to the project root and enter the following command:
 
@@ -16,12 +20,22 @@ To build the deployment package, run this command, which will create the plugin 
 ```bash
 node build.js
 ```
+## Current status
+
+Two API components, GPT Completion API and GPT Chat Completion API are quite stable and we do not expect many changes with them.
+
+The  Autonomous Chat Element might be changed in future releases. There are couple of experiments and issues we would like to try with it:
+
+* try it with the gpt-3.5-turbo (now it is working with the plain GPT-3)
+* improve usage of the signed in user available data (now you have to tell to the Bot to use account data)
+* implement long term memory
 
 ## GPT Package Overview
 
 After installing and activating the plugin, you will be able to enable an additional package, **convo-gpt**, in the Convoworks Editor. This package contains several components, allowing for easy access to the OpenAI API. 
 
 Package contains an example service template **GPT Examples** you can use to see how the components can be used. You can access templates when creating a new service.  **Remember to set your OpenAI `API_KEY` in service variables view.**
+This service contains three examples, completion api, chat api and autonomous chat. You can chose the active one in the "Session Start" service step by modifying GOTO element in it. 
 
 For more information on the OpenAI API and its use, please refer to their [documentation](https://platform.openai.com/docs/).
 
