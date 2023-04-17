@@ -126,7 +126,9 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     
     protected function _parseActionJson( $message)
     {
-        $json       =   json_decode( trim( $message), true);
+        $message    =   trim( $message);
+        $message    =   trim( $message, '`');
+        $json       =   json_decode( $message, true);
         
         if ( JSON_ERROR_NONE !== json_last_error()) {
             $json       =   $this->_parseActionJsonWithGpt( $message);
@@ -164,7 +166,10 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
         ]);
         $bot_response   =   $http_response['choices'][0]['message']['content'];
         
-        $json           =   json_decode( trim( $bot_response), true);
+        $bot_response   =   trim( $bot_response);
+        $bot_response   =   trim( $bot_response, '`');
+        
+        $json           =   json_decode( $bot_response, true);
         
         if ( JSON_ERROR_NONE !== json_last_error()) {
             throw new \InvalidArgumentException( 'No valid JSON found in message ['.$message.']');
