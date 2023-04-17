@@ -141,23 +141,31 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     
     protected function _parseActionJsonWithGpt( $message)
     {
-        $prompt     =   'There are one or more JSON formatted data chunks in the following message. Write me the first valid JSON information from it.
-
-Message:';
-        $prompt     .=  $message;
-        $prompt     .=  "\n\nParsed: ";
+        $messages   =   [
+            [
+                'role' => 'system',
+                'content' => 'There are one or more JSON like formatted data chunks in the following message.'.
+                ' JSON may be malformed. Write me the first JSON information from it. Make sure that you write it as valid JSON.',
+            ]
+        ];
         
-        $this->_logger->debug( 'Got action prompt ============');
-        $this->_logger->debug( "\n".$prompt);
+        $messages[] =   [
+            'role' => 'user',
+            'content' => $message
+        ];
+        
+        
+        $this->_logger->debug( 'Parsing action message ============');
+        $this->_logger->debug( "\n".$message);
         $this->_logger->debug( '============');
         
-        $http_response  =   $this->_getGptApi()->completion( [
-            'model' => 'text-davinci-003',
+        $http_response  =   $this->_getGptApi()->chatCompletion( [
+            'model' => 'gpt-3.5-turbo',
             'temperature' => 0.7,
             'max_tokens' => 256,
-            'prompt' => $prompt,
+            'messages' => $messages,
         ]);
-        $bot_response   =   $http_response['choices'][0]['text'];
+        $bot_response   =   $http_response['choices'][0]['message']['content'];
         
         $json           =   json_decode( trim( $bot_response), true);
         
