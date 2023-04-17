@@ -141,13 +141,10 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     
     protected function _parseActionJsonWithGpt( $message)
     {
-        $messages   =   [
-            [
-                'role' => 'system',
-                'content' => 'There are one or more JSON like formatted data chunks in the following message.'.
-                ' JSON may be malformed. Write me the first JSON information from it. Make sure that you write it as valid JSON.',
-            ]
-        ];
+        $messages   =   [];
+        $message    =   'Extract just JSON information from the following message. In case of multiple JSONs, write just the first one.
+
+'.$message;
         
         $messages[] =   [
             'role' => 'user',
