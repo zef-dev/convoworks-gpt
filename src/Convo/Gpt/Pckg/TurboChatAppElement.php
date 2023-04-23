@@ -130,9 +130,13 @@ class TurboChatAppElement extends AbstractChatAppElement
             ]],
             $messages);
         
-        $response_data          =   $this->_getGptApi()->chatCompletion( $options);
-        
-        return $response_data['choices'][0]['message'];
+        $response_data      =   $this->_getGptApi()->chatCompletion( $options);
+
+        $message            =   $response_data['choices'][0]['message'];
+        $message['content'] =   trim( $message['content'], '`');
+        $message['content'] =   trim( $message['content'], '\n');
+
+        return $message;
     }
     
     // UTIL

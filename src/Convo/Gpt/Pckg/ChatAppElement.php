@@ -136,7 +136,9 @@ class ChatAppElement extends AbstractChatAppElement
         
         $this->_lastPrompt  =   $prompt;
         
-        return $http_response['choices'][0]['text'];
+        $message            =   trim( $http_response['choices'][0]['text'], '`');
+        $message            =   trim( $message, '\n');
+        return $message;
     }
     
     // UTIL
