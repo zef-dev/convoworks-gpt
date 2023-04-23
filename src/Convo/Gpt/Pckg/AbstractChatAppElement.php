@@ -128,6 +128,8 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     {
         $message    =   trim( $message);
         $message    =   trim( $message, '`');
+        $message    =   stripslashes( $message);
+        
         $json       =   json_decode( $message, true);
         
         if ( JSON_ERROR_NONE !== json_last_error()) {
