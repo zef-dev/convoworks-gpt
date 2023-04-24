@@ -9,7 +9,7 @@
         "chatgpt",
         "wordpress"
     ],
-    "version": "0.02.00",
+    "version": "0.03.00",
     "require": {
         "php": "^7.2",
         "zef-dev/convoworks-core": "^0.22"
