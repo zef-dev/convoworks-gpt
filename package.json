@@ -1,6 +1,6 @@
 {
     "private": true,
-    "version": "0.02.00",
+    "version": "0.03.00",
     "scripts": {},
     "devDependencies": {
         "yargs": "^17.0.1",
