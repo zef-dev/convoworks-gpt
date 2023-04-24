@@ -1684,8 +1684,8 @@
                                                                     "appointment_date": "${date( 'Y-m-d', strtotime( action.date))}",
                                                                     "appointment_time": "${date( 'H:i:s', strtotime( action.time))}",
                                                                     "payload": {
-                                                                        "email": "${action.email}",
-                                                                        "name": "${action.name}"
+                                                                        "Email": "${action.email}",
+                                                                        "Name": "${action.name}"
                                                                     },
                                                                     "result_var": "status",
                                                                     "timezone_mode": "DEFAULT",
