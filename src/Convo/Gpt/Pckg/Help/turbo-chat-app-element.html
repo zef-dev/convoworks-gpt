@@ -1,0 +1,44 @@
+<div>
+    <h3>Turbo Chat Element</h3>
+
+    <p>
+        This element enables you to create a chat application which will be able to autonomously execute defined actions on your website.
+        <br>
+        This element uses the chat completion API.
+    </p>
+    
+    <h3>Conversation</h3>
+    <p>
+        There are three roles in this conversation. Except <b>AI</b> and <b>User</b> we have a <b>System</b> agent whcih is able to execute actions.
+        <br>
+        When the user requests some action, the AI will respond with plain JSON, stating within which action is requested and passing along all requested params. 
+        Chat element will recognize that as the action request, will trigger appropriate action (matched by action_id) and pass the result to the conversation. 
+        After that new completion is requested.
+        <br>
+        Conversation itself (messages persistance) is handled by the client (service).
+    </p>
+    
+    <h3>Prompt building</h3>
+    <p>
+        Prompt consists of two parts.
+        <br>
+        The first part is instructions and the chat definition. It is built using the element's <b>Main prompt</b> and prompts defined by the child Prompt elements.
+        <br>
+        The second part is the current conversation.
+        <br>
+        While building the Prompts section, you can use IF/ELSE and other control structures, allowing you to dynamically change conversation context.
+    </p>
+    
+    <h3>Actions</h3>
+    <p>
+        Actions are specialized elements, defined with action_id, which are able to execute elements and return the result. 
+        Besides Action part, these elements are defining own prompt sections.
+    </p>
+
+    <h3>Result variable</h3>
+    <ul style="padding-left: 15px; list-style: disc;">
+        <li><b>messages</b> array, all message objects in the conversation</li>
+        <li><b>bot_response</b> array, message object as defined by the chat completion api (fields role and content)</li>
+        <li><b>last_prompt</b> string, full initial system message</li>
+    </ul>
+</div>

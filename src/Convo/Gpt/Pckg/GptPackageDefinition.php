@@ -424,7 +424,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'chat-app-element.html'
+                        'filename' => 'turbo-chat-app-element.html'
                     ],
                 ]
             ),
