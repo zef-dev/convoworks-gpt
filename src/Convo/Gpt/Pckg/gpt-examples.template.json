@@ -69,7 +69,7 @@
                             "class": "\\Convo\\Pckg\\Core\\Elements\\GoToElement",
                             "namespace": "convo-core",
                             "properties": {
-                                "value": "Chat_App",
+                                "value": "a298e897-336d-46ad-b384-111eb174770a",
                                 "next": false,
                                 "_component_id": "pdtva1xp-r1y0-gqgo-pakg-7j5lxhraw3hr"
                             }
@@ -87,7 +87,7 @@
                 "properties": {
                     "block_id": "Completion_Example",
                     "role": "conversation_block",
-                    "name": "Completion Example",
+                    "name": "Completion API Example",
                     "elements": [
                         {
                             "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
@@ -266,7 +266,7 @@
                 "properties": {
                     "role": "conversation_block",
                     "block_id": "Chat_Example",
-                    "name": "Chat Example",
+                    "name": "Chat Completion API Example",
                     "pre_dispatch": [],
                     "elements": [
                         {
@@ -844,6 +844,406 @@
                 "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
                 "namespace": "convo-core",
                 "properties": {
+                    "role": "conversation_block",
+                    "block_id": "a298e897-336d-46ad-b384-111eb174770a",
+                    "name": "Turbo Chat App",
+                    "pre_dispatch": [],
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "scope_type": "request",
+                                "parameters": "service",
+                                "properties": {
+                                    "user": "${wp_get_current_user()}"
+                                },
+                                "_component_id": "x1o1enip-nivp-rnwv-5t2y-cdkjcixn7xoq"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "INITIAL PROMPT VALUES (used just once)",
+                                "context": null,
+                                "_component_id": "fxx1yb8j-rch1-uhql-ilk8-il9k46dobz2j"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "test": "${user.exists()}",
+                                "then": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "WELCOME": "Hi ${user.data.user_nicename}, how can I help?"
+                                            },
+                                            "_component_id": "cqq3bc1i-dqsn-51js-niu8-cxbzusgvybje"
+                                        }
+                                    }
+                                ],
+                                "else_if": [],
+                                "else": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "WELCOME": "Hi, how can I help?"
+                                            },
+                                            "_component_id": "lfxe0ejn-ptla-tp01-tuy9-hhlyaj5hway5"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "22pdkqmt-o7vw-wwyk-djzq-gb8gfewlw1pv"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "scope_type": "request",
+                                "parameters": "service",
+                                "properties": {
+                                    "message[\"role\"]": "assistant",
+                                    "message[\"content\"]": "${WELCOME}"
+                                },
+                                "_component_id": "dcbxxph9-svhh-4i3a-tysq-t9ldfgnahcz4"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "CONSTANTS TO BE USED IN THE WORKFLOW (used through the session)",
+                                "context": null,
+                                "_component_id": "avfkrv1f-rm3j-ffym-vpjj-ri7d8edhcjsr"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "scope_type": "session",
+                                "parameters": "service",
+                                "properties": {
+                                    "messages": "${[message]}"
+                                },
+                                "_component_id": "xgjrkamq-ydla-jpj1-5f8p-0v3mvlyp7eao"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "USE THE LAST MESSAGE (helpful if you want to predefine multiple turns from the beginning)",
+                                "context": null,
+                                "_component_id": "xdrpbinr-vjbp-4ypj-joho-1mmgodh6y2eq"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "type": "default",
+                                "text": "${messages[count(messages)-1][\"content\"]}",
+                                "append": false,
+                                "alexa_domain": "normal",
+                                "alexa_emotion": "neutral",
+                                "alexa_emotion_intensity": "medium",
+                                "_component_id": "m1mfyjvs-q3xq-tifi-c73p-hz8hrxi7nt1f"
+                            }
+                        }
+                    ],
+                    "processors": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Processors\\SimpleProcessor",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "name": null,
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "user": "${wp_get_current_user()}"
+                                            },
+                                            "_component_id": "yelrxxfg-juwb-ggpk-lvio-zeifhf0pub7r"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "comment": "CATCH USER MESSAGE",
+                                            "context": null,
+                                            "_component_id": "au1f4mew-ifzx-7v3z-tabr-hi83jt0yww2t"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "user_message[\"role\"]": "user",
+                                                "user_message[\"content\"]": "${trim( request.text)}"
+                                            },
+                                            "_component_id": "yvjgatew-dpv5-bqtp-vthy-tdxtarev5rth"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "comment": "ADD MESSAGE TO THE CONVERSATION",
+                                            "context": null,
+                                            "_component_id": "nrnwhraz-f6qm-hxgi-s3yu-edlyhmmlinoj"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "session",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "messages": "${array_merge( messages, [user_message])}"
+                                            },
+                                            "_component_id": "htwxyinv-zlxr-oiil-uazs-dwjjdiod9kcc"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\TurboChatAppElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "system_message": "# Convoworks.com webchat\n\nPurpose of this webchat is to enable users to access information or do actions on the Convoworks website through a conversational channel.\n\nThis document is separated in 2 main parts:\n\n* **System definition** - which defines principles how the system is functioning\n* **Current conversation context** - additional information the Assistant can use regarding current user and current conversation",
+                                            "messages": "${messages}",
+                                            "result_var": "status",
+                                            "api_key": "${API_KEY}",
+                                            "apiOptions": {
+                                                "model": "gpt-3.5-turbo",
+                                                "temperature": "${0.7}",
+                                                "max_tokens": "${256}"
+                                            },
+                                            "prompts": [
+                                                {
+                                                    "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
+                                                    "namespace": "convo-gpt",
+                                                    "properties": {
+                                                        "title": "System definition",
+                                                        "content": "This section system information and rules how the webchat operates",
+                                                        "prompts": [
+                                                            {
+                                                                "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
+                                                                "namespace": "convo-gpt",
+                                                                "properties": {
+                                                                    "title": "Assistant behavior",
+                                                                    "content": "The Assistant follows the rules defined in this section and can use information defined below in the document.\n\nThe following rules should be followed by the Assistant throughout the conversation:\n\n* The Assistant responds to the user in plain English.\n* To obtain additional information or perform an action within the System, the Assistant is capable of executing actions by responding with valid JSON.\n* If required fields for a particular action are missing, the Assistant will ask the user to provide them.\n* If required fields for a particular action are missing and the user is logged in, the Assistant should use available user information.\n* The Assistant triggers actions only if the required information has been provided by the user.\n* The System will use JSON-formatted data to respond with the result of the action, also formatted as JSON.\n* It is important that the Assistant does not respond to the user until the action is executed.\n* The Assistant will not disclose how it executes actions in the System.\n* The Assistant can only use and offer actions listed in this document to the user.\n* If the Assistant requests an unsupported action (action_id), the System will respond with an error message: \"Action [action_id] is not defined.\"\n* The Assistant will not make assumptions about information in the System or execute undefined System actions. For example, the Assistant will not suggest an action to the user if that action is not defined in this document.\n* During the conversation, the Assistant should use available information about the current user, such as their name, preferences, and history with the System.\n* If the user requests an undefined action, the Assistant should inform the user that the action is not available.\n* If the user is logged in, the Assistant will not ask them for information that is already available, such as an email address.",
+                                                                    "childPrompts": [],
+                                                                    "_component_id": "cqkf3gpa-vybo-k5mb-t51t-oazjytzzrbk2"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
+                                                                "namespace": "convo-gpt",
+                                                                "properties": {
+                                                                    "title": "Conversation workflow",
+                                                                    "content": "The Assistant is communicating with the user in an ordinary way. When there is a need for fetching additional information, the Assistant sends a JSON message to which the System will respond. The Assistant can have several turns with the System before responding to the user.\n\nHere is an excerpt from an imaginary conversation that only serves to demonstrate how the Assistant and System can communicate. The action used in this example does not relate to a real System.\n\n* The Assistant welcomes the user.\nExample - Assistant: Hi. How can I help?\n\n* The user asks a question.\nExample - User: Can I book a Friday?\n\n* The Assistant asks the System for additional information formatted as valid JSON, with no additional message to the user.\nExample - Assistant: {\"action_id\":\"demo_check_time\", \"date\":\"Friday\"}\n\n* The System responds to the Assistant with JSON.\nExample - System: {\"available\":true}\n\n* The Assistant responds to the user in plain English.\nExample - Assistant: Yes, you can book on Friday. At what time slot would you like to book a demo?",
+                                                                    "prompts": [
+                                                                        {
+                                                                            "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
+                                                                            "namespace": "convo-gpt",
+                                                                            "properties": {
+                                                                                "title": "Example 1",
+                                                                                "content": "Assistant: Hi, how can I help you?\nUser: I would like to book a demo.\nAssistant: Great! When would you like to book it?\nUser: Friday at 4 pm.\nAssistant: {\"action_id\":\"demo_check_time\", \"date\":\"2023-03-31\", \"time\":\"16:00\"}\nSystem: {\"available\":true}\nAssistant: Great! That time slot is available. Please tell me your name and email.\nUser: I'm John Smith, johnny@gmail.com\nAssistant: {\"action_id\":\"demo_create_appointment\", \"date\":\"2023-03-31\", \"time\":\"16:00\", \"name\":\"John Smith\", \"email\":\"johnny@gmail.com\"}\nSystem: {\"appointment_id\":\"abc344bh43\"}\nAssistant: Thanks! Your appointment is created. Can I help you with anything else?",
+                                                                                "childPrompts": [],
+                                                                                "_component_id": "lnwhvylb-6fq7-kjgu-7hfl-pddjbvx6df52"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
+                                                                            "namespace": "convo-gpt",
+                                                                            "properties": {
+                                                                                "title": "Example 2",
+                                                                                "content": "Assistant: Hi, how can I help you?\nUser: I would like to book a demo.\nAssistant: Great! When would you like to book it?\nUser: Friday at 4 pm.\nAssistant: {\"action_id\":\"demo_check_time\", \"date\":\"2023-03-31\", \"time\":\"16:00\"}\nSystem: {\"available\":false, \"suggestions\":[{\"date\":\"2023-03-31\", \"time\":\"17:00\"}, {\"date\":\"2023-04-01\", \"time\":\"16:00\"}]}\nAssistant: Sorry, but that time slot is not available. Would 5 pm on the same day or the same time slot the next day work better for you?\nUser: Yes, 5 pm would be OK too.\nAssistant: Great! Please tell me your name and email.\nUser: I'm John Smith, johnny@gmail.com\nAssistant: {\"action_id\":\"demo_create_appointment\", \"date\":\"2023-03-31\", \"time\":\"17:00\", \"name\":\"John Smith\", \"email\":\"johnny@gmail.com\"}\nSystem: {\"appointment_id\":\"abc344bh43\"}\nAssistant: Thanks! Your appointment is created. Can I help you with anything else?",
+                                                                                "childPrompts": [],
+                                                                                "_component_id": "v7m7jmd2-j841-5cxd-99hw-ypf7sh74fhew"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "_component_id": "ker6huxu-oku5-kshr-ng7j-uemghhjllsz1"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
+                                                                "namespace": "convo-gpt",
+                                                                "properties": {
+                                                                    "title": "Available Website actions",
+                                                                    "content": "Actions enable the Assistant to obtain additional information from, or perform actions within the System. An action request is defined as a JSON data object with one required field, \"action_id,\" and additional parameters depending on the chosen action. The System will respond with the result of the action in JSON format.\n\nBelow is the list of currently available actions. The Assistant can only invoke actions that are listed below.",
+                                                                    "prompts": [
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "fragment_id": "Action_package_Newsletter",
+                                                                                "_component_id": "j0gslhdn-ciiu-3c6c-vkoa-0jvtwgjeuggm"
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                                            "namespace": "convo-core",
+                                                                            "properties": {
+                                                                                "fragment_id": "Action_package_Book_a_demo",
+                                                                                "_component_id": "9zvjb44k-ppb5-xrjx-h3ve-vuxymo8xwfn1"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "_component_id": "qaxdvyff-joay-2hkz-eorv-fbmw9pz2efel"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "gmdtq9je-b1t6-o3nr-wurr-lw1humvzztv6"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
+                                                    "namespace": "convo-gpt",
+                                                    "properties": {
+                                                        "title": "Current conversation context",
+                                                        "content": "Here is additional information that the Assistant can use during the current conversation.",
+                                                        "prompts": [
+                                                            {
+                                                                "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
+                                                                "namespace": "convo-gpt",
+                                                                "properties": {
+                                                                    "title": "Convoworks - Basic info",
+                                                                    "content": "Convoworks is a no-code framework written in PHP and which was originally designed for solving conversational services for smart speakers. Thanks to it's architecture, it can also handle other communication platform like Viber, FB Messenger, web chat, Telegram app, IVR calls through Twilio. In addition, it could be extended to serve as no-code HTTP API builder or scheduled task builder.  It is very customizable and developers can write additional component packages for it.\nConvoworks WP is implementation as a WordPress plugin. \n\nMain Convoworks parts:\n* PHP core interfaces and implementations. It defines conversation workflow as a stream of reusable components and knows how to execute it.\n* Platform REST adapters (web hooks for Amazon Alexa, Viber, FB Messenger ...)\n* Admin REST API & Admin GUI\n* Additional packages containing custom components or even additional platform adapters",
+                                                                    "childPrompts": [],
+                                                                    "_component_id": "7tubgqrl-tlty-etom-ji4w-vbpbn5rdzgqh"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "comment": "IF THE USER IS KNOWN, USE THEIR DATA",
+                                                                    "context": null,
+                                                                    "_component_id": "kjdse8e4-4mbx-ufwd-sxyx-hwexr1epuq5y"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "test": "${user.exists()}",
+                                                                    "then": [
+                                                                        {
+                                                                            "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
+                                                                            "namespace": "convo-gpt",
+                                                                            "properties": {
+                                                                                "title": "The current User information",
+                                                                                "content": "The User is logged in and here is some basic info:\n\n* user id: ${user.ID}\n* name: ${user.data.user_nicename}\n* email: ${user.data.user_email}",
+                                                                                "_component_id": "cbfukvzn-y7dn-dnfp-cklq-1fuvhrdzwomu"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "else_if": [],
+                                                                    "else": [],
+                                                                    "_component_id": "prb6zzne-fhkl-cfpj-ezee-b0ozmzse8kcz"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Gpt\\Pckg\\SimplePromptElement",
+                                                                "namespace": "convo-gpt",
+                                                                "properties": {
+                                                                    "title": "Other info",
+                                                                    "content": "* today is ${date('l jS F Y')}\n* tomorrow is ${date('l jS F Y', strtotime('tomorrow'))}\n* current time is ${date('h:i:s A')}",
+                                                                    "childPrompts": [],
+                                                                    "_component_id": "swfmpvhe-ighc-nutk-urm9-hm5wrmobeoss"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "gr2ufqln-bdrd-vlt7-kedk-c4jc0etqstjp"
+                                                    }
+                                                }
+                                            ],
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "comment": "ADD BOT RESPONSE TO THE CONVERSATION",
+                                                        "context": null,
+                                                        "_component_id": "fjwjrxnk-pul4-y18a-lu02-gm0izfbbxg8z"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "session",
+                                                        "parameters": "service",
+                                                        "properties": {
+                                                            "messages": "${status.messages}"
+                                                        },
+                                                        "_component_id": "cupgoape-bd0s-qxda-u7gx-j09ttjrbmfh8"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "type": "default",
+                                                        "text": "${status.bot_response.content}",
+                                                        "append": false,
+                                                        "alexa_domain": "normal",
+                                                        "alexa_emotion": "neutral",
+                                                        "alexa_emotion_intensity": "medium",
+                                                        "_component_id": "9adimrgv-bjgj-fyuq-anle-jvh0xiigwh05"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "iaqfxuf8-xawl-sdvi-nro0-u20kvfkgkhtg"
+                                        }
+                                    }
+                                ],
+                                "request_filters": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Filters\\NopRequestFilter",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "empty": "match",
+                                            "values": [],
+                                            "_component_id": "czcayyfp-ffpi-0k1t-koql-vphjbmgbi2mn"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "64tvmm3f-zbdv-riml-kuez-ocuw2krnrcc4"
+                            }
+                        }
+                    ],
+                    "fallback": [],
+                    "_component_id": "1c55644d-24b2-4ac3-a630-dd93182c955e"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
+                "namespace": "convo-core",
+                "properties": {
                     "role": "error_handler",
                     "block_id": "Error_handler",
                     "name": "Error handler",
@@ -881,16 +1281,16 @@
                             "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
                             "namespace": "convo-gpt",
                             "properties": {
-                                "title": "Newsletter related actions",
-                                "content": "Convoworks newsletter contains news about Convoworks and interesting related technologies. Following actions are enabling the Bot to check or update the User's newsletter subscription status.",
+                                "title": "Newsletter-related Actions",
+                                "content": "Convoworks newsletter contains news about Convoworks and interesting related technologies. The following actions enable the Assistant to check or update the User's newsletter subscription status.",
                                 "prompts": [
                                     {
                                         "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "newsletter_register_email",
-                                            "title": "Add email to the mailing list action",
-                                            "content": "This action will add email address to the newsletter mailing list. Prior to this action, the Bot should check if user is already subscribed, with the `newsletter_check_email_registered` action.\n\nRequest fields:\n* `action_id = \"newsletter_register_email\"`\n* `email`, string, required\n\nResponse:\n* `registered`, boolean",
+                                            "title": "Add Email to the Mailing List",
+                                            "content": "This action adds an email address to the newsletter mailing list. Before executing this action, the Assistant should check whether the user is already subscribed by using the `newsletter_check_email_registered` action.\n\nRequest Fields:\n* `action_id`: \"newsletter_register_email\"\n* `email`: string, required\n\nResponse:\n* `registered`: boolean",
                                             "ok": [
                                                 {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
@@ -956,8 +1356,8 @@
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "newsletter_check_email_registered",
-                                            "title": "Check if email is registered action",
-                                            "content": "This action checks if the email address is already subscribed to our newsletter.\n\nRequest fields:\n* `action_id = \"newsletter_check_email_registered\"`\n* `email`, string, required\n\nResponse:\n* `registered`, boolean",
+                                            "title": "Check Email Registration Status",
+                                            "content": "This action checks whether the email address is already subscribed to our newsletter.\n\nRequest Fields:\n* `action_id`: \"newsletter_check_email_registered\"\n* `email`: string, required\n\nResponse:\n* `registered`: boolean",
                                             "ok": [
                                                 {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
@@ -1027,8 +1427,8 @@
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "newsletter_unregister_email",
-                                            "title": "Remove email from the mailing list action",
-                                            "content": "This action will remove email (unsubscribe) address from the newsletter mailing list. Prior to this action, the Bot should check if user is actually subscribed, with the `newsletter_check_email_registered` action.\n\nRequest fields:\n* `action_id = \"newsletter_unregister_email\"`\n* `email`, string, required\n\nResponse:\n* `registered`, boolean",
+                                            "title": "Remove Email from the Mailing List",
+                                            "content": "This action removes an email (unsubscribe) address from the newsletter mailing list. Before executing this action, the Assistant should check whether the user is actually subscribed by using the `newsletter_check_email_registered` action.\n\nRequest Fields:\n* `action_id`: \"newsletter_unregister_email\"\n* `email`: string, required\n\nResponse:\n* `registered`: boolean",
                                             "ok": [
                                                 {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
@@ -1126,15 +1526,15 @@
                             "namespace": "convo-gpt",
                             "properties": {
                                 "title": "Book a demo related actions",
-                                "content": "These are actions related to appointment management.",
+                                "content": "These are the actions related to appointment management.",
                                 "prompts": [
                                     {
                                         "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "demo_check_time",
-                                            "title": "Check appointment time action",
-                                            "content": "This action checks if the requested appointment time is available.\n\nRequest fields:\n* `action_id = \"demo_check_time\"`\n* `date`, string, required\n* `time`, string, required\n\nResponse:\n* `available`, boolean\n* `suggestions`, array of available appointment slots to suggest.",
+                                            "title": "Check appointment time availability",
+                                            "content": "This action checks if the requested appointment time is available or not.\n\nRequest fields:\n* `action_id = \"demo_check_time\"`\n* `date`, string, required\n* `time`, string, required\n\nResponse:\n* `available`, boolean\n* `suggestions`, an array of available appointment slots to suggest.",
                                             "action_var": "action",
                                             "result": "${action_result}",
                                             "ok": [
@@ -1254,8 +1654,8 @@
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "demo_create_appointment",
-                                            "title": "Create appointment action",
-                                            "content": "This action create a new appointment.\n\nRequest fields:\n* `action_id = \"demo_create_appointment\"`\n* `date`, string, required\n* `time`, string, required\n* `email`, string, required\n* `name`, string, required\n\nResponse:\n* `appointment_id`, string",
+                                            "title": "Create a new appointment",
+                                            "content": "This action creates a new appointment.\n\nRequest fields:\n* `action_id = \"demo_create_appointment\"`\n* `date`, string, required\n* `time`, string, required\n* `email`, string, required\n* `name`, string, required\n\nResponse:\n* `appointment_id`, string",
                                             "action_var": "action",
                                             "result": "${action_result}",
                                             "ok": [
@@ -1338,8 +1738,8 @@
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "demo_reschedule_appointment",
-                                            "title": "Reschedule appointment action",
-                                            "content": "This action will update an existing appointment.\n\nRequest fields:\n* `action_id = \"demo_reschedule_appointment\"`\n* `appointment_id`, string, required, existing appointment id\n* `date`, string, required\n* `time`, string, required\n* `email`, string, required\n\nResponse:\n* `available`, boolean",
+                                            "title": "Reschedule an existing appointment",
+                                            "content": "This action will update an existing appointment.\n\nRequest fields:\n* `action_id = \"demo_reschedule_appointment\"`\n* `appointment_id`, string, required (existing appointment id)\n* `date`, string, required\n* `time`, string, required\n* `email`, string, required\n\nResponse:\n* `available`, boolean",
                                             "action_var": "action",
                                             "result": "${action_result}",
                                             "ok": [
@@ -1419,8 +1819,8 @@
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "demo_load_appointments",
-                                            "title": "Load user's appointments action",
-                                            "content": "This action will load user's appointments.\n\nRequest fields:\n* `action_id = \"demo_load_appointments\"`\n* `email`, string, required\n\nResponse:\n* `appointments`, array of appointments",
+                                            "title": "Load user's appointments",
+                                            "content": "This action will load the user's appointments.\n\nRequest fields:\n* `action_id = \"demo_load_appointments\"`\n* `email`, string, required\n\nResponse:\n* `appointments`, an array of appointments",
                                             "action_var": "action",
                                             "result": "${action_result}",
                                             "ok": [
@@ -1518,8 +1918,8 @@
                                         "namespace": "convo-gpt",
                                         "properties": {
                                             "action_id": "demo_cancel_appointment",
-                                            "title": "Cancel appointment action",
-                                            "content": "This action will cancel selected appointment .\n\nRequest fields:\n* `action_id = \"demo_cancel_appointment\"`\n* `appointment_id`, string, required\n* `email`, string, required\n\nResponse:\n* `canceled`, boolean",
+                                            "title": "Cancel an appointment",
+                                            "content": "This action will cancel the selected appointment.\n\nRequest fields:\n* `action_id = \"demo_cancel_appointment\"`\n* `appointment_id`, string, required\n* `email`, string, required\n\nResponse:\n* `canceled`, boolean",
                                             "action_var": "action",
                                             "result": "${action_result}",
                                             "ok": [
@@ -1575,6 +1975,81 @@
                 "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
                 "namespace": "convo-core",
                 "properties": {
+                    "fragment_id": "Action_package_Current_info",
+                    "name": "Action package - Current info",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\PromptSectionElement",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "title": "Current context actions",
+                                "content": "These actions are allowing the AI to have more related information to the current conversation context.",
+                                "prompts": [
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SimpleChatActionElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "action_id": "current_user",
+                                            "title": "Get current user",
+                                            "content": "Returns currently logged in user related information.",
+                                            "action_var": "action",
+                                            "result": "${[]}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "test": "${user.exists()}",
+                                                        "then": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"user_id\"]": "${user.ID}",
+                                                                        "action_result[\"name\"]": "${user.data.user_nicename}",
+                                                                        "action_result[\"email\"]": "${user.data.user_email}"
+                                                                    },
+                                                                    "_component_id": "deskdcuh-bjvy-39j3-p3vs-zijadkfjwzni"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "else_if": [],
+                                                        "else": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "scope_type": "request",
+                                                                    "parameters": "service",
+                                                                    "properties": {
+                                                                        "action_result[\"error\"]": "Current user is not logged in"
+                                                                    },
+                                                                    "_component_id": "ievowr7s-fmtq-lym2-9e0h-caego7vdjjf6"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "t1rwc23c-thrl-wgfi-ddhp-6hiw1iqdii1m"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "tmdro1gu-rgrz-v5xr-rxzc-kmivbmu2ezdd"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "8eoy2d8i-vsmx-kle3-lv3y-vho5gn6ixuk1"
+                            }
+                        }
+                    ],
+                    "_component_id": "egugzbtg-afha-9igb-qwki-n4jrtggof6wk"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
                     "fragment_id": "Check_action_email",
                     "name": "Check action email parameter",
                     "elements": [
@@ -1603,7 +2078,6 @@
                 }
             }
         ],
-        "properties": [],
-        "configurations": []
+        "properties": []
     }
 }
