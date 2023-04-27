@@ -146,7 +146,8 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     protected function _parseActionJsonWithGpt( $message)
     {
         $messages   =   [];
-        $message    =   'Extract just JSON information from the following message. In case of multiple JSONs, write just the first one.
+        $message    =   'Extract just JSON information from the following message. '.
+        'In case of multiple JSONs, extract just the first one. Be succinct with your response.
 
 '.$message;
         
