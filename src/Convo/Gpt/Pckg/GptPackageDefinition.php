@@ -490,6 +490,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Variable which evaluates to a result of the executed action',
                         'valueType' => 'string'
                     ],
+                    'autoActivate' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => [],
+                        'defaultValue' => false,
+                        'name' => 'Automatically activated',
+                        'description' => 'Applicable for actions without paramaters, will automatically prepended to the conversation',
+                        'valueType' => 'boolean'
+                    ],
                     'ok' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [

@@ -59,10 +59,22 @@ class SimpleChatActionElement extends SimplePromptElement implements IChatAction
         return $this->evaluateString( $this->_properties['action_id']) === $actionId;
     }
     
+    public function getActionId()
+    {
+        return $this->_properties['action_id'];
+    }
+    
+    public function autoActivate()
+    {
+        return $this->_properties['autoActivate'] ?? false;
+    }
+    
     // UTIL
     public function __toString()
     {
         return parent::__toString().'['.$this->_properties['action_id'].']';
     }
+
+
 
 }

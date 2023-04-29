@@ -9,6 +9,16 @@ interface IChatAction extends IChatPrompt
 {
     
     /**
+     * @return string
+     */
+    public function getActionId();
+    
+    /**
+     * @return bool
+     */
+    public function autoActivate();
+    
+    /**
      * @param string $actionId
      * @return bool
      */
@@ -19,6 +29,7 @@ interface IChatAction extends IChatPrompt
      * @param array $data
      * @param IConvoRequest $request
      * @param IConvoResponse $response
+     * @return array
      * @throws ValidationException
      */
     public function executeAction( $data, IConvoRequest $request, IConvoResponse $response);

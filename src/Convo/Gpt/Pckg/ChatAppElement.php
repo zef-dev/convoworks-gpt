@@ -44,7 +44,7 @@ class ChatAppElement extends AbstractChatAppElement
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         $user_message   =   $this->evaluateString( $this->_properties['user_message']);
         
-        $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER);
+        $bot_response   =   $this->_getCompletion( $messages, trim( $user_message), self::PREFIX_USER, $request, $response);
         $bot_response   =   $this->_handleBotResponse( $bot_response, $messages, $request, $response);
         
         $messages[]     =   self::PREFIX_BOT.trim( $bot_response);
@@ -109,13 +109,30 @@ class ChatAppElement extends AbstractChatAppElement
             $action_response    =   json_encode( ['message'=> $e->getMessage()]);
         }
         
-        return $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE);;
+        return $this->_getCompletion( $messages, $action_response, self::PREFIX_WEBSITE, $request, $response);
     }
     
     
     // API
-    private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix)
+    private function _getCompletion( &$messages, $lastMessge, $lastMessagePrefix, $request, $response)
     {
+        $auto       =   [];
+        
+        $actions    =   $this->getActions();
+        
+        foreach ( $actions as $action)
+        {
+            if ( !$action->autoActivate()) {
+                continue;
+            }
+            $auto[]     =   self::PREFIX_BOT.json_encode( ['action_id' => $action->getActionId()]);
+            $auto[]     =   self::PREFIX_WEBSITE.json_encode( $action->executeAction( [], $request, $response));
+        }
+        
+        $messages           =   array_merge( $auto, $messages);
+        
+        
+        
         $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
         $conversation   =   implode( "\n", $messages);
         

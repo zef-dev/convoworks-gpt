@@ -40,7 +40,7 @@ class TurboChatAppElement extends AbstractChatAppElement
         
         $messages       =   $this->evaluateString( $this->_properties['messages']);
         
-        $bot_response   =   $this->_getCompletion( $messages);
+        $bot_response   =   $this->_getCompletion( $messages, $request, $response);
         $bot_response   =   $this->_handleBotResponse( $bot_response, $messages, $request, $response);
         
         $messages[]     =   $bot_response;
@@ -113,14 +113,37 @@ class TurboChatAppElement extends AbstractChatAppElement
             'content' => $action_response
         ];
         
-        return $this->_getCompletion( $messages);
+        return $this->_getCompletion( $messages, $request, $response);
     }
     
     // API
-    private function _getCompletion( $messages)
+    private function _getCompletion( $messages, IConvoRequest $request, IConvoResponse $response)
     {
         $prompt             =   $this->getPromptContent();
         $this->_lastPrompt  =   $prompt;
+        
+        $auto       =   [];
+        
+        $actions = $this->getActions();
+        
+        foreach ( $actions as $action) 
+        {
+            if ( !$action->autoActivate()) {
+                continue;
+            }
+            $auto[]     =   [
+                'role' => 'assistant',
+                'content' => json_encode( ['action_id' => $action->getActionId()])
+            ];
+            
+            $auto[]     =   [
+                'role' => 'system',
+                'content' => json_encode( $action->executeAction( [], $request, $response))
+            ];
+        }
+        
+        
+        $messages           =   array_merge( $auto, $messages);
         
         $options                =   $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         $options['messages']    =   array_merge(

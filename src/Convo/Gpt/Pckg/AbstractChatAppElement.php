@@ -60,9 +60,10 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
         return $this->_chatPrompts;
     }
     
+
     /**
      * {@inheritDoc}
-     * @see \Convo\Gpt\IChatPromptContainer::getActions()
+     * @see \Convo\Gpt\IChatPrompt::getActions()
      */
     public function getActions()
     {
