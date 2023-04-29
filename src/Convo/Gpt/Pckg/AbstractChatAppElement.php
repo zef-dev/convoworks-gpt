@@ -81,11 +81,14 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     
     public function getPromptContent()
     {
-        $str    = $this->evaluateString( $this->_properties['system_message']);
+        $str    =   $this->evaluateString( $this->_properties['system_message']);
+        $skip   =   $this->evaluateString( $this->_properties['skipChildPrompts'] ?? false);
         
-        foreach ( $this->_chatPrompts as $prompt) {
-            $str .= "\n\n\n";
-            $str .= $prompt->getPromptContent();
+        if ( !$skip) {
+            foreach ( $this->_chatPrompts as $prompt) {
+                $str .= "\n\n\n";
+                $str .= $prompt->getPromptContent();
+            }
         }
         
         return $str;

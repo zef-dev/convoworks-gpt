@@ -281,6 +281,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Completion API options that you can override',
                         'valueType' => 'array'
                     ],
+                    'skipChildPrompts' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => [],
+                        'defaultValue' => false,
+                        'name' => 'Skip child prompts',
+                        'description' => 'Will use only own prompt, while child Prompts (including action prompts) will not be used',
+                        'valueType' => 'boolean'
+                    ],
                     'prompts' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -376,6 +384,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'name' => 'API options',
                         'description' => 'Chat Completion API options that you can override',
                         'valueType' => 'array'
+                    ],
+                    'skipChildPrompts' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => [],
+                        'defaultValue' => false,
+                        'name' => 'Skip child prompts',
+                        'description' => 'Will use only own prompt, while child Prompts (including action prompts) will not be used',
+                        'valueType' => 'boolean'
                     ],
                     'prompts' => [
                         'editor_type' => 'service_components',
