@@ -129,8 +129,12 @@ class TurboChatAppElement extends AbstractChatAppElement
         foreach ( $actions as $action) 
         {
             if ( !$action->autoActivate()) {
+                $this->_logger->debug( 'Skipping action from autoactivate ['.$action.']');
                 continue;
             }
+            
+            $this->_logger->info( 'Autoactivating action ['.$action.']');
+            
             $auto[]     =   [
                 'role' => 'assistant',
                 'content' => json_encode( ['action_id' => $action->getActionId()])
