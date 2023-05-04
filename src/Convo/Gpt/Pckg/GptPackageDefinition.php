@@ -615,47 +615,6 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
-                '\Convo\Gpt\Pckg\ActionsPromptElement',
-                'x!Actions Prompt Generator',
-                'This element will collect all defined actions and insert their prompts',
-                [
-                    'title' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '## Available Website actions',
-                        'name' => 'Prompt Title',
-                        'description' => 'Actions section title',
-                        'valueType' => 'string'
-                    ],
-                    'content' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => ['large' => true],
-                        'defaultValue' => 'Actions are allowing the Bot to get additional information from, or to perform some action in the website.'.
-                        ' Action request is defined as a JSON data, with one required field, "action_id" and additional parameters depending on the chosen action.  '.
-                        'Website will respond with action result in JSON format.
-
-Below is currently available actions list that the Bot can invoke.',
-                        'name' => 'Prompt Content',
-                        'description' => 'Actions section intro which describes how the Bot can use actions',
-                        'valueType' => 'string'
-                    ],
-                    '_preview_angular' => [
-                        'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">ACTIONS PROMPT GENERATOR</span>' .
-                        ' <b>{{component.properties.title}}</b>' .
-                        '</div>'
-                    ],
-                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
-                    '_workflow' => 'read',
-                    '_descend' => true,
-                    '_help' =>  [
-                        'type' => 'file',
-                        'filename' => 'actions-prompt-element.html'
-                    ],
-                ]
-            ),
-            new \Convo\Core\Factory\ComponentDefinition(
-                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ValidationErrorElement',
                 'Validation Error',
                 'Stops the execution and signals the Chat App that action request is not valid',
