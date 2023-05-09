@@ -129,12 +129,8 @@ class ChatAppElement extends AbstractChatAppElement
             $auto[]     =   self::PREFIX_WEBSITE.json_encode( $action->executeAction( [], $request, $response));
         }
         
-        $messages           =   array_merge( $auto, $messages);
-        
-        
-        
         $messages[]     =   $lastMessagePrefix.trim( $lastMessge);
-        $conversation   =   implode( "\n", $messages);
+        $conversation   =   implode( "\n", array_merge( $auto, $messages));
         
         $prompt         =   $this->getPromptContent();
         $prompt         .=  "\n\n";
