@@ -50,12 +50,6 @@ class GptPackageDefinition extends AbstractPackageDefinition
         return $functions;
     }
     
-    protected function _initEntities()
-    {
-        $entities  =    [];
-        return $entities;
-    }
-    
     protected function _initDefintions()
     {
         $API_KEY = [
