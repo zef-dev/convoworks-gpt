@@ -129,6 +129,7 @@ In order to enable this kind of behavior, this element delegates prompt building
 * `result_var` - Default `status`, the name of the variable that contains additional information. It contains these fields: `messages` array of all conversation messages (including the last bot response), `bot_response` the last bot response (safe to display to the user), `last_prompt` the full last prompt which is sent to the API call. Useful for debugging.
 * `api_key` - Your OpenAI API key
 * `apiOptions` - [OpenAI Completion API](https://platform.openai.com/docs/api-reference/completions) endpoint options
+* `skipChildPrompts` - When enabled, only this component prompt will be used. This can be useful when testing and tuning your prompts.
 
 **Flows:**
 
@@ -146,6 +147,7 @@ This component is quite similar to the previous one, with a difference that it i
 * `result_var` - Default `status`, the name of the variable that contains additional information. It contains these fields: `messages` array of all conversation messages (including the last bot response), `bot_response` the last bot response (also as a complex object. Use it to display a response to the user).
 * `api_key` - Your OpenAI API key
 * `apiOptions` - [OpenAI Chat Completion API](https://platform.openai.com/docs/api-reference/chat) endpoint options
+* `skipChildPrompts` - When enabled, only this component prompt will be used. This can be useful when testing and tuning your prompts.
 
 **Flows:**
 
@@ -186,6 +188,7 @@ This element allows you to define an action, with its ID and prompt definition, 
 * `content` - The content of the prompt section.
 * `action_var` - A variable containing action data which is available in the **OK** flow.
 * `result` - A variable which evaluates to a result of the executed action. This (evaluated) value will be appended to the conversation as a website response.
+* `autoActivate` - When enabled, it will call this action automatically and prepend the call to the conversation. Applicable for getting current user information or any other action which does not require input parameters.
 
 **Flows:**
 
