@@ -1,6 +1,11 @@
 
 # Convoworks GPT WordPress plugin
 
+### 0.4.0 Auto activated actions
+
+* Add ability to mark actions as auto activated (e.g. logged user info)
+* Add ability to use just main Chat app prompt - child prompts will be ignored. Useful when testing and tuning prompts.
+
 ### 0.3.0 Turbo Chat App
 
 * Add chat app which uses GPT-3.5-turbo API
