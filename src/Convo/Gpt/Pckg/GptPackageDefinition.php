@@ -5,7 +5,6 @@ namespace Convo\Gpt\Pckg;
 use Convo\Core\Factory\AbstractPackageDefinition;
 use Convo\Core\Factory\PackageProviderFactory;
 use Convo\Gpt\GptApiFactory;
-use Convo\Core\Expression\ExpressionFunction;
 
 class GptPackageDefinition extends AbstractPackageDefinition 
 {
@@ -29,25 +28,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
         
         parent::__construct( $logger, self::NAMESPACE, __DIR__);
         
-        $this->addTemplate( $this->_loadFile( __DIR__ .'/gpt-examples.template.json'));
-    }
-    
-    public function getFunctions()
-    {
-        $functions          =   [];
-        
-        // TEMP
-        $functions[] = new ExpressionFunction(
-            'wp_delete_post',
-            function ( $postid, $force=false) {
-                return sprintf( 'wp_delete_post(%d, %b)', $postid, $force);
-            },
-            function( $args, $postid, $force=false) {
-                return wp_delete_post( $postid, $force);
-            }
-        );
-        
-        return $functions;
+        $this->registerTemplate( __DIR__ .'/gpt-examples.template.json');
     }
     
     protected function _initDefintions()
