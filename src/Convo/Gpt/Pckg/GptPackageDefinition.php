@@ -164,6 +164,18 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Chat completion API options that you can use',
                         'valueType' => 'array'
                     ],
+                    'functions' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'Function',
+                        'description' => 'Function definitions',
+                        'valueType' => 'class'
+                    ],
                     'ok' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -416,6 +428,89 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_help' =>  [
                         'type' => 'file',
                         'filename' => 'turbo-chat-app-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ChatFunctionElement',
+                'Chat Function',
+                'Function definition that can be used with Completion API based elements',
+                [
+                    'name' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Function name',
+                        'description' => 'Unique function name',
+                        'valueType' => 'string'
+                    ],
+                    'description' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Description',
+                        'description' => 'Functions description',
+                        'valueType' => 'string'
+                    ],
+                    'parameters' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [
+                        ],
+                        'name' => 'Function parameters',
+                        'description' => 'Function parameters definition',
+                        'valueType' => 'array'
+                    ],
+                    'required' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${[]}',
+                        'name' => 'Required',
+                        'description' => 'Array of required fields',
+                        'valueType' => 'string'
+                    ],
+                    'request_data' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'data',
+                        'name' => 'Request data',
+                        'description' => 'Expression that evaluates to function arguments',
+                        'valueType' => 'string'
+                    ],
+                    'result_data' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'result',
+                        'name' => 'Result name',
+                        'description' => 'Name of the variable which hold function result',
+                        'valueType' => 'string'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed when action is requested',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span>' .
+                        ' <b>{{component.properties.name}}</b>' .
+                        '</div>'
+                    ],
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'simple-chat-action-element.html'
                     ],
                 ]
             ),
