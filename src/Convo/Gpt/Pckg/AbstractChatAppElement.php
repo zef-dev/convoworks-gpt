@@ -44,6 +44,7 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     // ELEMENT
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+        $this->_chatPrompts = [];
         foreach ( $this->_prompts as $prompt) {
             $prompt->read( $request, $response);
         }
