@@ -476,16 +476,16 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => 'data',
-                        'name' => 'Request data',
-                        'description' => 'Expression that evaluates to function arguments',
+                        'name' => 'Request data variable',
+                        'description' => 'Variable name used for function arguments',
                         'valueType' => 'string'
                     ],
                     'result_data' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => 'result',
-                        'name' => 'Result name',
-                        'description' => 'Name of the variable which hold function result',
+                        'defaultValue' => '${function_result}',
+                        'name' => 'Function result',
+                        'description' => 'Expression that will evaluate to the function result',
                         'valueType' => 'string'
                     ],
                     'ok' => [
@@ -503,7 +503,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span>' .
-                        ' <b>{{component.properties.name}}</b>' .
+                        ' <b>{{component.properties.name}}( {{component.properties.request_data}}) => {{component.properties.result_data}}</b>' .
                         '</div>'
                     ],
                     '_workflow' => 'read',

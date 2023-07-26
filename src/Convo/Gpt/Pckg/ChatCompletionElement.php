@@ -82,8 +82,10 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
         $http_response   =   $this->_handleResponse( $http_response, $messages, $request, $response);
 
         $params          =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
-        $params->setServiceParam( 'messages', $messages);
+        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
+            'response' => $http_response,
+            'messages' => $messages
+        ]);
         
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
