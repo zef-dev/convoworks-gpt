@@ -17,7 +17,8 @@
     <p>
         Status variable is a object containing two fields: 
             <code>response</code> - containing the last GPT response, 
-            <code>messages</code> - all previous messages in conversation (excluding the last response)
+            <code>messages</code> - all previous messages in conversation (including the last response)
+            <code>last_message</code> -last message response
     </p>
     <p>
         You can access completion text itself like this: <code>${status.response.choices[0]["message"]["content"]}</code>

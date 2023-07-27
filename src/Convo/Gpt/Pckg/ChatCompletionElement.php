@@ -78,13 +78,18 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
             [[ 'role' => 'system', 'content' => $system_message]],
             $messages);
         
-        $http_response   =   $this->_chatCompletion( $messages);
-        $http_response   =   $this->_handleResponse( $http_response, $messages, $request, $response);
-
-        $params          =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        $http_response  =  $this->_chatCompletion( $messages);
+        $http_response  =  $this->_handleResponse( $http_response, $messages, $request, $response);
+        
+        $last_message   =  $http_response['choices'][0]['message'];
+        $messages[]     =  $last_message;
+        array_shift( $messages);
+        
+        $params         =  $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'response' => $http_response,
-            'messages' => $messages
+            'messages' => $messages,
+            'last_message' => $last_message,
         ]);
         
         foreach ( $this->_ok as $elem)   {
@@ -92,30 +97,30 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
         }
     }
     
-    private function _handleResponse( $http_response, &$messages, $request, $response)
+    private function _handleResponse( $httpResponse, &$messages, $request, $response)
     {
-        $function_name   =   $http_response['choices'][0]['message']['function_call']['name'] ?? null;
+        $function_name   =   $httpResponse['choices'][0]['message']['function_call']['name'] ?? null;
         $auto_execute    =   true;
         
         if ( $function_name && $auto_execute)
         {
             $messages       =   array_merge(
                 $messages,
-                [$http_response['choices'][0]['message']],
+                [$httpResponse['choices'][0]['message']],
                 );
             
-            $result = $this->_executeFunction( $http_response['choices'][0]['message'], $request, $response);
+            $result = $this->_executeFunction( $httpResponse['choices'][0]['message'], $request, $response);
             
             $messages       =   array_merge(
                 $messages,
                 [[ 'role' => 'function', 'name' => $function_name, 'content' => $result]]
                 );
-            $http_response   =   $this->_chatCompletion( $messages);
+            $httpResponse   =   $this->_chatCompletion( $messages);
             
-            return $this->_handleResponse( $http_response, $messages, $request, $response);
+            return $this->_handleResponse( $httpResponse, $messages, $request, $response);
         }
         
-        return $http_response;
+        return $httpResponse;
     }
     
     private function _executeFunction( $message, $request, $response) 
