@@ -151,12 +151,13 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
     private function _getApiOptions( $messages)
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
-        $options['messages'] = $messages;
         
         $options['functions'] = [];
         foreach ( $this->getFunctions() as $function) {
             $options['functions'][] = $function->getDefinition();
         }
+        
+        $options['messages'] = $messages;
         
         return $options;
     }
