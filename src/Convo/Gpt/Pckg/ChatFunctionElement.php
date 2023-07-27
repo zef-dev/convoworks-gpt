@@ -81,12 +81,16 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     
     public function getDefinition()
     {
+        $parameters = $this->getService()->evaluateArgs( $this->_parameters, $this);
+        if ( empty( $parameters)) {
+            $parameters = new \stdClass();
+        }
         return [
             'name' => $this->getName(),
             'description' => $this->evaluateString( $this->_description),
             'parameters' => [
                 'type' => 'object',
-                'properties' => $this->getService()->evaluateArgs( $this->_parameters, $this),
+                'properties' => $parameters,
                 'required' => $this->evaluateString( $this->_required),
             ],
         ];
