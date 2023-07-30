@@ -464,6 +464,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Function parameters definition',
                         'valueType' => 'array'
                     ],
+                    'defaults' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${{}}',
+                        'name' => 'Defaults',
+                        'description' => 'Associative array of default values for fucntion parameters',
+                        'valueType' => 'string'
+                    ],
                     'required' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],

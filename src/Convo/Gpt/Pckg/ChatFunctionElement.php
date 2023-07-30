@@ -15,6 +15,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     private $_name;
     private $_description;
     private $_parameters;
+    private $_defaults;
     private $_required;
     
     private $_requestData;
@@ -32,6 +33,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         $this->_name            =   $properties['name'];
         $this->_description     =   $properties['description'];
         $this->_parameters      =   $properties['parameters'];
+        $this->_defaults        =   $properties['defaults'] ?? [];
         $this->_required        =   $properties['required'];
         $this->_requestData     =   $properties['request_data'];
         $this->_resultData      =   $properties['result_data'];
@@ -53,8 +55,11 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     public function execute( IConvoRequest $request, IConvoResponse $response, $data)
     {
         $this->_logger->debug( 'Got data ['.print_r( $data, true).']');
-        $data = json_decode( $data);
-        $this->_logger->debug( 'Got data 2 ['.print_r( $data, true).']');
+        $data = json_decode( $data, true);
+        $this->_logger->debug( 'Got data decoded ['.print_r( $data, true).']');
+        $data = array_merge( $this->_getDefaults(), $data);
+        $this->_logger->debug( 'Got data with defaults ['.print_r( $data, true).']');
+        
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $data_var      =    $this->evaluateString( $this->_requestData);
         $params->setServiceParam( $data_var, $data);
@@ -67,6 +72,15 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         
         $params        =    $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
         return $this->evaluateString( $this->_resultData);
+    }
+    
+    private function _getDefaults()
+    {
+        $defaults = $this->evaluateString( $this->_defaults);
+        if ( is_array( $defaults)) {
+            return $defaults;
+        }
+        return [];
     }
     
     public function accepts( $functionName)
