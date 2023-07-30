@@ -511,7 +511,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span>' .
-                        ' <b>{{component.properties.name}}( {{component.properties.request_data}}) => {{component.properties.result_data}}</b>' .
+                        ' <b>{{component.properties.name}}('.
+                        '<span ng-repeat="(key,val) in component.properties.parameters track by key">{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>'.
+                        ') => {{component.properties.result_data}}</b>' .
                         '</div>'
                     ],
                     '_workflow' => 'read',
