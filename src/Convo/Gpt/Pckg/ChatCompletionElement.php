@@ -152,10 +152,13 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         
-        $options['functions'] = [];
-        foreach ( $this->getFunctions() as $function) {
-            $options['functions'][] = $function->getDefinition();
+        if ( count( $this->getFunctions())) {
+            $options['functions'] = [];
+            foreach ( $this->getFunctions() as $function) {
+                $options['functions'][] = $function->getDefinition();
+            }
         }
+        
         
         $options['messages'] = $messages;
         
