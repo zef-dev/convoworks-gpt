@@ -8,6 +8,10 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\IChatAction;
 
+/**
+ * @author Tole
+ * @deprecated
+ */
 class SimpleChatActionElement extends SimplePromptElement implements IChatAction
 {
 

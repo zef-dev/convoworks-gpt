@@ -2,7 +2,9 @@
 
 namespace Convo\Gpt;
 
-
+/**
+ * @deprecated
+ */
 class ValidationException extends \RuntimeException
 {
 }

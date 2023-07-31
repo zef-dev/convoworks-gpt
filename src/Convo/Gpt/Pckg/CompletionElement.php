@@ -9,6 +9,9 @@ use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\GptApiFactory;
 
+/**
+ * @deprecated
+ */
 class CompletionElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
     

@@ -8,6 +8,10 @@ use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Gpt\ValidationException;
 
+/**
+ * @author Tole
+ * @deprecated
+ */
 class ValidationErrorElement extends AbstractWorkflowContainerComponent implements IConversationElement
 {
     private $_message;

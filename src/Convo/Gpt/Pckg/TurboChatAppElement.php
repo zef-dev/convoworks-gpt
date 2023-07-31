@@ -9,6 +9,9 @@ use Convo\Core\Params\IServiceParamsScope;
 use Convo\Core\DataItemNotFoundException;
 use Convo\Gpt\ValidationException;
 
+/**
+ * @deprecated
+ */
 class TurboChatAppElement extends AbstractChatAppElement
 {
 

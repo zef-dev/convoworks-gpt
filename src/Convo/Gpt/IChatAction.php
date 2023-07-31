@@ -5,6 +5,9 @@ namespace Convo\Gpt;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 
+/**
+ * @deprecated
+ */
 interface IChatAction extends IChatPrompt
 {
     

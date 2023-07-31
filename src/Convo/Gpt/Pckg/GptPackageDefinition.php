@@ -46,7 +46,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\CompletionElement',
-                'GPT Completion API',
+                'x!GPT Completion API',
                 'Allows you to execute completion API calls',
                 [
                     'prompt' => [
@@ -218,7 +218,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatAppElement',
-                'Autonomous Chat',
+                'x!Autonomous Chat',
                 'Chat handler which can be configured to autonomously execute actions in the workflow',
                 [
                     'system_message' => [
@@ -330,7 +330,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\TurboChatAppElement',
-                'Turbo Chat',
+                'x!Turbo Chat',
                 'Chat handler which can be configured to autonomously execute actions in the workflow',
                 [
                     'system_message' => [
@@ -527,7 +527,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SimpleChatActionElement',
-                'Simple Chat Action',
+                'x!Simple Chat Action',
                 'Allows you to define definition (prompt) and execute action in the workflow',
                 [
                     'action_id' => [
@@ -696,7 +696,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ValidationErrorElement',
-                'Validation Error',
+                'x!Validation Error',
                 'Stops the execution and signals the Chat App that action request is not valid',
                 [
                     'message' => [

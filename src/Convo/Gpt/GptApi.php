@@ -26,21 +26,16 @@ class GptApi
         $this->_apiKey = $apiKey;
     }
 
+    /**
+     * @param array $data
+     * @return mixed
+     * @deprecated
+     */
     public function completion( $data)
     {
         $headers = [
             'Authorization' => 'Bearer '.$this->_apiKey,
         ];
-        
-//         $data = [
-//             'model' => 'text-davinci-003',
-//             'prompt' => $prompt,
-//             'temperature' => 0.7,
-//             'max_tokens' => 256,
-//             'top_p' => 1,
-//             'frequency_penalty' => 0,
-//             'presence_penalty' => 0,
-//         ];
         
         $this->_logger->debug( 'Http request data ['.print_r( $data, true).']');
         
@@ -82,7 +77,6 @@ class GptApi
         
         return $response_data;
     }
-    
     
     // UTIL
     public function __toString()
