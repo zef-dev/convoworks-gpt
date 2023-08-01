@@ -78,6 +78,29 @@ class GptApi
         return $response_data;
     }
     
+
+    public function embeddings( $data)
+    {
+        $headers = [
+            'Authorization' => 'Bearer '.$this->_apiKey,
+        ];
+        
+        $this->_logger->debug( 'Http request data ['.print_r( $data, true).']');
+        
+        $config = [];
+        
+        $client = $this->_httpFactory->getHttpClient( $config);
+        $request = $this->_httpFactory->buildRequest( IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/embeddings', $headers, $data);
+        
+        $response = $client->sendRequest( $request);
+        
+        $response_data = json_decode( $response->getBody()->getContents(), true);
+        
+        $this->_logger->debug( 'Http response data ['.print_r( $response_data, true).']');
+        
+        return $response_data;
+    }
+    
     // UTIL
     public function __toString()
     {
