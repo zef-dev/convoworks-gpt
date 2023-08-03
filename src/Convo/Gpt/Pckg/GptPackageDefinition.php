@@ -238,18 +238,6 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Chat completion API options that you can use',
                         'valueType' => 'array'
                     ],
-                    'functions' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Function',
-                        'description' => 'Function definitions',
-                        'valueType' => 'class'
-                    ],
                     'ok' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
