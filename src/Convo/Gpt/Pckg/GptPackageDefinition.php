@@ -283,22 +283,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 'GPT Chat Completion API v2',
                 'Allows you to execute chat completion API calls',
                 [
-                    'system_message' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
-                        'name' => 'System message',
-                        'description' => 'Main, system prompt to be added at the beginning of the conversation.',
-                        'valueType' => 'string'
-                    ],
-                    'messages' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${[]}',
-                        'name' => 'Messages',
-                        'description' => 'The messages to generate chat completions for, in the chat format.',
-                        'valueType' => 'string'
-                    ],
+//                     'system_message' => [
+//                         'editor_type' => 'desc',
+//                         'editor_properties' => [],
+//                         'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
+//                         'name' => 'System message',
+//                         'description' => 'Main, system prompt to be added at the beginning of the conversation.',
+//                         'valueType' => 'string'
+//                     ],
+//                     'messages' => [
+//                         'editor_type' => 'text',
+//                         'editor_properties' => [],
+//                         'defaultValue' => '${[]}',
+//                         'name' => 'Messages',
+//                         'description' => 'The messages to generate chat completions for, in the chat format.',
+//                         'valueType' => 'string'
+//                     ],
                     'result_var' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
@@ -383,6 +383,94 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'type' => 'file',
                         'filename' => 'chat-completion-v2-element.html'
                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\MessagesLimiterElement',
+                'Messages Limiter',
+                'Limits messages size by sumarizing oldest ones',
+                [
+                    'system_message' => [
+                            'editor_type' => 'desc',
+                            'editor_properties' => [],
+                            'defaultValue' => 'Considering all the prior conversation including the previous summaries, '.
+                        'please generate a concise summary capturing the key points and significant themes up until now. '.
+                        'Please ensure the summary contains all necessary information to understand the context of the current conversation.',
+                            'name' => 'System message',
+                            'description' => 'Main, system prompt which instructs how to sumarize conversation',
+                            'valueType' => 'string'
+                        ],
+                    'max_count' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${20}',
+                        'name' => 'Max messages to keep',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'truncate_to' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${10}',
+                        'name' => 'When max xount is reached, truncate to this number of messages',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [
+                            'model' => 'gpt-3.5-turbo',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Chat completion API options that you can use',
+                        'valueType' => 'array'
+                    ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Message provider which provides conversation we are working with',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">MESSAGES LIMITER</span>' .
+                        ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
+                        '<br>{{component.properties.system_message}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new MessagesLimiterElement( $properties, $this->_gptApiFactory);
+                        }
+                    },
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'chat-completion-v2-element.html'
+//                     ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
