@@ -11,8 +11,9 @@ use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IChatFunction;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Core\ComponentNotFoundException;
+use Convo\Gpt\IMessages;
 
-class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer
+class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer, IMessages
 {
     
     /**
@@ -81,6 +82,19 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     public function registerMessage( $message)
     {
         $this->_messages[] = $message;
+    }
+    
+    public function getMessages()
+    {
+        return $this->_messages;
+    }
+    
+    public function getConversation()
+    {
+        return array_map( function ( $item) {
+            unset( $item['transient']);
+            return $item;
+        }, $this->_messages);
     }
     
     public function read( IConvoRequest $request, IConvoResponse $response)

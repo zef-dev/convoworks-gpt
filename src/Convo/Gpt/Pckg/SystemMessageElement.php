@@ -21,8 +21,9 @@ class SystemMessageElement extends AbstractWorkflowContainerComponent implements
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        /** @var \Convo\Gpt\Pckg\ChatCompletionV2Element $container */
-        $container = $this->findAncestor( '\Convo\Gpt\Pckg\ChatCompletionV2Element');
+        /** @var \Convo\Gpt\IMessages $container */
+        $container = $this->findAncestor( '\Convo\Gpt\IMessages');
+        
         $container->registerMessage( [
             'role' => 'system',
             'transient' => true,

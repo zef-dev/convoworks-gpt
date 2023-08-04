@@ -21,8 +21,8 @@ class ConversationMessagesElement extends AbstractWorkflowContainerComponent imp
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
-        /** @var \Convo\Gpt\Pckg\ChatCompletionV2Element $container */
-        $container = $this->findAncestor( '\Convo\Gpt\Pckg\ChatCompletionV2Element');
+        /** @var \Convo\Gpt\IMessages $container */
+        $container = $this->findAncestor( '\Convo\Gpt\IMessages');
         
         $messages = $this->evaluateString( $this->_messages);
         
