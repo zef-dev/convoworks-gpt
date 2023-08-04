@@ -29,11 +29,18 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
      * @var IChatFunction[]
      */
     private $_functions = [];
+    
+    private $_messages = [];
 
     /**
      * @var IConversationElement[]
      */
     private $_functionsDefinition = [];
+
+    /**
+     * @var IConversationElement[]
+     */
+    private $_messagesDefinition = [];
     
     public function __construct( $properties, $gptApiFactory)
     {
@@ -52,6 +59,13 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $this->addChild($element);
             }
         }
+        
+        if ( isset( $properties['message_provider'])) {
+            foreach ( $properties['message_provider'] as $element) {
+                $this->_messagesDefinition[] = $element;
+                $this->addChild($element);
+            }
+        }
     }
     
     public function getFunctions()
@@ -64,6 +78,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $this->_functions[] = $function;
     }
     
+    public function registerMessage( $message)
+    {
+        $this->_messages[] = $message;
+    }
+    
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
         $this->_functions = [];
@@ -71,24 +90,33 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             $elem->read( $request, $response);
         }
         
-        $system_message =   $this->evaluateString( $this->_properties['system_message']);
-        $messages       =   $this->evaluateString( $this->_properties['messages']);
-
-        $messages       =   array_merge(
-            [[ 'role' => 'system', 'content' => $system_message]],
-            $messages);
+        $this->_messages = [];
+        foreach ( $this->_messagesDefinition as $elem)   {
+            $elem->read( $request, $response);
+        }
         
-        $http_response  =  $this->_chatCompletion( $messages);
-        $http_response  =  $this->_handleResponse( $http_response, $messages, $request, $response);
+//         $system_message =   $this->evaluateString( $this->_properties['system_message']);
+//         $messages       =   $this->evaluateString( $this->_properties['messages']);
+
+//         $messages       =   array_merge(
+//             [[ 'role' => 'system', 'content' => $system_message]],
+//             $messages);
+        
+        $http_response  =  $this->_chatCompletion( $this->_messages);
+        $http_response  =  $this->_handleResponse( $http_response, $this->_messages, $request, $response);
         
         $last_message   =  $http_response['choices'][0]['message'];
-        $messages[]     =  $last_message;
-        array_shift( $messages);
+        $this->registerMessage( $last_message);
+//         array_shift( $messages);
         
         $params         =  $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'response' => $http_response,
-            'messages' => $messages,
+            'messages' => array_filter( $this->_messages, function ( $message) {
+                if ( !isset( $message['transient']) || !$message['transient']) {
+                    return true;
+                }
+            }),
             'last_message' => $last_message,
         ]);
         
@@ -137,6 +165,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     
     private function _chatCompletion( $messages)
     {
+        $messages = array_map( function ( $item) {
+            unset( $item['transient']);
+            return $item;
+        }, $messages);
+        
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
         

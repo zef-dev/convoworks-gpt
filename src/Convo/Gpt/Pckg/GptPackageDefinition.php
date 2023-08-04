@@ -322,6 +322,18 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Chat completion API options that you can use',
                         'valueType' => 'array'
                     ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Message provider which provides conversation we are working with',
+                        'valueType' => 'class'
+                    ],
                     'functions' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -349,7 +361,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
-                        '<br>{{component.properties.system_message}}' .
+                        ' => <b>{{component.properties.result_var}}</b>' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -800,6 +812,64 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'type' => 'file',
                         'filename' => 'simple-prompt-element.html'
                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SystemMessageElement',
+                'System Message',
+                '',
+                [
+                    'content' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => ['large' => true],
+                        'defaultValue' => '',
+                        'name' => 'Message content',
+                        'description' => 'Content of the system message',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
+                        ' <br>{{component.properties.content}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'simple-prompt-element.html'
+//                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ConversationMessagesElement',
+                'Conversation Messages',
+                '',
+                [
+                    'messages' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Messages',
+                        'description' => 'Expression which evaluates to conversation messages array',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">CONVERSATION</span>' .
+                        ' <b>{{component.properties.messages}}</b>' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'simple-prompt-element.html'
+//                     ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
