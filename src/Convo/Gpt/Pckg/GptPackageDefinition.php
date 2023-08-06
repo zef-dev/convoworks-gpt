@@ -235,6 +235,110 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\GptQueryGeneratorElement',
+                'GPT Query Generator',
+                'Generates queries for the given conversation',
+                [
+                    'system_message' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => "Given the following conversation between a user and an AI assistant:
+
+User: [User's message]
+Assistant: [Assistant's response]
+
+Please generate relevant questions that can be used to query a vector database for further information. These questions should capture the main topics and key details discussed in the conversation.
+
+1: [Generated Question]
+2: [Generated Question]
+- ...
+
+Note: If no relevant questions can be generated from the conversation, please respond with the \"NA\". If the last user's message is a simple courtesy (e.g., \"thanks\" or \"goodbye\"), please indicate that no questions were produced.
+",
+                        'name' => 'System message',
+                        'description' => 'Main, system prompt to be added at the beginning of the conversation.',
+                        'valueType' => 'string'
+                    ],
+                    'messages' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => null,
+                        'name' => 'Messages',
+                        'description' => 'Messages array representing current conversation',
+                        'valueType' => 'string'
+                    ],
+                    'messages_count' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${6}',
+                        'name' => 'Messages count',
+                        'description' => 'Value how many last messages should be used',
+                        'valueType' => 'string'
+                    ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'questions',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Status variable containing generated questions',
+                        'valueType' => 'string'
+                    ],
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [
+                            'model' => 'gpt-3.5-turbo',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Embeddings API options that you can use',
+                        'valueType' => 'array'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">GPT GENERATE QUESTIONS</span>' .
+                        '<br>{{component.properties.messages}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new GptQueryGeneratorElement( $properties, $this->_gptApiFactory);
+                        }
+                    },
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'completion-element.html'
+//                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatCompletionElement',
                 'GPT Chat Completion API',
                 'Allows you to execute chat completion API calls',
