@@ -55,18 +55,23 @@ class GptPackageDefinition extends AbstractPackageDefinition
         
         $functions[] = new ExpressionFunction(
             'tokenize_string',
-            function ($text) {
-                return sprintf('tokenize_string(%s)', var_export( $text, true));
+            function ($text, $stopWords=null) {
+                return sprintf('tokenize_string(%s)', var_export( $text, true), var_export( $stopWords, true));
             },
-            function($args, $text) use ( $stop_words) {
+            function($args, $text, $stopWords=null) use ( $stop_words) {
+                
+                if ( is_null( $stopWords)) {
+                    $stopWords = $stop_words;
+                }
+                
                 $text = wp_strip_all_tags( $text);
                 $text = strtolower( $text);
                 $text = preg_replace("#[[:punct:]]#", "", $text);
                 $tokens = explode(' ', $text);
-                $meaningful_tokens = array_diff( $tokens, $stop_words);
+                $meaningful_tokens = array_diff( $tokens, $stopWords);
                 return implode( ' ', $meaningful_tokens);
             }
-            );
+        );
         
         return $functions;
     }
