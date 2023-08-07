@@ -235,6 +235,80 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ModerationApiElement',
+                'GPT Moderation API',
+                'Validate input with moderation API',
+                [
+                    'input' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => null,
+                        'name' => 'Input',
+                        'description' => 'Input text to be moderated',
+                        'valueType' => 'string'
+                    ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Status variable containing moderation API response',
+                        'valueType' => 'string'
+                    ],
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [
+                            'model' => 'text-moderation-latest'
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Moderation API options that you can use',
+                        'valueType' => 'array'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">MODERATION API</span>' .
+                        '<br>{{component.properties.input}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new ModerationApiElement( $properties, $this->_gptApiFactory);
+                        }
+                    },
+//                     '_help' =>  [
+//                         'type' => 'file',
+//                         'filename' => 'completion-element.html'
+//                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\GptQueryGeneratorElement',
                 'GPT Query Generator',
                 'Generates queries for the given conversation',
@@ -247,7 +321,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
 User: [User's message]
 Assistant: [Assistant's response]
 
-Please generate relevant questions that can be used to query a vector database for further information. These questions should capture the main topics and key details discussed in the conversation.
+Please generate max 3 relevant questions that can be used to query a vector database for further information. These questions should capture the main topics and key details discussed in the conversation.
 
 1: [Generated Question]
 2: [Generated Question]
