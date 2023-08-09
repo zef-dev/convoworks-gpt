@@ -9,6 +9,10 @@ use Convo\Core\Workflow\IConversationElement;
 use Convo\Gpt\IChatPrompt;
 use Convo\Gpt\IChatPromptContainer;
 
+/**
+ * @author Tole
+ * @deprecated
+ */
 class SimplePromptElement extends AbstractWorkflowContainerComponent implements IChatPrompt, IConversationElement
 {
     private $_title;

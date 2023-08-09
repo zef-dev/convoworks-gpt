@@ -3,6 +3,10 @@
 namespace Convo\Gpt;
 
 
+/**
+ * @author Tole
+ * @deprecated
+ */
 interface IChatPrompt 
 {
     /**

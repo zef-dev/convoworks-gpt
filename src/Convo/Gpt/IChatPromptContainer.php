@@ -2,7 +2,10 @@
 
 namespace Convo\Gpt;
 
-
+/**
+ * @author Tole
+ * @deprecated
+ */
 interface IChatPromptContainer extends IChatPrompt
 {
     

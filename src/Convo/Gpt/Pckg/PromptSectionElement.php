@@ -8,6 +8,10 @@ use Convo\Gpt\IChatPromptContainer;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 
+/**
+ * @author Tole
+ * @deprecated
+ */
 class PromptSectionElement extends SimplePromptElement implements IChatPromptContainer
 {
     
