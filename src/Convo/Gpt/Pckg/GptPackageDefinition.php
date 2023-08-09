@@ -316,26 +316,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\GptQueryGeneratorElement',
                 'GPT Query Generator',
-                'Generates queries for the given conversation',
+                'Generates relevant questions from a given conversation to enhance GPT chat completion-based interactions by querying a knowledge database.',
                 [
                     'system_message' => [
                         'editor_type' => 'desc',
                         'editor_properties' => [],
-                        'defaultValue' => "Given the following conversation between a user and an AI assistant:
-
-User: [User's message]
-Assistant: [Assistant's response]
-
-Please generate max 3 relevant questions that can be used to query a vector database for further information. These questions should capture the main topics and key details discussed in the conversation.
-
-1: [Generated Question]
-2: [Generated Question]
-- ...
-
-Note: If no relevant questions can be generated from the conversation, please respond with the \"NA\". If the last user's message is a simple courtesy (e.g., \"thanks\" or \"goodbye\"), please indicate that no questions were produced.
-",
-                        'name' => 'System message',
-                        'description' => 'Main, system prompt to be added at the beginning of the conversation.',
+                        'defaultValue' => "Given the following conversation between a user and an AI assistant:\n\nUser: [User's message]\nAssistant: [Assistant's response]\n\nPlease generate max 3 relevant questions that can be used to query a vector database for further information. These questions should capture the main topics and key details discussed in the conversation.\n\n1: [Generated Question]\n2: [Generated Question]\n- ...\n\nNote: If no relevant questions can be generated from the conversation, please respond with the \"NA\". If the last user's message is a simple courtesy (e.g., \"thanks\" or \"goodbye\"), please indicate that no questions were produced.\n",
+                        'name' => 'System Message',
+                        'description' => 'Initial prompt setting the context and format for the conversation.',
                         'valueType' => 'string'
                     ],
                     'messages' => [
@@ -343,23 +331,23 @@ Note: If no relevant questions can be generated from the conversation, please re
                         'editor_properties' => [],
                         'defaultValue' => null,
                         'name' => 'Messages',
-                        'description' => 'Messages array representing current conversation',
-                        'valueType' => 'string'
+                        'description' => 'Array of messages from the GPT chat completion-based conversation which serves as the context for question generation.',
+                        'valueType' => 'array'
                     ],
                     'messages_count' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${6}',
-                        'name' => 'Messages count',
-                        'description' => 'Value how many last messages should be used',
-                        'valueType' => 'string'
+                        'name' => 'Messages Count',
+                        'description' => 'Defines the number of recent messages to be considered for question generation.',
+                        'valueType' => 'integer'
                     ],
                     'result_var' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => 'questions',
-                        'name' => 'Result Variable Name',
-                        'description' => 'Status variable containing generated questions',
+                        'name' => 'Result Variable',
+                        'description' => 'Variable to store the generated questions.',
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
@@ -373,8 +361,8 @@ Note: If no relevant questions can be generated from the conversation, please re
                             'temperature' => '${0.7}',
                             'max_tokens' => '${256}',
                         ],
-                        'name' => 'API options',
-                        'description' => 'Embeddings API options that you can use',
+                        'name' => 'API Options',
+                        'description' => 'Defines specific parameters for the GPT chat completion API to fine-tune question generation.',
                         'valueType' => 'array'
                     ],
                     'ok' => [
@@ -385,8 +373,8 @@ Note: If no relevant questions can be generated from the conversation, please re
                         ],
                         'defaultValue' => [],
                         'defaultOpen' => false,
-                        'name' => 'OK flow',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'name' => 'OK Flow',
+                        'description' => 'Sequence of elements executed after successful question generation, allowing for follow-up actions.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -397,23 +385,23 @@ Note: If no relevant questions can be generated from the conversation, please re
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class ($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
                         
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory = $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new GptQueryGeneratorElement( $properties, $this->_gptApiFactory);
+                            return new GptQueryGeneratorElement($properties, $this->_gptApiFactory);
                         }
                     },
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'completion-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'gpt-query-generator-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(

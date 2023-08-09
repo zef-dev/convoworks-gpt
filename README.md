@@ -251,6 +251,34 @@ The flow to be executed if the moderation operation is finished with the result 
 For more information on the OpenAI Moderation API and its capabilities, refer to the [OpenAI Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations).
 
 
+### GPT Query Generator
+
+The GPT Query Generator element allows you to create context-rich questions from a given conversation. These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions by providing additional context and insights.
+
+**System Message**
+
+A predetermined prompt that sets the initial context and format for the conversation. This message provides the GPT with a structure to follow when generating questions.
+
+**Messages**
+
+An array of messages that represent the conversation from the GPT chat completion. This serves as the primary context from which the GPT generates the questions.
+
+**Messages Count**
+
+Specifies the number of recent messages from the conversation that should be considered for generating questions. This allows for flexibility in narrowing down or expanding the conversation context.
+
+**Result Variable Name**
+
+The variable that will store the generated questions. This makes it possible to reference and utilize the generated questions in subsequent operations or outputs.
+
+**API Options**
+
+Specific parameters for the GPT chat completion API. This section allows you to fine-tune the behavior of the question generation process. Options include choosing the specific GPT model, setting the temperature, and limiting the maximum tokens.
+
+**OK Flow**
+
+The sequence of elements that will be executed after successful question generation. This can include subsequent operations or responses that utilize the generated questions to enhance the overall conversation flow.
+
 
 
 > Written with [StackEdit](https://stackedit.io/).
