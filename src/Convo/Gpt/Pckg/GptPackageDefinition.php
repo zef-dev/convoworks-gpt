@@ -242,14 +242,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ModerationApiElement',
                 'GPT Moderation API',
-                'Validate input with moderation API',
+                'Validate input with the OpenAI Moderation API',
                 [
                     'input' => [
                         'editor_type' => 'desc',
                         'editor_properties' => [],
                         'defaultValue' => null,
                         'name' => 'Input',
-                        'description' => 'Input text to be moderated',
+                        'description' => 'The input text to be moderated',
                         'valueType' => 'string'
                     ],
                     'result_var' => [
@@ -257,7 +257,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => 'status',
                         'name' => 'Result Variable Name',
-                        'description' => 'Status variable containing moderation API response',
+                        'description' => 'The status variable containing the moderation API response',
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
@@ -270,7 +270,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                             'model' => 'text-moderation-latest'
                         ],
                         'name' => 'API options',
-                        'description' => 'Moderation API options that you can use',
+                        'description' => 'Options for the OpenAI Moderation API',
                         'valueType' => 'array'
                     ],
                     'ok' => [
@@ -282,7 +282,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => false,
                         'name' => 'OK flow',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'description' => 'The flow to be executed if the operation is finished with the result variable available for use',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -299,17 +299,17 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         
                         public function __construct( $gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory = $gptApiFactory;
                         }
                         public function createComponent( $properties, $service)
                         {
                             return new ModerationApiElement( $properties, $this->_gptApiFactory);
                         }
                     },
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'completion-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'moderation-api-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(

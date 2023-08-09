@@ -226,5 +226,31 @@ For more information on available API options, refer to the [Embeddings API Refe
 
 
 
+### GPT Moderation API
+
+This element allows you to validate input with the OpenAI Moderation API. The Moderation API is a powerful tool for content moderation, helping you ensure that the generated content aligns with your guidelines and policies.
+
+**Input**
+
+The input text to be moderated. This can be any text that you want to check for potential issues or violations.
+
+**Result Variable Name**
+
+The status variable containing the moderation API response. This variable will hold the result of the moderation check, providing insights into the content's potential issues or violations.
+
+**API options**
+
+Options for the OpenAI Moderation API. These options allow you to customize the moderation behavior according to your specific requirements. You can specify parameters such as the moderation model to use and any additional settings.
+
+**OK flow**
+
+The flow to be executed if the moderation operation is finished with the result variable available for use. This flow can include actions or conditions based on the moderation result, allowing you to take appropriate actions based on the content's moderation status.
+
+---
+
+For more information on the OpenAI Moderation API and its capabilities, refer to the [OpenAI Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations).
+
+
+
 
 > Written with [StackEdit](https://stackedit.io/).
