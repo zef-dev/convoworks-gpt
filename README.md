@@ -203,4 +203,28 @@ Stops the execution and signals the Chat App that the action request is not vali
 * `message` - Error message describing why the validation failed.
 
 
+
+### GPT Embeddings Element
+
+This element serves as a wrapper for the OpenAI Embeddings API, enabling the retrieval of vector representations for a given input.
+
+**Parameters:**
+
+* `Input` - The string text for which you want to create an embedding. It's recommended to clean up the raw string beforehand using the provided `tokenize_string()` function: `${ tokenize_string( your_raw_text)}`
+
+* `Status Variable` - The status variable contains the complete response from the embeddings API. Access the embedding value with: `${status.data[0].embedding}`
+
+* `API options` - Options for the Embeddings API.
+
+**Flows:**
+
+* `OK flow` - Flow to execute if the operation completes and the result variable is available for use.
+
+---
+
+For more information on available API options, refer to the [Embeddings API Reference - OpenAI API](https://platform.openai.com/docs/api-reference/embeddings).
+
+
+
+
 > Written with [StackEdit](https://stackedit.io/).

@@ -168,14 +168,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\EmbeddingsElement',
                 'GPT Embeddings API',
-                'Allows you to create embeddings API',
+                'Allows the creation of an embeddings API.',
                 [
                     'input' => [
                         'editor_type' => 'desc',
                         'editor_properties' => [],
                         'defaultValue' => null,
                         'name' => 'Input',
-                        'description' => 'Input text to generate embeddings for. Can be string or array of string tokens',
+                        'description' => 'Input text for generating embeddings. Can be a string or an array of string tokens.',
                         'valueType' => 'string'
                     ],
                     'result_var' => [
@@ -183,7 +183,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => 'status',
                         'name' => 'Result Variable Name',
-                        'description' => 'Status variable containing embeddings API response',
+                        'description' => 'Status variable containing the embeddings API response.',
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
@@ -196,7 +196,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                             'model' => 'text-embedding-ada-002'
                         ],
                         'name' => 'API options',
-                        'description' => 'Embeddings API options that you can use',
+                        'description' => 'Options for the Embeddings API.',
                         'valueType' => 'array'
                     ],
                     'ok' => [
@@ -208,7 +208,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => false,
                         'name' => 'OK flow',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'description' => 'Flow to execute if the operation completes and the result variable is available for use.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -225,7 +225,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         
                         public function __construct( $gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory = $gptApiFactory;
                         }
                         public function createComponent( $properties, $service)
                         {
@@ -234,7 +234,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'completion-element.html'
+                        'filename' => 'embeddings-element.html'
                     ],
                 ]
             ),

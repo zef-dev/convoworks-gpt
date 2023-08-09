@@ -1,0 +1,28 @@
+<div>
+    <h3>GPT Embeddings Element</h3>
+
+    <p>
+        This element serves as a wrapper for the OpenAI Embeddings API, enabling the retrieval of vector representations for a given input.
+    </p>
+    
+    <h3>Input</h3>
+    <p>
+        The string text for which you want to create an embedding. It's recommended to clean up the raw string beforehand using the provided <code>tokenize_string()</code> function:
+        <code>${ tokenize_string( your_raw_text)}</code>
+    </p>
+
+    <h3>Status Variable</h3>
+    <p>
+        The status variable contains the complete response from the embeddings API.
+    </p>
+    
+    <p>
+        Access the embedding value with: <code>${status.data[0].embedding}</code>
+    </p>
+    
+    <hr>
+    
+    <p>
+        For more information on available API options, refer to the <a href="https://platform.openai.com/docs/api-reference/embeddings" target="_blank">Embeddings API Reference - OpenAI API</a>.
+    </p>
+</div>
