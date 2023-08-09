@@ -350,6 +350,25 @@ Limits the size of messages by summarizing the oldest ones.
 
 
 
+### Chat Function
+
+Function definition that can be used with Completion API based elements.
+
+- **Function name**: Unique function name for identification.
+  
+- **Description**: Description about what the function does.
+  
+- **Function parameters**: Definitions of all the parameters this function requires.
+
+- **Defaults**: Associative array specifying default values for function parameters.
+
+- **Required**: List of mandatory fields required for this function.
+
+- **Request data variable**: Variable name used for passing arguments to the function.
+
+- **Function result**: Expression evaluated to determine the function's result.
+
+- **OK flow**: Workflow that is executed when an action is requested through this function.
 
 
 

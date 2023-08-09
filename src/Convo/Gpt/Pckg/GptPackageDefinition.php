@@ -887,7 +887,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => '',
                         'name' => 'Description',
-                        'description' => 'Functions description',
+                        'description' => 'Function description',
                         'valueType' => 'string'
                     ],
                     'parameters' => [
@@ -895,10 +895,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [
                             'multiple' => true
                         ],
-                        'defaultValue' => [
-                        ],
+                        'defaultValue' => [],
                         'name' => 'Function parameters',
-                        'description' => 'Function parameters definition',
+                        'description' => 'Function parameter definitions',
                         'valueType' => 'array'
                     ],
                     'defaults' => [
@@ -906,7 +905,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => '${{}}',
                         'name' => 'Defaults',
-                        'description' => 'Associative array of default values for fucntion parameters',
+                        'description' => 'Associative array of default values for function parameters',
                         'valueType' => 'string'
                     ],
                     'required' => [
@@ -957,7 +956,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'simple-chat-action-element.html'
+                        'filename' => 'chat-function-element.html'
                     ],
                 ]
             ),
