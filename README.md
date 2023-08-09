@@ -319,5 +319,19 @@ This field allows you to specify the text content of the system message. The con
 For use cases and more details on how system messages can be integrated with the Chat Completion API v2, refer to the associated component documentation.
 
 
+### Conversation Messages
+
+The Conversation Messages element plays a pivotal role in handling conversations with the **GPT Chat Completion API v2**. It manages the storage and provision of the entire conversation that needs to be sent to the API. This ensures that the context and flow of the conversation remain intact during API interactions.
+
+**Messages**
+
+This component accepts an expression that evaluates to the array of conversation messages. These messages are the chronological transcript of the conversation, which is essential to maintain context and continuity in AI interactions.
+
+---
+
+For more details on how to properly set up and manage conversation messages with the GPT Chat Completion API v2, refer to the associated component documentation.
+
+
+
 
 > Written with [StackEdit](https://stackedit.io/).

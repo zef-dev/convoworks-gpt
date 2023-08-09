@@ -1116,14 +1116,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ConversationMessagesElement',
                 'Conversation Messages',
-                '',
+                'Manages and provides the entire conversation to the GPT Chat Completion API v2, ensuring consistent context throughout the interaction.',
                 [
                     'messages' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
                         'name' => 'Messages',
-                        'description' => 'Expression which evaluates to conversation messages array',
+                        'description' => 'Expression that evaluates to the conversation messages array.',
                         'valueType' => 'string'
                     ],
                     '_preview_angular' => [
@@ -1135,10 +1135,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'simple-prompt-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'conversation-messages-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
