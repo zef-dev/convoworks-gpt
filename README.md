@@ -281,4 +281,29 @@ The sequence of elements that will be executed after successful question generat
 
 
 
+### GPT Chat Completion API v2
+
+This advanced component enables you to perform chat completion API calls with more dynamic capabilities and additional contexts.
+
+**Result Variable Name**
+
+The variable that stores the API completion response.
+
+**API options**
+
+Configuration options for the chat completion API, such as the model used, temperature, and token limit.
+
+**Messages**
+
+Defines a sub-flow that provides messages or context for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.
+
+**Function**
+
+Allows dynamic registration of available functions that the agent can use during the conversation.
+
+**OK flow**
+
+This flow is executed once the API call is finished and the result variable is ready for further actions.
+
+
 > Written with [StackEdit](https://stackedit.io/).

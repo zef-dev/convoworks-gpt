@@ -1,32 +1,27 @@
 <div>
-    <h3>Chat Completion element v2</h3>
+    <h3>GPT Chat Completion API v2</h3>
+    <p>This advanced component enables you to perform chat completion API calls with more dynamic capabilities and additional contexts.</p>
 
-    <p>
-        This is OpenAI Chat Completion API wrapper element which allows you to make calls and get out the chat completion API response.
-    </p>
-    
+    <h3>Result Variable Name</h3>
+    <p>The variable that stores the API completion response.</p>
+
+    <h3>API options</h3>
+    <p>Configuration options for the chat completion API, such as the model used, temperature, and token limit.</p>
+
     <h3>Messages</h3>
-    <p>
-        Messages are array of message objects (<code>{"role":"user|system|assistant", "content":"Some message"}</code>). 
-        System message is automatically generated and prepended by the element.
-        <br>
-        Saving messages through the session is not handled and it is up on the client (service) how it will manage it.
-    </p>
+    <p>Defines a sub-flow that provides messages or context for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.</p>
 
-    <h3>Status variable</h3>
-    <p>
-        Status variable is a object containing two fields: 
-            <code>response</code> - containing the last GPT response, 
-            <code>messages</code> - all previous messages in conversation (including the last response)
-            <code>last_message</code> -last message response
-    </p>
-    <p>
-        You can access completion text itself like this: <code>${status.response.choices[0]["message"]["content"]}</code>
-    </p>
+    <h3>Function</h3>
+    <p>Allows dynamic registration of available functions that the agent can use during the conversation.</p>
+
+    <h3>OK flow</h3>
+    <p>This flow is executed once the API call is finished and the result variable is ready for further actions.</p>
+    
     
     <hr>
     
     <p>
         Check for more on available API options at <a href="https://platform.openai.com/docs/api-reference/chat" target="_blank">Chat Completion API Reference - OpenAI API</a>
     </p>
+    
 </div>
