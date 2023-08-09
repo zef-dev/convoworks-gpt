@@ -1087,14 +1087,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SystemMessageElement',
                 'System Message',
-                '',
+                'Defines a system-generated message within the chat context.',
                 [
                     'content' => [
                         'editor_type' => 'desc',
                         'editor_properties' => ['large' => true],
                         'defaultValue' => '',
                         'name' => 'Message content',
-                        'description' => 'Content of the system message',
+                        'description' => 'The text content of the system message.',
                         'valueType' => 'string'
                     ],
                     '_preview_angular' => [
@@ -1106,10 +1106,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'simple-prompt-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'system-message-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
