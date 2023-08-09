@@ -90,82 +90,6 @@ class GptPackageDefinition extends AbstractPackageDefinition
         return [
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
-                '\Convo\Gpt\Pckg\CompletionElement',
-                'x!GPT Completion API',
-                'Allows you to execute completion API calls',
-                [
-                    'prompt' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => null,
-                        'name' => 'Prompt',
-                        'description' => 'The prompt(s) to generate completions for',
-                        'valueType' => 'string'
-                    ],
-                    'result_var' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 'status',
-                        'name' => 'Result Variable Name',
-                        'description' => 'Status variable containing completion response',
-                        'valueType' => 'string'
-                    ],
-                    'api_key' => $API_KEY,
-                    'apiOptions' => [
-                        'editor_type' => 'params',
-                        'editor_properties' => [
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [
-                            'model' => 'text-davinci-003',
-                            'temperature' => '${0.7}',
-                            'max_tokens' => '${256}',
-                        ],
-                        'name' => 'API options',
-                        'description' => 'Completion API options that you can use',
-                        'valueType' => 'array'
-                    ],
-                    'ok' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'OK flow',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
-                        'valueType' => 'class'
-                    ],
-                    '_preview_angular' => [
-                        'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">COMPLETION API</span>' .
-                        '<br>{{component.properties.prompt}}' .
-                        '</div>'
-                    ],
-                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
-                    '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
-                    {
-                        private $_gptApiFactory;
-                        
-                        public function __construct( $gptApiFactory)
-                        {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
-                        }
-                        public function createComponent( $properties, $service)
-                        {
-                            return new CompletionElement( $properties, $this->_gptApiFactory);
-                        }
-                    },
-                    '_help' =>  [
-                        'type' => 'file',
-                        'filename' => 'completion-element.html'
-                    ],
-                ]
-            ),
-            new \Convo\Core\Factory\ComponentDefinition(
-                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatCompletionElement',
                 'GPT Chat Completion API',
                 'Allows you to execute chat completion API calls',
@@ -683,6 +607,127 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SystemMessageElement',
+                'System Message',
+                'Defines a system-generated message within the chat context.',
+                [
+                    'content' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => ['large' => true],
+                        'defaultValue' => '',
+                        'name' => 'Message content',
+                        'description' => 'The text content of the system message.',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
+                        ' <br>{{component.properties.content}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'system-message-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ChatFunctionElement',
+                'Chat Function',
+                'Function definition that can be used with Completion API based elements',
+                [
+                    'name' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Function name',
+                        'description' => 'Unique function name',
+                        'valueType' => 'string'
+                    ],
+                    'description' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Description',
+                        'description' => 'Function description',
+                        'valueType' => 'string'
+                    ],
+                    'parameters' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'name' => 'Function parameters',
+                        'description' => 'Function parameter definitions',
+                        'valueType' => 'array'
+                    ],
+                    'defaults' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${{}}',
+                        'name' => 'Defaults',
+                        'description' => 'Associative array of default values for function parameters',
+                        'valueType' => 'string'
+                    ],
+                    'required' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${[]}',
+                        'name' => 'Required',
+                        'description' => 'Array of required fields',
+                        'valueType' => 'string'
+                    ],
+                    'request_data' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'data',
+                        'name' => 'Request data variable',
+                        'description' => 'Variable name used for function arguments',
+                        'valueType' => 'string'
+                    ],
+                    'result_data' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${function_result}',
+                        'name' => 'Function result',
+                        'description' => 'Expression that will evaluate to the function result',
+                        'valueType' => 'string'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed when action is requested',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span>' .
+                        ' <b>{{component.properties.name}}('.
+                        '<span ng-repeat="(key,val) in component.properties.parameters track by key">{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>'.
+                        ') => {{component.properties.result_data}}</b>' .
+                        '</div>'
+                    ],
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'chat-function-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatAppElement',
                 'x!Autonomous Chat',
                 'Chat handler which can be configured to autonomously execute actions in the workflow',
@@ -899,96 +944,40 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
-                '\Convo\Gpt\Pckg\SystemMessageElement',
-                'System Message',
-                'Defines a system-generated message within the chat context.',
+                '\Convo\Gpt\Pckg\CompletionElement',
+                'x!GPT Completion API',
+                'Allows you to execute completion API calls',
                 [
-                    'content' => [
+                    'prompt' => [
                         'editor_type' => 'desc',
-                        'editor_properties' => ['large' => true],
-                        'defaultValue' => '',
-                        'name' => 'Message content',
-                        'description' => 'The text content of the system message.',
+                        'editor_properties' => [],
+                        'defaultValue' => null,
+                        'name' => 'Prompt',
+                        'description' => 'The prompt(s) to generate completions for',
                         'valueType' => 'string'
                     ],
-                    '_preview_angular' => [
-                        'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
-                        ' <br>{{component.properties.content}}' .
-                        '</div>'
-                    ],
-                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
-                    '_workflow' => 'read',
-                    '_descend' => 'true',
-                    '_help' =>  [
-                        'type' => 'file',
-                        'filename' => 'system-message-element.html'
-                    ],
-                ]
-            ),
-            new \Convo\Core\Factory\ComponentDefinition(
-                $this->getNamespace(),
-                '\Convo\Gpt\Pckg\ChatFunctionElement',
-                'Chat Function',
-                'Function definition that can be used with Completion API based elements',
-                [
-                    'name' => [
+                    'result_var' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Function name',
-                        'description' => 'Unique function name',
+                        'defaultValue' => 'status',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Status variable containing completion response',
                         'valueType' => 'string'
                     ],
-                    'description' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Description',
-                        'description' => 'Function description',
-                        'valueType' => 'string'
-                    ],
-                    'parameters' => [
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => [
                             'multiple' => true
                         ],
-                        'defaultValue' => [],
-                        'name' => 'Function parameters',
-                        'description' => 'Function parameter definitions',
+                        'defaultValue' => [
+                            'model' => 'text-davinci-003',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Completion API options that you can use',
                         'valueType' => 'array'
-                    ],
-                    'defaults' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${{}}',
-                        'name' => 'Defaults',
-                        'description' => 'Associative array of default values for function parameters',
-                        'valueType' => 'string'
-                    ],
-                    'required' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${[]}',
-                        'name' => 'Required',
-                        'description' => 'Array of required fields',
-                        'valueType' => 'string'
-                    ],
-                    'request_data' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 'data',
-                        'name' => 'Request data variable',
-                        'description' => 'Variable name used for function arguments',
-                        'valueType' => 'string'
-                    ],
-                    'result_data' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${function_result}',
-                        'name' => 'Function result',
-                        'description' => 'Expression that will evaluate to the function result',
-                        'valueType' => 'string'
                     ],
                     'ok' => [
                         'editor_type' => 'service_components',
@@ -999,22 +988,33 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => false,
                         'name' => 'OK flow',
-                        'description' => 'Flow to be executed when action is requested',
+                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span>' .
-                        ' <b>{{component.properties.name}}('.
-                        '<span ng-repeat="(key,val) in component.properties.parameters track by key">{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>'.
-                        ') => {{component.properties.result_data}}</b>' .
+                        'template' => '<div class="code"><span class="statement">COMPLETION API</span>' .
+                        '<br>{{component.properties.prompt}}' .
                         '</div>'
                     ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_descend' => 'true',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new CompletionElement( $properties, $this->_gptApiFactory);
+                        }
+                    },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'chat-function-element.html'
+                        'filename' => 'completion-element.html'
                     ],
                 ]
             ),
