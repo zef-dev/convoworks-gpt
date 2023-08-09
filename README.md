@@ -334,7 +334,7 @@ This component accepts an expression that evaluates to the array of conversation
 For more details on how to properly set up and manage conversation messages with the GPT Chat Completion API v2, refer to the associated component documentation.
 
 
-### Messages Limiter
+### GPT Messages Limiter
 
 Limits the size of messages by summarizing the oldest ones.
 
