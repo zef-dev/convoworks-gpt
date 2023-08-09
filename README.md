@@ -306,6 +306,7 @@ Allows dynamic registration of available functions that the agent can use during
 This flow is executed once the API call is finished and the result variable is ready for further actions.
 
 
+
 ### System Message
 
 The System Message element defines a system-generated message within the chat context. These messages are primarily used in conjunction with the **GPT Chat Completion API v2** to prepend system-level information or context to a conversation. This can be useful for providing agents with a consistent introduction or setting the tone for the conversation.
@@ -319,6 +320,7 @@ This field allows you to specify the text content of the system message. The con
 For use cases and more details on how system messages can be integrated with the Chat Completion API v2, refer to the associated component documentation.
 
 
+
 ### Conversation Messages
 
 The Conversation Messages element plays a pivotal role in handling conversations with the **GPT Chat Completion API v2**. It manages the storage and provision of the entire conversation that needs to be sent to the API. This ensures that the context and flow of the conversation remain intact during API interactions.
@@ -330,6 +332,23 @@ This component accepts an expression that evaluates to the array of conversation
 ---
 
 For more details on how to properly set up and manage conversation messages with the GPT Chat Completion API v2, refer to the associated component documentation.
+
+
+### Messages Limiter
+
+Limits the size of messages by summarizing the oldest ones.
+
+- **System message**: The main system prompt which instructs GPT on how to summarize the conversation.
+  
+- **Max messages to keep**: The maximum number of messages before the limiter will start summarizing the older ones.
+  
+- **Truncate to this number of messages**: Once the maximum count is reached, the messages are truncated down to this number.
+
+- **API options**: Chat completion API options to use for summarizing the conversation.
+
+- **Messages**: Message provider which supplies the conversation we are working with.
+
+
 
 
 

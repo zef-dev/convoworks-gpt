@@ -570,47 +570,45 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\MessagesLimiterElement',
                 'Messages Limiter',
-                'Limits messages size by sumarizing oldest ones',
+                'Limits messages size by summarizing the oldest ones.',
                 [
                     'system_message' => [
-                            'editor_type' => 'desc',
-                            'editor_properties' => [],
-                            'defaultValue' => 'Considering all the prior conversation including the previous summaries, '.
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => 'Considering all the prior conversation including the previous summaries, '.
                         'please generate a concise summary capturing the key points and significant themes up until now. '.
                         'Please ensure the summary contains all necessary information to understand the context of the current conversation.',
-                            'name' => 'System message',
-                            'description' => 'Main, system prompt which instructs how to sumarize conversation',
-                            'valueType' => 'string'
-                        ],
+                        'name' => 'System message',
+                        'description' => 'Main, system prompt which instructs how to summarize the conversation.',
+                        'valueType' => 'string'
+                    ],
                     'max_count' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${20}',
                         'name' => 'Max messages to keep',
-                        'description' => '',
+                        'description' => 'The maximum number of messages before the conversation is summarized.',
                         'valueType' => 'string'
                     ],
                     'truncate_to' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${10}',
-                        'name' => 'When max xount is reached, truncate to this number of messages',
-                        'description' => '',
+                        'name' => 'Truncate message count',
+                        'description' => 'The number of messages to keep after summarization.',
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
                     'apiOptions' => [
                         'editor_type' => 'params',
-                        'editor_properties' => [
-                            'multiple' => true
-                        ],
+                        'editor_properties' => ['multiple' => true],
                         'defaultValue' => [
                             'model' => 'gpt-3.5-turbo',
                             'temperature' => '${0.7}',
                             'max_tokens' => '${256}',
                         ],
                         'name' => 'API options',
-                        'description' => 'Chat completion API options that you can use',
+                        'description' => 'Chat completion API options for summarization.',
                         'valueType' => 'array'
                     ],
                     'message_provider' => [
@@ -622,7 +620,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => true,
                         'name' => 'Messages',
-                        'description' => 'Message provider which provides conversation we are working with',
+                        'description' => 'Provides the conversation messages that need to be summarized.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -635,23 +633,23 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
                         
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory = $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new MessagesLimiterElement( $properties, $this->_gptApiFactory);
+                            return new MessagesLimiterElement($properties, $this->_gptApiFactory);
                         }
                     },
-//                     '_help' =>  [
-//                         'type' => 'file',
-//                         'filename' => 'chat-completion-v2-element.html'
-//                     ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'messages-limiter-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(

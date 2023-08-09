@@ -1,0 +1,32 @@
+<div>
+    <h3>Messages Limiter</h3>
+
+    <p>
+        Limits the size of messages by summarizing the oldest ones. When the conversation reaches the specified maximum count of messages, this component will shrink the conversation by summarizing it down to a specified count.
+    </p>
+
+    <h3>System Message</h3>
+    <p>
+        The main system prompt instructing GPT-3 on how to summarize the conversation. This prompt helps ensure that the summary contains all the essential details.
+    </p>
+
+    <h3>Max Messages to Keep</h3>
+    <p>
+        The maximum number of messages that can be present in the conversation before it gets summarized.
+    </p>
+
+    <h3>Truncate Message Count</h3>
+    <p>
+        The number of messages to retain after the conversation is summarized. This count is less than the maximum messages to ensure the conversation size remains under control.
+    </p>
+
+    <h3>API Options</h3>
+    <p>
+        Chat completion API options that are used for summarization. These options dictate the behavior of the GPT-3 model, such as which version of the model to use, the desired temperature setting, and the token limit.
+    </p>
+
+    <h3>Messages</h3>
+    <p>
+        Provides the conversation messages which are being summarized. This is a service component allowing interfaces with the Convo system to retrieve the messages.
+    </p>
+</div>
