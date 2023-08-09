@@ -166,6 +166,168 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ChatCompletionElement',
+                'GPT Chat Completion API',
+                'Allows you to execute chat completion API calls',
+                [
+                    'system_message' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
+                        'name' => 'System message',
+                        'description' => 'Main, system prompt to be added at the beginning of the conversation.',
+                        'valueType' => 'string'
+                    ],
+                    'messages' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${[]}',
+                        'name' => 'Messages',
+                        'description' => 'The messages to generate chat completions for, in the chat format.',
+                        'valueType' => 'string'
+                    ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Status variable containing completion response',
+                        'valueType' => 'string'
+                    ],
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [
+                            'model' => 'gpt-3.5-turbo',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Chat completion API options that you can use',
+                        'valueType' => 'array'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
+                        '<br>{{component.properties.system_message}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_gptApiFactory;
+                        
+                        public function __construct( $gptApiFactory)
+                        {
+                            $this->_gptApiFactory	   =   $gptApiFactory;
+                        }
+                        public function createComponent( $properties, $service)
+                        {
+                            return new ChatCompletionElement( $properties, $this->_gptApiFactory);
+                        }
+                    },
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'chat-completion-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ChatCompletionV2Element',
+                'GPT Chat Completion API v2',
+                'Facilitates chat completion API calls with advanced capabilities.',
+                [
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result Variable Name',
+                        'description' => 'Variable storing the API completion response.',
+                        'valueType' => 'string'
+                    ],
+                    'api_key' => $API_KEY,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => ['multiple' => true],
+                        'defaultValue' => [
+                            'model' => 'gpt-3.5-turbo',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Configuration options for the chat completion API.',
+                        'valueType' => 'array'
+                    ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Executes a sub-flow to provide messages (context) for the chat completion API.',
+                        'valueType' => 'class'
+                    ],
+                    'functions' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'Function',
+                        'description' => 'Dynamically registers available functions the agent can utilize.',
+                        'valueType' => 'class'
+                    ],
+                    'ok' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'OK flow',
+                        'description' => 'Executed once the operation is completed and the result variable is ready for use.',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
+                        ' => <b>{{component.properties.result_var}}</b>' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory {
+                    private $_gptApiFactory;
+                    
+                    public function __construct($gptApiFactory) {
+                        $this->_gptApiFactory = $gptApiFactory;
+                    }
+                    public function createComponent($properties, $service) {
+                        return new ChatCompletionV2Element($properties, $this->_gptApiFactory);
+                    }
+                    },
+                    '_help' => [
+                        'type' => 'file',
+                        'filename' => 'chat-completion-v2-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\EmbeddingsElement',
                 'GPT Embeddings API',
                 'Allows the creation of an embeddings API.',
@@ -406,170 +568,37 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
-                '\Convo\Gpt\Pckg\ChatCompletionElement',
-                'GPT Chat Completion API',
-                'Allows you to execute chat completion API calls',
+                '\Convo\Gpt\Pckg\ConversationMessagesElement',
+                'Conversation Messages',
+                'Manages and provides the entire conversation to the GPT Chat Completion API v2, ensuring consistent context throughout the interaction.',
                 [
-                    'system_message' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => [],
-                        'defaultValue' => 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Today is ${date("l, F j, Y")}.',
-                        'name' => 'System message',
-                        'description' => 'Main, system prompt to be added at the beginning of the conversation.',
-                        'valueType' => 'string'
-                    ],
                     'messages' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${[]}',
+                        'defaultValue' => '',
                         'name' => 'Messages',
-                        'description' => 'The messages to generate chat completions for, in the chat format.',
+                        'description' => 'Expression that evaluates to the conversation messages array.',
                         'valueType' => 'string'
-                    ],
-                    'result_var' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 'status',
-                        'name' => 'Result Variable Name',
-                        'description' => 'Status variable containing completion response',
-                        'valueType' => 'string'
-                    ],
-                    'api_key' => $API_KEY,
-                    'apiOptions' => [
-                        'editor_type' => 'params',
-                        'editor_properties' => [
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [
-                            'model' => 'gpt-3.5-turbo',
-                            'temperature' => '${0.7}',
-                            'max_tokens' => '${256}',
-                        ],
-                        'name' => 'API options',
-                        'description' => 'Chat completion API options that you can use',
-                        'valueType' => 'array'
-                    ],
-                    'ok' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => [
-                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'OK flow',
-                        'description' => 'Flow to be executed if operation is finished with result variable available for use',
-                        'valueType' => 'class'
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
-                        '<br>{{component.properties.system_message}}' .
+                        'template' => '<div class="code"><span class="statement">CONVERSATION</span>' .
+                        ' <b>{{component.properties.messages}}</b>' .
                         '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
-                    {
-                        private $_gptApiFactory;
-                        
-                        public function __construct( $gptApiFactory)
-                        {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
-                        }
-                        public function createComponent( $properties, $service)
-                        {
-                            return new ChatCompletionElement( $properties, $this->_gptApiFactory);
-                        }
-                    },
+                    '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'chat-completion-element.html'
-                    ],
-                ]
-            ),
-            new \Convo\Core\Factory\ComponentDefinition(
-                $this->getNamespace(),
-                '\Convo\Gpt\Pckg\ChatCompletionV2Element',
-                'GPT Chat Completion API v2',
-                'Facilitates chat completion API calls with advanced capabilities.',
-                [
-                    'result_var' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => 'status',
-                        'name' => 'Result Variable Name',
-                        'description' => 'Variable storing the API completion response.',
-                        'valueType' => 'string'
-                    ],
-                    'api_key' => $API_KEY,
-                    'apiOptions' => [
-                        'editor_type' => 'params',
-                        'editor_properties' => ['multiple' => true],
-                        'defaultValue' => [
-                            'model' => 'gpt-3.5-turbo',
-                            'temperature' => '${0.7}',
-                            'max_tokens' => '${256}',
-                        ],
-                        'name' => 'API options',
-                        'description' => 'Configuration options for the chat completion API.',
-                        'valueType' => 'array'
-                    ],
-                    'message_provider' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
-                        'defaultValue' => [],
-                        'defaultOpen' => true,
-                        'name' => 'Messages',
-                        'description' => 'Executes a sub-flow to provide messages (context) for the chat completion API.',
-                        'valueType' => 'class'
-                    ],
-                    'functions' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Function',
-                        'description' => 'Dynamically registers available functions the agent can utilize.',
-                        'valueType' => 'class'
-                    ],
-                    'ok' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'OK flow',
-                        'description' => 'Executed once the operation is completed and the result variable is ready for use.',
-                        'valueType' => 'class'
-                    ],
-                    '_preview_angular' => [
-                        'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
-                        ' => <b>{{component.properties.result_var}}</b>' .
-                        '</div>'
-                    ],
-                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
-                    '_workflow' => 'read',
-                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory {
-                    private $_gptApiFactory;
-                    
-                    public function __construct($gptApiFactory) {
-                        $this->_gptApiFactory = $gptApiFactory;
-                    }
-                    public function createComponent($properties, $service) {
-                        return new ChatCompletionV2Element($properties, $this->_gptApiFactory);
-                    }
-                    },
-                    '_help' => [
-                        'type' => 'file',
-                        'filename' => 'chat-completion-v2-element.html'
+                        'filename' => 'conversation-messages-element.html'
                     ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\MessagesLimiterElement',
-                'Messages Limiter',
+                'GPT Messages Limiter',
                 'Limits messages size by summarizing the oldest ones.',
                 [
                     'system_message' => [
@@ -870,6 +899,35 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SystemMessageElement',
+                'System Message',
+                'Defines a system-generated message within the chat context.',
+                [
+                    'content' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => ['large' => true],
+                        'defaultValue' => '',
+                        'name' => 'Message content',
+                        'description' => 'The text content of the system message.',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
+                        ' <br>{{component.properties.content}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'system-message-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatFunctionElement',
                 'Chat Function',
                 'Function definition that can be used with Completion API based elements',
@@ -1046,7 +1104,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SimplePromptElement',
-                'Simple Prompt',
+                'x!Simple Prompt',
                 'This element allows you to split complex prompt into several, managable sections.',
                 [
                     'title' => [
@@ -1082,66 +1140,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
-                '\Convo\Gpt\Pckg\SystemMessageElement',
-                'System Message',
-                'Defines a system-generated message within the chat context.',
-                [
-                    'content' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => ['large' => true],
-                        'defaultValue' => '',
-                        'name' => 'Message content',
-                        'description' => 'The text content of the system message.',
-                        'valueType' => 'string'
-                    ],
-                    '_preview_angular' => [
-                        'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
-                        ' <br>{{component.properties.content}}' .
-                        '</div>'
-                    ],
-                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
-                    '_workflow' => 'read',
-                    '_descend' => 'true',
-                    '_help' =>  [
-                        'type' => 'file',
-                        'filename' => 'system-message-element.html'
-                    ],
-                ]
-            ),
-            new \Convo\Core\Factory\ComponentDefinition(
-                $this->getNamespace(),
-                '\Convo\Gpt\Pckg\ConversationMessagesElement',
-                'Conversation Messages',
-                'Manages and provides the entire conversation to the GPT Chat Completion API v2, ensuring consistent context throughout the interaction.',
-                [
-                    'messages' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Messages',
-                        'description' => 'Expression that evaluates to the conversation messages array.',
-                        'valueType' => 'string'
-                    ],
-                    '_preview_angular' => [
-                        'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">CONVERSATION</span>' .
-                        ' <b>{{component.properties.messages}}</b>' .
-                        '</div>'
-                    ],
-                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
-                    '_workflow' => 'read',
-                    '_descend' => 'true',
-                    '_help' =>  [
-                        'type' => 'file',
-                        'filename' => 'conversation-messages-element.html'
-                    ],
-                ]
-            ),
-            new \Convo\Core\Factory\ComponentDefinition(
-                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\PromptSectionElement',
-                'Prompt Section',
+                'x!Prompt Section',
                 'This element allows nesting prompts',
                 [
                     'title' => [
