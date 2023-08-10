@@ -1,4 +1,5 @@
 
+
 # Convoworks GPT WordPress Plugin
 
 Convoworks GPT is an extension package for [Convoworks framework](https://github.com/zef-dev/convoworks-core). It is in the form of a WordPress plugin so you can use it with the [Convoworks WP](https://wordpress.org/plugins/convoworks-wp/).
@@ -65,42 +66,32 @@ The second set of actions is for **appointment scheduling**.  It enables AI to c
 
 This is an OpenAI API wrapper element, which allows you to make calls and get the chat completion API response.
 
+
 **Parameters:**
 
 * `system_message` - The initial `system` message in the conversation.
-* `messages` - An array of conversation messages, containing only the `assistant` and `user` roles
-* `result_var` - Default `status`, the name of the variable that contains the complete API response. You can access the completion text itself like this: `${status.choices[0]["message"]["content"]}`
-* `api_key` - Your OpenAI API key
-* `apiOptions` - [OpenAI Chat Completion API](https://platform.openai.com/docs/api-reference/chat) endpoint options
+* `messages` - An array of conversation messages, including the `assistant` and `user` roles.
+* `result_var` - Defaults to `status`, this is the variable name that stores the complete API response. Access the completion text with: `${status.choices[0]["message"]["content"]}`
+* `api_key` - Your OpenAI API key.
+* `apiOptions` - Options for the [OpenAI Chat Completion API](https://platform.openai.com/docs/api-reference/chat).
 
 **Flows:**
-
-* `ok` - Elements to execute after completion. The completion result is accessible via the variable defined with `result_var`
+* `ok` - Executes elements after completion. Access completion results through the `result_var` variable.
 
 
 ### GPT Chat Completion API v2
 
 This advanced component enables you to perform chat completion API calls with more dynamic capabilities and additional contexts.
 
-**Result Variable Name**
+**Parameters:**
 
-The variable that stores the API completion response.
-
-**API options**
-
-Configuration options for the chat completion API, such as the model used, temperature, and token limit.
-
-**Messages**
-
-Defines a sub-flow that provides messages or context for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.
-
-**Function**
-
-Allows dynamic registration of available functions that the agent can use during the conversation.
-
-**OK flow**
-
-This flow is executed once the API call is finished and the result variable is ready for further actions.
+* `Result Variable Name` - The variable that stores the API completion response.
+* `API options` - Configuration options for the chat completion API, such as the model used, temperature, and token limit.
+* 
+**Flows:**
+* `Messages` - Defines a sub-flow that provides messages or context for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.
+* `Function` -  Allows dynamic registration of available functions that the agent can use during the conversation.
+* `OK flow` -  This flow is executed once the API call is finished and the result variable is ready for further actions.
 
 
 ### GPT Embeddings Element
@@ -109,17 +100,13 @@ This element serves as a wrapper for the OpenAI Embeddings API, enabling the ret
 
 **Parameters:**
 
-* `Input` - The string text for which you want to create an embedding. It's recommended to clean up the raw string beforehand using the provided `tokenize_string()` function: `${ tokenize_string( your_raw_text)}`
-
-* `Status Variable` - The status variable contains the complete response from the embeddings API. Access the embedding value with: `${status.data[0].embedding}`
-
+* `Input` - The string to be embedded. Recommended preprocessing using `tokenize_string()`: `${ tokenize_string( your_raw_text)}`.
+* `Status Variable` - The variable that contains the complete API response. Access the embedding value with: `${status.data[0].embedding}`.
 * `API options` - Options for the Embeddings API.
 
 **Flows:**
+* `OK flow` - Executes when the operation completes and the result variable is available.
 
-* `OK flow` - Flow to execute if the operation completes and the result variable is available for use.
-
----
 
 For more information on available API options, refer to the [Embeddings API Reference - OpenAI API](https://platform.openai.com/docs/api-reference/embeddings).
 
@@ -129,23 +116,14 @@ For more information on available API options, refer to the [Embeddings API Refe
 
 This element allows you to validate input with the OpenAI Moderation API. The Moderation API is a powerful tool for content moderation, helping you ensure that the generated content aligns with your guidelines and policies.
 
-**Input**
+**Parameters:**
 
-The input text to be moderated. This can be any text that you want to check for potential issues or violations.
+* `Input` - Text for moderation.
+* `Result Variable Name` - Variable storing the moderation API response.
+* `API options` - Options for the OpenAI Moderation API.
 
-**Result Variable Name**
-
-The status variable containing the moderation API response. This variable will hold the result of the moderation check, providing insights into the content's potential issues or violations.
-
-**API options**
-
-Options for the OpenAI Moderation API. These options allow you to customize the moderation behavior according to your specific requirements. You can specify parameters such as the moderation model to use and any additional settings.
-
-**OK flow**
-
-The flow to be executed if the moderation operation is finished with the result variable available for use. This flow can include actions or conditions based on the moderation result, allowing you to take appropriate actions based on the content's moderation status.
-
----
+**Flows:**
+* `OK flow` - Executes once the moderation operation completes and the result variable is available.
 
 For more information on the OpenAI Moderation API and its capabilities, refer to the [OpenAI Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations).
 
@@ -154,54 +132,34 @@ For more information on the OpenAI Moderation API and its capabilities, refer to
 
 The GPT Query Generator element allows you to create context-rich questions from a given conversation. These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions by providing additional context and insights.
 
-**System Message**
+**Parameters:**
 
-A predetermined prompt that sets the initial context and format for the conversation. This message provides the GPT with a structure to follow when generating questions.
+* `System Message` - Sets initial context and format for the conversation.
+* `Messages` - Array of messages representing the GPT chat completion, acting as the primary context for question generation.
+* `Messages Count` - Number of recent conversation messages to be considered.
+* `Result Variable Name` - Variable storing the generated questions.
+* `API Options` - Parameters for the GPT chat completion API.
 
-**Messages**
-
-An array of messages that represent the conversation from the GPT chat completion. This serves as the primary context from which the GPT generates the questions.
-
-**Messages Count**
-
-Specifies the number of recent messages from the conversation that should be considered for generating questions. This allows for flexibility in narrowing down or expanding the conversation context.
-
-**Result Variable Name**
-
-The variable that will store the generated questions. This makes it possible to reference and utilize the generated questions in subsequent operations or outputs.
-
-**API Options**
-
-Specific parameters for the GPT chat completion API. This section allows you to fine-tune the behavior of the question generation process. Options include choosing the specific GPT model, setting the temperature, and limiting the maximum tokens.
-
-**OK Flow**
-
-The sequence of elements that will be executed after successful question generation. This can include subsequent operations or responses that utilize the generated questions to enhance the overall conversation flow.
+**Flows:**
+* `OK Flow` - Executes after successful question generation.
 
 
 ### System Message
 
 The System Message element defines a system-generated message within the chat context. These messages are primarily used in conjunction with the **GPT Chat Completion API v2** to prepend system-level information or context to a conversation. This can be useful for providing agents with a consistent introduction or setting the tone for the conversation.
 
-**Message Content**
-
-This field allows you to specify the text content of the system message. The content can be static or dynamically generated based on the flow.
-
----
+**Parameters:**
+* `Message Content` - Text content of the system message, which can be static or dynamically generated.
 
 For use cases and more details on how system messages can be integrated with the Chat Completion API v2, refer to the associated component documentation.
-
 
 
 ### Conversation Messages
 
 The Conversation Messages element plays a pivotal role in handling conversations with the **GPT Chat Completion API v2**. It manages the storage and provision of the entire conversation that needs to be sent to the API. This ensures that the context and flow of the conversation remain intact during API interactions.
 
-**Messages**
-
-This component accepts an expression that evaluates to the array of conversation messages. These messages are the chronological transcript of the conversation, which is essential to maintain context and continuity in AI interactions.
-
----
+**Parameters:**
+* `Messages` - Expression evaluating to an array of conversation messages. These chronologically ordered messages ensure contextual continuity.
 
 For more details on how to properly set up and manage conversation messages with the GPT Chat Completion API v2, refer to the associated component documentation.
 
@@ -210,15 +168,13 @@ For more details on how to properly set up and manage conversation messages with
 
 Limits the size of messages by summarizing the oldest ones.
 
-- **System message**: The main system prompt which instructs GPT on how to summarize the conversation.
-  
-- **Max messages to keep**: The maximum number of messages before the limiter will start summarizing the older ones.
-  
-- **Truncate to this number of messages**: Once the maximum count is reached, the messages are truncated down to this number.
+**Parameters:**
 
-- **API options**: Chat completion API options to use for summarizing the conversation.
-
-- **Messages**: Message provider which supplies the conversation we are working with.
+* `System message` - The main system prompt.
+* `Max messages to keep` - Maximum message count before older messages get summarized.
+* `Truncate to this number of messages` - Message count after truncation.
+* `API options` - Options for summarizing the conversation.
+* `Messages` - Provides the conversation messages.
 
 
 
@@ -226,21 +182,18 @@ Limits the size of messages by summarizing the oldest ones.
 
 Function definition that can be used with Completion API based elements.
 
-- **Function name**: Unique function name for identification.
-  
-- **Description**: Description about what the function does.
-  
-- **Function parameters**: Definitions of all the parameters this function requires.
+**Parameters:**
 
-- **Defaults**: Associative array specifying default values for function parameters.
+* `Function name` - Unique function name.
+* `Description` - Function description.
+* `Function parameters` - Defines required function parameters.
+* `Defaults` - Default values for function parameters.
+* `Required` - List of mandatory function fields.
+* `Request data variable` - Variable for passing function arguments.
+* `Function result` - Expression to determine the function result.
 
-- **Required**: List of mandatory fields required for this function.
-
-- **Request data variable**: Variable name used for passing arguments to the function.
-
-- **Function result**: Expression evaluated to determine the function's result.
-
-- **OK flow**: Workflow that is executed when an action is requested through this function.
+**Flows:**
+* `OK flow` - Workflow executed when an action is requested through this function.
 
 
 ## Deprecated components
@@ -365,6 +318,6 @@ Stops the execution and signals the Chat App that the action request is not vali
 
 * `message` - Error message describing why the validation failed.
 
-
+---
 
 > Written with [StackEdit](https://stackedit.io/).
