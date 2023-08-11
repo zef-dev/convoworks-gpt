@@ -15,51 +15,24 @@ When using it for the first time, you have to install the node packages. Navigat
 ```bash
 npm install
 ```
-
 To build the deployment package, run this command, which will create the plugin zip. The version is taken from the `package.json` file:
 
 ```bash
 node build.js
 ```
-### Installation
 
-* Download and activate **Convoworks WP** through your plugin installer (it is on the WordPresss.org). No additional configuration is required.
-* Upload the **convoworks-gpt** plugin zip through your WordPress plugin installer and activate it.
-* In your WP admin, navigate to Convoworks WP, click on the **Create new**, enter desired name, select **GPT Examples** template and press **Submit**.
-* In your newly created service, navigate to the **Variables** view and enter your OpenAI key.
-* Navigate to **Test view** and try it.
-* In service editor, **Session Start** step, modify the GOTO instruction to try different example (there are 4 examples. Default one is Turbo Chat). 
+### Installation & Quick Start
 
+* Download and activate **Convoworks WP** through your plugin installer (available on [WordPress.org](https://wordpress.org/plugins/convoworks-wp/)). No additional configuration is required.
+* Upload the **convoworks-gpt** plugin zip file through your WordPress plugin installer and activate it.
+* In your WP admin panel, navigate to Convoworks WP, click on **Create new**, enter the desired name, select the **GPT Example Chat** template, and press **Submit**.
+* In your newly created service, navigate to the **Variables** view and enter your OpenAI key into the `GPT_API_KEY` variable.
+* Navigate to the **Test view** to try it out.
 
-## GPT Package Overview
+### Displaying Chat on Public Pages
 
-After installing and activating the plugin, you will be able to enable an additional package, **convo-gpt**, in the Convoworks Editor. This package contains several components, allowing for easy access to the OpenAI API. It also contains an example service template **GPT Examples** you can use it to see how the components can be used.
-
-You can access templates when creating a new service.  **Remember to set your OpenAI `API_KEY` in the service variables view.**
-
-For more information on the OpenAI API and its use, please refer to their [documentation](https://platform.openai.com/docs/).
-
-### GPT Examples template
-
-There are four examples in this template and you can choose which one is active in the **Session Start** step. All examples are ready to use and are demonstrating chat usage.
-
-#### API examples
-
-**Completion API Example** and Chat **Completion API Example** are demonstrating GPT API components usage. One is using the completion API while the second is using the chat completion API. Both examples are configured to work as simple chat assistants.
-
-#### Autonomous chats examples
-
-**Important! Please note that Autonomous chats examples are having quite large prompts (2,500 tokens).** 
-
-**Chat App** and **Turbo Chat App** are using specialized components capable of executing actions on the website. Again, the main difference is in the API they are using (chat vs completion API).
-
-The main idea behind these chat apps is to have ability to easily define and use actions which are interacting with your WordPress installation (check the **Fragments** tab for current actions).  
-
-These examples are using two action packages which are integrated with the website.
-
-The first is **newsletter subscription** related and they are enabling AI to check subscription status, register or unregister. The newsletter subscription list is implemented as a **custom post type** (default `my_newsletter_list` and can be changed on the variables view).
-
-The second set of actions is for **appointment scheduling**.  It enables AI to check, schedule or reschedule appointments. These actions are using the Convoworks Appointments package and by default it is configured to use a dummy appointments context. Enable **convo-wp-plugin-pack** to replace it with the concrete **Simply Schedule Appointments**, **Easy Appointments** or **Five Star Restaurant Reservations** plugins. Check for [more about appointments](https://convoworks.com/appointment-scheduling-on-your-wordpress-website-now-with-amazon-alexa-skill/) on our blog.
+* Navigate to the Configuration view and enable the Convo Chat platform (no additional settings are needed).
+* Use the shortcode to display it on the front end: `[convo_chat service_id="gpt-example-chat" title="Example Chat"]`
 
 
 ## Functions
