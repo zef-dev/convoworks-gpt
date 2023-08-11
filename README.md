@@ -215,7 +215,7 @@ Function definition that can be used with Completion API based elements.
 
 * `Function name` - Unique function name.
 * `Description` - Function description.
-* `Function parameters` - Defines required function parameters.
+* `Function parameters` - Defines required function parameters. For more details on how to define parameter check [JSON Schema documentation](https://json-schema.org/understanding-json-schema/)
 * `Defaults` - Default values for function parameters.
 * `Required` - List of mandatory function fields.
 * `Request data variable` - Variable for passing function arguments.
