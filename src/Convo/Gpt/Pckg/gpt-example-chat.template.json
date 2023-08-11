@@ -304,7 +304,7 @@
                                                         "scope_type": "request",
                                                         "parameters": "service",
                                                         "properties": {
-                                                            "function_result": "{ \"result\" : ${ rand( data.min, data.max)}}"
+                                                            "function_result": "${ strval( rand( data.min, data.max))}"
                                                         },
                                                         "_component_id": "t9rmiuks-skie-glpj-cqpz-hpnqazkg8scg"
                                                     }
