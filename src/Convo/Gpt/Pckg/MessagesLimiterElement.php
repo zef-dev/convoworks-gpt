@@ -103,8 +103,7 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             }
         }
         
-        $this->_logger->debug( 'Got truncated ['.print_r( $truncated, true).']');
-        $this->_logger->debug( 'Got new messages ['.print_r( $new_messages, true).']');
+        $this->_logger->debug( 'Truncated messages ['.print_r( $truncated, true).']');
         
         // SUMMARIZE
         $summarized = $this->_sumarize( $truncated);
@@ -132,10 +131,6 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
-        
-        $this->_logger->debug( 'Got messages ============');
-        $this->_logger->debug( "\n".json_encode( $messages, JSON_PRETTY_PRINT));
-        $this->_logger->debug( '============');
         
         $http_response   =   $api->chatCompletion( $this->_getApiOptions( $messages));
         

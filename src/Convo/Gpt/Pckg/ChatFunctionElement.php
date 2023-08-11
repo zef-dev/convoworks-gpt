@@ -54,7 +54,6 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     
     public function execute( IConvoRequest $request, IConvoResponse $response, $data)
     {
-        $this->_logger->debug( 'Got data ['.print_r( $data, true).']');
         $data = json_decode( $data, true);
         $this->_logger->debug( 'Got data decoded ['.print_r( $data, true).']');
         $data = array_merge( $this->_getDefaults(), $data);
@@ -64,7 +63,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         $data_var      =    $this->evaluateString( $this->_requestData);
         $params->setServiceParam( $data_var, $data);
         
-        $this->_logger->debug( 'Executing function ['.$this->getName().']. Arguments available as ['.$data_var.']');
+        $this->_logger->info( 'Executing function ['.$this->getName().']. Arguments available as ['.$data_var.']');
         
         foreach ( $this->_ok as $elem) {
             $elem->read( $request, $response);

@@ -43,7 +43,7 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
         
         $questions   =   $this->_generateQuestions( $serialized);
         
-        $this->_logger->debug( 'Got generated questions ['.print_r( $questions, true).']');
+        $this->_logger->info( 'Got generated questions ['.print_r( $questions, true).']');
         
         $params      =   $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $questions);
@@ -71,7 +71,7 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
         
         $max_count      =   intval( $this->evaluateString( $this->_properties['messages_count']));
         if ( $max_count) {
-            $this->_logger->debug( 'Trimming conversation to last ['.$max_count.'] messages');
+            $this->_logger->info( 'Trimming conversation to last ['.$max_count.'] messages');
             $conversation   =   $this->_getLastItems( $conversation, $max_count);
         }
         return implode( "\n\n", $conversation);
