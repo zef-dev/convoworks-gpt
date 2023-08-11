@@ -1,0 +1,371 @@
+{
+    "template_id": "gpt-example-chat",
+    "name": "GPT Example Chat",
+    "description": "Simple chat starter template.",
+    "service": {
+        "convo_service_version": 40,
+        "packages": [
+            "convo-core",
+            "convo-gpt"
+        ],
+        "contexts": [],
+        "variables": {
+            "GPT_API_KEY": "",
+            "GPT_DEFAULT_TEMPERATURE": "${0.3}",
+            "GPT_DEFAULT_MAX_TOKENS": "${10000}",
+            "GPT_DEFAULT_MODEL": "gpt-3.5-turbo-16k",
+            "MAX_MESSAGES": "${20}",
+            "TRUNCATE_TO": "${10}"
+        },
+        "preview_variables": [],
+        "entities": [],
+        "intents": [],
+        "blocks": [
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
+                "namespace": "convo-core",
+                "properties": {
+                    "block_id": "home",
+                    "role": "conversation_block",
+                    "name": "Home",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "scope_type": "request",
+                                "parameters": "service",
+                                "properties": {
+                                    "WELCOME": "Hi, how can I help?"
+                                },
+                                "_component_id": "14kciguq-v1fd-x7z5-mmw7-mubcxbo3apub"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "scope_type": "request",
+                                "parameters": "service",
+                                "properties": {
+                                    "message[\"role\"]": "assistant",
+                                    "message[\"content\"]": "${WELCOME}"
+                                },
+                                "_component_id": "pqydnlqi-ll63-limb-9jao-ddmzx2exvtfx"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "scope_type": "session",
+                                "parameters": "service",
+                                "properties": {
+                                    "messages": "${[message]}"
+                                },
+                                "_component_id": "lmbqncgo-zj7m-mfgx-ptpa-wduldrurokfv"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "type": "default",
+                                "text": "${messages[count(messages)-1][\"content\"]}",
+                                "append": false,
+                                "alexa_domain": "normal",
+                                "alexa_emotion": "neutral",
+                                "alexa_emotion_intensity": "medium",
+                                "_component_id": "dyj8tgla-hpmi-e6u8-1hlo-xtwnpqgm2oy8"
+                            }
+                        }
+                    ],
+                    "processors": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Processors\\SimpleProcessor",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "name": "Chat App",
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\ModerationApiElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "input": "${request.text}",
+                                            "result_var": "status",
+                                            "api_key": "${GPT_API_KEY}",
+                                            "apiOptions": {
+                                                "model": "text-moderation-latest"
+                                            },
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "test": "${status[\"results\"][0][\"flagged\"]}",
+                                                        "then": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "type": "default",
+                                                                    "text": "We detected that you are trying to abuse our chat. Please don't do that.",
+                                                                    "append": false,
+                                                                    "alexa_domain": "normal",
+                                                                    "alexa_emotion": "neutral",
+                                                                    "alexa_emotion_intensity": "medium",
+                                                                    "_component_id": "ev5dvevo-wx3m-glo3-oxft-bgsdbikgdlv4"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\EndRequestElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "_component_id": "o3rhprit-pkxq-jioc-mfbh-ehv7ic3vi5j0"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "else_if": [],
+                                                        "else": [],
+                                                        "_component_id": "pmtzbfhr-vnlq-nmev-tk9j-zccam8ma7chi"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "0df4vdxl-msxa-6p0o-nlzm-6ar6wcp3a6mt"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "user_message[\"role\"]": "user",
+                                                "user_message[\"content\"]": "${trim( request.text)}"
+                                            },
+                                            "_component_id": "m3tv9lpb-fphg-zmtu-silu-klezg9okmr9z"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "session",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "messages": "${array_merge( messages, [user_message])}"
+                                            },
+                                            "_component_id": "lxqtfmwo-gsaa-qwl8-x6w3-blgrjgwgyz8u"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "fragment_id": "Chat_Completion",
+                                            "_component_id": "xxedkyg5-vkkx-hgy6-xgho-ltxbtwwmibqt"
+                                        }
+                                    }
+                                ],
+                                "request_filters": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Filters\\NopRequestFilter",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "empty": "match",
+                                            "values": [],
+                                            "_component_id": "8i8lpthc-u02k-5kxi-buew-gp1xtzwvouqu"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "x59iqqx9-vump-fvcs-bm3u-sx3iwbfycuwl"
+                            }
+                        }
+                    ],
+                    "fallback": [],
+                    "_component_id": "eaf287c9-c1c7-79a4-42b3-6b8a8dcebe85"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
+                "namespace": "convo-core",
+                "properties": {
+                    "role": "error_handler",
+                    "block_id": "Error_handler",
+                    "name": "Error handler",
+                    "pre_dispatch": [],
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "It is recommended not to display error message in production.",
+                                "context": null,
+                                "_component_id": "qmyzikrh-vtcm-f5oq-s36b-saolg581hzwl"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "type": "default",
+                                "text": "Error occurred. ${error.getMessage()}",
+                                "append": false,
+                                "alexa_domain": "normal",
+                                "alexa_emotion": "neutral",
+                                "alexa_emotion_intensity": "medium",
+                                "_component_id": "mxxoulti-f8vf-vstq-db5p-aahzr0azxnev"
+                            }
+                        }
+                    ],
+                    "processors": [],
+                    "fallback": [],
+                    "_component_id": "d7gifafb-hkkv-lnng-yorz-tlbse8h3yiep"
+                }
+            }
+        ],
+        "fragments": [
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
+                    "fragment_id": "Chat_Completion",
+                    "name": "Chat Completion",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\ChatCompletionV2Element",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "result_var": "status",
+                                "api_key": "${GPT_API_KEY}",
+                                "apiOptions": {
+                                    "model": "${GPT_DEFAULT_MODEL}",
+                                    "temperature": "${GPT_DEFAULT_TEMPERATURE}",
+                                    "max_tokens": "${GPT_DEFAULT_MAX_TOKENS}"
+                                },
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "session",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "messages": "${status.messages}"
+                                            },
+                                            "_component_id": "loy0j0rr-y9sj-twde-kbg8-dlyktcfff7yp"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "type": "default",
+                                            "text": "${status.last_message.content}",
+                                            "append": false,
+                                            "alexa_domain": "normal",
+                                            "alexa_emotion": "neutral",
+                                            "alexa_emotion_intensity": "medium",
+                                            "_component_id": "gco0rvz9-vyra-muih-xy7n-8f2crjiwkgxx"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "rcb23gtx-fptt-m4oa-5t8z-auwr1pi6cgfw",
+                                "functions": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "comment": "You can place functions in a separate fragment and include it.",
+                                            "context": null,
+                                            "_component_id": "xyd0fhfh-kw7s-smtz-afee-3lcxl8gjab8m"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "name": "get_random_number",
+                                            "description": "This function will return random integer in the given range.",
+                                            "parameters": {
+                                                "min": "${{\n \"type\":\"integer\",\n \"description\" : \"Sets the smallest number that can be returned\"\n}}",
+                                                "max": "${{\n \"type\":\"integer\",\n \"description\" : \"Sets the largestnumber that can be returned\"\n}}"
+                                            },
+                                            "defaults": "${{}}",
+                                            "required": "${[ \"min\", \"max\"]}",
+                                            "request_data": "data",
+                                            "result_data": "${function_result}",
+                                            "ok": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "service",
+                                                        "properties": {
+                                                            "function_result": "{ \"result\" : ${ rand( data.min, data.max)}}"
+                                                        },
+                                                        "_component_id": "t9rmiuks-skie-glpj-cqpz-hpnqazkg8scg"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "dn5mykul-rysp-2pw9-pjap-rpbuo7hgj2xj"
+                                        }
+                                    }
+                                ],
+                                "message_provider": [
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "content": "You are a state-of-the-art AI assistant, trained to provide insightful, detailed, and reliable information on a wide array of topics. Your goal is to understand and assist users to the best of your ability, ensuring clarity and accuracy in every response",
+                                            "_component_id": "kfu0oium-ryxi-uqo5-heki-q3x1rmsbmuqq"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "content": "Other info:\n* today is ${date('l jS F Y')}\n* tomorrow is ${date('l jS F Y', strtotime('tomorrow'))}\n* current time is ${date('h:i:s A')}",
+                                            "_component_id": "6wdwnamg-ltpp-ffd4-pchi-pklllhzkjuvl"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\MessagesLimiterElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "max_count": "${MAX_MESSAGES}",
+                                            "truncate_to": "${TRUNCATE_TO}",
+                                            "message_provider": [
+                                                {
+                                                    "class": "\\Convo\\Gpt\\Pckg\\ConversationMessagesElement",
+                                                    "namespace": "convo-gpt",
+                                                    "properties": {
+                                                        "messages": "${messages}",
+                                                        "_component_id": "1bmxfov3-psnb-6dl0-wtcz-acqgku8dbaor"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "a2doafng-0czv-mnbw-kjxb-fd2bomxph7zp",
+                                            "api_key": "${GPT_API_KEY}",
+                                            "apiOptions": {
+                                                "model": "${GPT_DEFAULT_MODEL}",
+                                                "temperature": "${GPT_DEFAULT_TEMPERATURE}",
+                                                "max_tokens": "${GPT_DEFAULT_MAX_TOKENS}"
+                                            },
+                                            "system_message": "Considering all the prior conversation including the previous summaries, please generate a concise summary capturing the key points and significant themes up until now. Please ensure the summary contains all necessary information to understand the context of the current conversation."
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "_component_id": "6gp4wdco-0hwt-vdds-anzo-wxkc8o8iq9jq"
+                }
+            }
+        ],
+        "properties": [],
+        "configurations": []
+    }
+}
