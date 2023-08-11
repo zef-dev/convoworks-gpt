@@ -227,6 +227,7 @@ Function definition that can be used with Completion API based elements.
 
 ## Deprecated components
 
+The following components are associated with the now-deprecated OpenAI endpoints. While these components remain in the package to ensure your existing services continue to function, they are no longer visible in the toolbox.
 
 ### GPT Completion API Element
 
