@@ -1,7 +1,7 @@
 {
     "template_id": "gpt-example-chat",
     "name": "GPT Example Chat",
-    "description": "Simple chat starter template.",
+    "description": "Simple chat starter template that utilizes the moderation API component, provides summaries for long conversations, and includes function definitions",
     "service": {
         "convo_service_version": 40,
         "packages": [
