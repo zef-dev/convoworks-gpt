@@ -62,6 +62,35 @@ The first is **newsletter subscription** related and they are enabling AI to che
 The second set of actions is for **appointment scheduling**.  It enables AI to check, schedule or reschedule appointments. These actions are using the Convoworks Appointments package and by default it is configured to use a dummy appointments context. Enable **convo-wp-plugin-pack** to replace it with the concrete **Simply Schedule Appointments**, **Easy Appointments** or **Five Star Restaurant Reservations** plugins. Check for [more about appointments](https://convoworks.com/appointment-scheduling-on-your-wordpress-website-now-with-amazon-alexa-skill/) on our blog.
 
 
+## Functions
+
+Convoworks GPT WordPress Plugin provides predefined functions that can be utilized within workflows to extend the capabilities and provide more dynamic interactions.
+
+### `tokenize_string`
+
+**Description:**  
+The `tokenize_string` function processes an input string by removing all HTML tags, converting it to lowercase, stripping punctuation, and then tokenizing it by spaces. The resulting tokens are further refined by removing common stop words, producing a meaningful representation suitable for use with the embeddings API.
+
+**Parameters:**  
+* `$text` - The input string to be tokenized.
+* `$stopWords` (optional) - An array of words to be considered as stop words and removed from the tokenized output. If not provided, a default list of common English stop words will be used.
+
+**Usage:**  
+To tokenize a raw string:  
+```
+${tokenize_string(your_raw_text)}
+```
+
+To tokenize a raw string with custom stop words:  
+```
+${tokenize_string(your_raw_text, ["custom", "stop", "words"])}
+```
+
+**Default Stop Words:**  
+The default stop words list includes common English words like "a", "about", "above", and so forth. These words are typically removed to produce a cleaner, more meaningful representation of the input.
+
+## Components
+
 ### GPT Chat Completion API Element
 
 This is an OpenAI API wrapper element, which allows you to make calls and get the chat completion API response.
