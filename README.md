@@ -71,14 +71,14 @@ This is an OpenAI API wrapper element, which allows you to make calls and get th
 
 **Parameters:**
 
-* `system_message` - The initial `system` message in the conversation.
-* `messages` - An array of conversation messages, including the `assistant` and `user` roles.
-* `result_var` - Defaults to `status`, this is the variable name that stores the complete API response. Access the completion text with: `${status.choices[0]["message"]["content"]}`
-* `api_key` - Your OpenAI API key.
-* `apiOptions` - Options for the [OpenAI Chat Completion API](https://platform.openai.com/docs/api-reference/chat).
+* `System message` - The initial `system` message in the conversation.
+* `Messages` - An array of conversation messages, including the `assistant` and `user` roles.
+* `Result Variable Name` - Defaults to `status`, this is the variable name that stores the complete API response. Access the completion text with: `${status.choices[0]["message"]["content"]}`
+* `API key` - Your OpenAI API key.
+* `API options` - Options for the [OpenAI Chat Completion API](https://platform.openai.com/docs/api-reference/chat).
 
 **Flows:**
-* `ok` - Executes elements after completion. Access completion results through the `result_var` variable.
+* `OK flow` - Executes elements after completion. Access completion results through the `result_var` variable.
 
 
 ### GPT Chat Completion API v2
@@ -88,6 +88,7 @@ This advanced component enables you to perform chat completion API calls with mo
 **Parameters:**
 
 * `Result Variable Name` - The variable that stores the API completion response.
+* `API key` - Your OpenAI API key.
 * `API options` - Configuration options for the chat completion API, such as the model used, temperature, and token limit.
 * 
 **Flows:**
@@ -104,6 +105,7 @@ This element serves as a wrapper for the OpenAI Embeddings API, enabling the ret
 
 * `Input` - The string to be embedded. Recommended preprocessing using `tokenize_string()`: `${ tokenize_string( your_raw_text)}`.
 * `Status Variable` - The variable that contains the complete API response. Access the embedding value with: `${status.data[0].embedding}`.
+* `API key` - Your OpenAI API key.
 * `API options` - Options for the Embeddings API.
 
 **Flows:**
@@ -122,6 +124,7 @@ This element allows you to validate input with the OpenAI Moderation API. The Mo
 
 * `Input` - Text for moderation.
 * `Result Variable Name` - Variable storing the moderation API response.
+* `API key` - Your OpenAI API key.
 * `API options` - Options for the OpenAI Moderation API.
 
 **Flows:**
@@ -140,6 +143,7 @@ The GPT Query Generator element allows you to create context-rich questions from
 * `Messages` - Array of messages representing the GPT chat completion, acting as the primary context for question generation.
 * `Messages Count` - Number of recent conversation messages to be considered.
 * `Result Variable Name` - Variable storing the generated questions.
+* `API key` - Your OpenAI API key.
 * `API Options` - Parameters for the GPT chat completion API.
 
 **Flows:**
@@ -175,6 +179,7 @@ Limits the size of messages by summarizing the oldest ones.
 * `System message` - The main system prompt.
 * `Max messages to keep` - Maximum message count before older messages get summarized.
 * `Truncate to this number of messages` - Message count after truncation.
+* `API key` - Your OpenAI API key.
 * `API options` - Options for summarizing the conversation.
 * `Messages` - Provides the conversation messages.
 
