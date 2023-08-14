@@ -1,6 +1,12 @@
 
 # Convoworks GPT WordPress plugin
 
+### 0.5.0 Chat functions support
+
+* New Chat GPT API component with support for functions
+* Added System Message and Message Limiter elements
+* Added Embeddings and Moderation API elements
+
 ### 0.4.0 Auto activated actions
 
 * Add ability to mark actions as auto activated (e.g. logged user info)
