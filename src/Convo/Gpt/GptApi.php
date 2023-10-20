@@ -122,6 +122,28 @@ class GptApi
         return $response_data;
     }
     
+    public function createImage( $data)
+    {
+        $headers = [
+            'Authorization' => 'Bearer '.$this->_apiKey,
+        ];
+        
+        $this->_logger->debug( 'Performing request');
+        
+        $config = [];
+        
+        $client = $this->_httpFactory->getHttpClient( $config);
+        $request = $this->_httpFactory->buildRequest( IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/images/generations', $headers, $data);
+        
+        $response = $client->sendRequest( $request);
+        
+        $response_data = json_decode( $response->getBody()->getContents(), true);
+        
+        $this->_logger->debug( 'Http response ['.$response->getStatusCode().']');
+        
+        return $response_data;
+    }
+    
     // UTIL
     public function __toString()
     {
