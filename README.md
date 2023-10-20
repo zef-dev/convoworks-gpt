@@ -87,7 +87,7 @@ This advanced component enables you to perform chat completion API calls with mo
 
 **Parameters:**
 
-* `Result Variable Name` - The variable that stores the API completion response.
+* `Result Variable Name` - Default `status`. The variable that stores the API completion response. Defaults to `status`, this is the variable name that stores response information. (`response` : full API response, `messages`: array of messages for current conversation, `last_message`: the last message (returned from GPT) as associative array)
 * `API key` - Your OpenAI API key.
 * `API options` - Configuration options for the chat completion API, such as the model used, temperature, and token limit.
 * 

@@ -17,6 +17,31 @@
     <h3>OK flow</h3>
     <p>This flow is executed once the API call is finished and the result variable is ready for further actions.</p>
     
+
+    Inside the <strong>OK flow</strong>, you can access response data through a variabole defined by <strong>Result Variable Name</strong> and it's properties.
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code class="status-prop" title="Click to copy expression">response</code></td>
+                <td>Full response body as an associative array</td>
+            </tr>
+            <tr>
+                <td><code class="status-prop" title="Click to copy expression">messages</code></td>
+                <td>Array of all messages in conversation</td>
+            </tr>
+            <tr>
+                <td><code class="status-prop" title="Click to copy expression">last_message</code></td>
+                <td>Last message (returned from GPT) as associative array</td>
+            </tr>
+        </tbody>
+    </table>
     
     <hr>
     
