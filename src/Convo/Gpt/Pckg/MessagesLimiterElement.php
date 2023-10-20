@@ -125,8 +125,8 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         }
         
         $messages[] =   [
-            'role' => 'user',
-            'content' => implode( "\n\n", $temp)
+            'role' => 'system',
+            'content' => '# Conversation to summarize'. "\n\n" .implode( "\n\n", $temp)
         ];
         
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
