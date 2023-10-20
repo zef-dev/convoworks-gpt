@@ -171,7 +171,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $data            =   $message['function_call']['arguments'];
         foreach ( $this->_functions as $function) {
             if ( $function->accepts( $function_name)) {
-                return $function->execute( $request, $response, $data);
+                try {
+                    return $function->execute( $request, $response, $data);
+                } catch ( \Exception $e) {
+                    $this->_logger->warning( $e);
+                    return json_encode( [ 'error' => $e->getMessage()]);
+                }
             }
         }
         throw new ComponentNotFoundException( 'Function ['.$function_name.'] not found');
