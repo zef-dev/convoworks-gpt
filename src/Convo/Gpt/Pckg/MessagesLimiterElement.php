@@ -84,6 +84,7 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
     
     private function _truncate( $messages, $max, $to) 
     {
+        $this->_logger->debug( 'Truncating messages ['.count( $messages).'] to ['.$to.'] max ['.$max.']');
         $count = count( $messages);
         if ( $count < $max) {
             return $messages;
@@ -93,12 +94,22 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         $new_messages = [];
         $truncated = [];
         $count_to_trim = $count - $to;
-        foreach ( $messages as $message) {
-            if ( count( $truncated) < $count_to_trim) {
-                if ( $message['role'] === 'user' || $message['role'] === 'system' || (
-                    $message['role'] === 'assistant' || !isset( $message['function_call'])))
+        
+        $this->_logger->debug( 'Count to trim ['.$count_to_trim.']');
+        
+        for ( $i=0; $i< $count; $i++) 
+        {
+            $message = $messages[$i];
+            
+            if ( $i < $count_to_trim) 
+            {
+                if ( $message['role'] === 'function' || isset( $message['function_call'])) {
+                    continue;
+                }
                 $truncated[] = $message;
-            } else {
+            } 
+            else 
+            {
                 $new_messages[] = $message;
             }
         }
