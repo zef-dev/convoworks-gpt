@@ -45,7 +45,7 @@ class EmbeddingsElement extends AbstractWorkflowContainerComponent implements IC
         $this->_logger->debug( "\n".print_r( $input, true));
         $this->_logger->debug( '============');
         
-        $http_response   =   $api->embeddings( $this->_getApiOptions( $input));
+        $http_response   =   $api->embeddings( $this->_buildApiOptions( $input));
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
@@ -55,7 +55,7 @@ class EmbeddingsElement extends AbstractWorkflowContainerComponent implements IC
         }
     }
     
-    private function _getApiOptions( $input)
+    private function _buildApiOptions( $input)
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         $options['input'] = $input;

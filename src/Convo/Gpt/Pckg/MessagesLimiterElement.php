@@ -143,12 +143,12 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
         
-        $http_response   =   $api->chatCompletion( $this->_getApiOptions( $messages));
+        $http_response   =   $api->chatCompletion( $this->_buildApiOptions( $messages));
         
         return $http_response['choices'][0]['message']['content'];
     }
     
-    private function _getApiOptions( $messages)
+    private function _buildApiOptions( $messages)
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         

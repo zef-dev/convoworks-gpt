@@ -201,11 +201,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $this->_logger->debug( "\n".json_encode( $messages, JSON_PRETTY_PRINT));
         $this->_logger->debug( '============');
         
-        $http_response   =   $api->chatCompletion( $this->_getApiOptions( $messages));
+        $http_response   =   $api->chatCompletion( $this->_buildApiOptions( $messages));
         return $http_response;
     }
     
-    private function _getApiOptions( $messages)
+    private function _buildApiOptions( $messages)
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         
@@ -215,7 +215,6 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $options['functions'][] = $function->getDefinition();
             }
         }
-        
         
         $options['messages'] = $messages;
         

@@ -40,7 +40,7 @@ class ModerationApiElement extends AbstractWorkflowContainerComponent implements
         $api_key        =   $this->evaluateString( $this->_properties['api_key']);
         
         $api            =   $this->_gptApiFactory->getApi( $api_key);
-        $http_response  =   $api->moderations( $this->_getApiOptions( $input));
+        $http_response  =   $api->moderations( $this->_buildApiOptions( $input));
         
         $params         =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
@@ -50,7 +50,7 @@ class ModerationApiElement extends AbstractWorkflowContainerComponent implements
         }
     }
     
-    private function _getApiOptions( $input)
+    private function _buildApiOptions( $input)
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         $options['input'] = $input;

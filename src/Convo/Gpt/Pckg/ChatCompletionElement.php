@@ -50,7 +50,7 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
         $this->_logger->debug( "\n".json_encode( $messages, JSON_PRETTY_PRINT));
         $this->_logger->debug( '============');
         
-        $http_response   =   $api->chatCompletion( $this->_getApiOptions( $messages));
+        $http_response   =   $api->chatCompletion( $this->_buildApiOptions( $messages));
         
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), $http_response);
@@ -60,7 +60,7 @@ class ChatCompletionElement extends AbstractWorkflowContainerComponent implement
         }
     }
     
-    private function _getApiOptions( $messages)
+    private function _buildApiOptions( $messages)
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
         $options['messages'] = $messages;
