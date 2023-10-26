@@ -158,6 +158,9 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             );
             
             try {
+                
+                $function_data = self::processJsonWithConstants( $function_data);
+                $this->_logger->debug( 'Got processed JSON ['.$function_data.']');
                 $this->_registerExecution( $function_name, $function_data);
                 $function   =   $this->_findFunction( $function_name);
                 $result     =   $function->execute( $request, $response, $function_data);
