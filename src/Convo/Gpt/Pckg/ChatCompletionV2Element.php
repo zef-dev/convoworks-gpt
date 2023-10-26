@@ -187,7 +187,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         
         $MAX_ATTEMPTS = 3;
         if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
-            throw new \Exception( 'Trying to invoke same function ['.$functionName.'] with same data too many times. Max allowed ['.$MAX_ATTEMPTS.']');
+            throw new \Exception( 'Trying to invoke same function ['.$functionName.'] with same data too many times. Max allowed ['.$MAX_ATTEMPTS.']. Do not try to call this function again!');
         }
     }
     
