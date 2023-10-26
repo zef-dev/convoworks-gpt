@@ -55,6 +55,10 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     public function execute( IConvoRequest $request, IConvoResponse $response, $data)
     {
         $data = json_decode( $data, true);
+        $error = json_last_error();
+        if ( $error !== JSON_ERROR_NONE) {
+            throw new \Exception( 'JSON parsing error: '.json_last_error_msg());   
+        }
         $this->_logger->debug( 'Got data decoded ['.print_r( $data, true).']');
         $data = array_merge( $this->_getDefaults(), $data);
         $this->_logger->debug( 'Got data with defaults ['.print_r( $data, true).']');
