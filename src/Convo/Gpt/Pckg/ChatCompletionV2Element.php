@@ -12,6 +12,7 @@ use Convo\Gpt\IChatFunction;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Core\ComponentNotFoundException;
 use Convo\Gpt\IMessages;
+use Convo\Gpt\RefuseFunctionCallException;
 
 class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer, IMessages
 {
@@ -160,6 +161,8 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $this->_registerExecution( $function_name, $function_data);
                 $function   =   $this->_findFunction( $function_name);
                 $result     =   $function->execute( $request, $response, $function_data);
+            } catch ( RefuseFunctionCallException $e) {
+                throw $e;
             } catch ( \Exception $e) {
                 $this->_logger->warning( $e);
                 $result = json_encode( [ 'error' => $e->getMessage()]);
@@ -179,15 +182,20 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     
     private function _registerExecution( $functionName, $functionData)
     {
+        $MAX_ATTEMPTS = 3;
         $key = md5($functionName.'-'.$functionData);
         if ( !isset( $this->_callStack[$key])) {
             $this->_callStack[$key] = 0;
         }
+        
+        if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
+            throw new RefuseFunctionCallException( 'You were already warned to stop invoking ['.$functionName.'] after ['.$this->_callStack[$key].'] attempts. Breaking the further execution.');
+        }
+        
         $this->_callStack[$key] = $this->_callStack[$key] + 1;
         
-        $MAX_ATTEMPTS = 3;
         if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
-            throw new \Exception( 'Trying to invoke same function ['.$functionName.'] with same data too many times. Max allowed ['.$MAX_ATTEMPTS.']. Do not try to call this function again!');
+            throw new \Exception( 'Caution: Please avoid invoking the ['.$functionName.'] function with arguments ['.$functionData.'] again! Compliance is crucial. Attempted invocations have reached ['.$this->_callStack[$key].'], while the maximum allowed is ['.$MAX_ATTEMPTS.'].');
         }
     }
     
