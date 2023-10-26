@@ -43,6 +43,8 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
      */
     private $_messagesDefinition = [];
     
+    private $_callStack  =  [];
+    
     public function __construct( $properties, $gptApiFactory)
     {
         parent::__construct( $properties);
@@ -99,6 +101,8 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+        $this->_callStack = [];
+        
         $this->_functions = [];
         foreach ( $this->_functionsDefinition as $elem)   {
             $elem->read( $request, $response);
@@ -153,6 +157,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             );
             
             try {
+                $this->_registerExecution( $function_name, $function_data);
                 $function   =   $this->_findFunction( $function_name);
                 $result     =   $function->execute( $request, $response, $function_data);
             } catch ( \Exception $e) {
@@ -170,6 +175,20 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
         
         return $httpResponse;
+    }
+    
+    private function _registerExecution( $functionName, $functionData)
+    {
+        $key = md5($functionName.'-'.$functionData);
+        if ( !isset( $this->_callStack[$key])) {
+            $this->_callStack[$key] = 0;
+        }
+        $this->_callStack[$key] = $this->_callStack[$key] + 1;
+        
+        $MAX_ATTEMPTS = 3;
+        if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
+            throw new \Exception( 'Trying to invoke same function ['.$functionName.'] with same data too many times. Max allowed ['.$MAX_ATTEMPTS.']');
+        }
     }
     
     /**
