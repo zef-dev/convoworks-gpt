@@ -149,9 +149,14 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             $messages       =   array_merge(
                 $messages,
                 [$httpResponse['choices'][0]['message']],
-                );
+            );
             
-            $result = $this->_executeFunction( $httpResponse['choices'][0]['message'], $request, $response);
+            try {
+                $result = $this->_executeFunction( $httpResponse['choices'][0]['message'], $request, $response);
+            } catch ( \Exception $e) {
+                $this->_logger->warning( $e);
+                $result = json_encode( [ 'error' => $e->getMessage()]);
+            }
             
             $messages       =   array_merge(
                 $messages,
@@ -171,12 +176,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $data            =   $message['function_call']['arguments'];
         foreach ( $this->_functions as $function) {
             if ( $function->accepts( $function_name)) {
-                try {
-                    return $function->execute( $request, $response, $data);
-                } catch ( \Exception $e) {
-                    $this->_logger->warning( $e);
-                    return json_encode( [ 'error' => $e->getMessage()]);
-                }
+                return $function->execute( $request, $response, $data);
             }
         }
         throw new ComponentNotFoundException( 'Function ['.$function_name.'] not found');
