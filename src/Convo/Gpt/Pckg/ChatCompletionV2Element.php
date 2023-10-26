@@ -180,6 +180,35 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         return $httpResponse;
     }
     
+    public static function preprocessJsonWithConstants( $json)
+    {
+        // GREAT ONE
+        return preg_replace_callback('/"([^"]+)"|([A-Z_]+)/', function ($matches) {
+            // If it is a constant (not enclosed by quotes), add quotes
+            if (!empty($matches[2]) && !preg_match('/"[A-Z_]+"/', $matches[2])) {
+                return '"' . $matches[2] . '"';
+            }
+            // If it is within quotes, return as is
+            return $matches[0];
+        }, $json);
+    }
+    
+    public static function processJsonWithConstants( $json)
+    {
+        // GREAT ONE
+        return preg_replace_callback('/"([^"]+)"|([A-Z_]+)/', function ($matches) {
+            // If it is a constant (not enclosed by quotes), add quotes
+            if (!empty($matches[2]) && !preg_match('/"[A-Z_]+"/', $matches[2])) {
+                if ( defined( $matches[2])) {
+                    return json_encode( constant( $matches[2]));
+                }
+                return '"' . $matches[2] . '"';
+            }
+            // If it is within quotes, return as is
+            return $matches[0];
+        }, $json);
+    }
+    
     private function _registerExecution( $functionName, $functionData)
     {
         $MAX_ATTEMPTS = 3;
