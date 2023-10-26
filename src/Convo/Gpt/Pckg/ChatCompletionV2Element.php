@@ -142,6 +142,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     private function _handleResponse( $httpResponse, &$messages, $request, $response)
     {
         $function_name   =   $httpResponse['choices'][0]['message']['function_call']['name'] ?? null;
+        $function_data   =   $httpResponse['choices'][0]['message']['function_call']['arguments'] ?? null;
         $auto_execute    =   true;
         
         if ( $function_name && $auto_execute)
@@ -152,7 +153,8 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             );
             
             try {
-                $result = $this->_executeFunction( $httpResponse['choices'][0]['message'], $request, $response);
+                $function   =   $this->_findFunction( $function_name);
+                $result     =   $function->execute( $request, $response, $function_data);
             } catch ( \Exception $e) {
                 $this->_logger->warning( $e);
                 $result = json_encode( [ 'error' => $e->getMessage()]);
@@ -170,16 +172,19 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         return $httpResponse;
     }
     
-    private function _executeFunction( $message, $request, $response) 
+    /**
+     * @param string $functionName
+     * @throws ComponentNotFoundException
+     * @return \Convo\Gpt\IChatFunction
+     */
+    private function _findFunction( $functionName) 
     {
-        $function_name   =   $message['function_call']['name'];
-        $data            =   $message['function_call']['arguments'];
         foreach ( $this->_functions as $function) {
-            if ( $function->accepts( $function_name)) {
-                return $function->execute( $request, $response, $data);
+            if ( $function->accepts( $functionName)) {
+                return $function;
             }
         }
-        throw new ComponentNotFoundException( 'Function ['.$function_name.'] not found');
+        throw new ComponentNotFoundException( 'Function ['.$functionName.'] not found');
     }
     
     private function _chatCompletion( $messages)
