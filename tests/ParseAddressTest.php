@@ -63,14 +63,15 @@ class ParseAddressTest extends TestCase
     
     public function processDataProvider()
     {
+        define( 'CONSTANT_VALUE', 'My String Value');
         return [
             [
                 '{ "a": "Here is some FILE_APPEND text", "b": FILE_APPEND }',
-                '{ "a": "Here is some FILE_APPEND text", "b": '.json_encode( FILE_APPEND).' }'
+                '{ "a": "Here is some FILE_APPEND text", "b": '.json_encode( constant( "FILE_APPEND")).' }'
             ],
             [
                 '{"constant":CONSTANT_VALUE}',
-                '{"constant":"CONSTANT_VALUE"}'
+                '{"constant":'.json_encode( constant( "CONSTANT_VALUE")).'}'
             ],
             [
                 '["element1", "element2", ELEMENT]',
