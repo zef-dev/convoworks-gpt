@@ -4,6 +4,7 @@ namespace Convo\Gpt;
 
 
 use Convo\Core\Util\IHttpFactory;
+use Convo\Core\Util\HttpClientException;
 
 class GptApi
 {
@@ -68,7 +69,17 @@ class GptApi
         $client = $this->_httpFactory->getHttpClient( $config);
         $request = $this->_httpFactory->buildRequest( IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/chat/completions', $headers, $data);
         
-        $response = $client->sendRequest( $request);
+        try {
+            $response = $client->sendRequest( $request);
+        } catch ( HttpClientException $e) {
+            if ( $e->getCode() === 400) {
+                $response_data = json_decode( $e->getMessage(), true);
+                if ( isset( $response_data['error']['code']) && $response_data['error']['code'] === 'context_length_exceeded') {
+                    throw new ContextLengthExceededException( $response_data['error']['message'], 0, $e);
+                }
+            }
+            throw $e;
+        }
         
         $response_data = json_decode( $response->getBody()->getContents(), true);
         
