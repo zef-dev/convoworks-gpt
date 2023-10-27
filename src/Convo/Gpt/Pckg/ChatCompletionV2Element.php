@@ -183,20 +183,39 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         return $httpResponse;
     }
     
-    public static function processJsonWithConstants( $json)
+    public static function processJsonWithConstants($json)
     {
-        // GREAT ONE
-        return preg_replace_callback('/"([^"]+)"|([A-Z_]+)/', function ($matches) {
-            // If it is a constant (not enclosed by quotes), add quotes
-            if (!empty($matches[2]) && !preg_match('/"[A-Z_]+"/', $matches[2])) {
-                if ( defined( $matches[2])) {
-                    return json_encode( constant( $matches[2]));
-                }
-                return '"' . $matches[2] . '"';
+        // Placeholder for escaped double quotes
+        $PLACEHOLDER = "***convo-json-placeholder***";
+        // Pattern representing escaped double quotes in JSON
+        $PATTERN = '\\\\"';
+        
+        // Temporarily replace escaped double quotes with a placeholder
+        $json = str_replace($PATTERN, $PLACEHOLDER, $json);
+        
+        $json = preg_replace_callback('/("[^"]*")|(\b[A-Z_]+\b)/', function ($matches) {
+            // If part of a string, return as is
+            if ($matches[1]) return $matches[1];
+            
+            $constantName = $matches[2];
+            
+            // Check if it is a defined constant
+            if (defined($constantName)) {
+                // Get the value of the constant
+                $constantValue = constant($constantName);
+                
+                // Replace with the actual value of the constant, ensuring it's JSON-encoded
+                return is_numeric($constantValue) ? $constantValue : json_encode($constantValue);
             }
-            // If it is within quotes, return as is
-            return $matches[0];
+            
+            // If it's not a defined constant, wrap as string value
+            return '"'.$constantName.'"';
         }, $json);
+            
+        // Restore the escaped double quotes
+        $json = str_replace($PLACEHOLDER, $PATTERN, $json);
+        
+        return $json;
     }
     
     private function _registerExecution( $functionName, $functionData)

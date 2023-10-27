@@ -40,8 +40,8 @@ class ProcessJsonWithConstantsTest extends TestCase
                 '{"boolean_true": true, "boolean_false": false, "null_value": null}'
             ],
             [
-                '{CONSTANT_KEY: "value"}',
-                '{"CONSTANT_KEY": "value"}'
+                '[\n    \"C:\\\\xampp\\\\htdocs\\\\wp-test\\\\.htaccess\",\n    \"# BEGIN WordPress\\n# The directives (lines) between \\\"BEGIN WordPress\\\" and \\\"END WordPress\\\" are\\n# dynamically generated, and should only be modified via WordPress filters.\\n# Any changes to the directives between these markers will be overwritten.\\n<IfModule mod_rewrite.c>\\nRewriteEngine On\\nRewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\\nRewriteBase \/wp-test\/\\nRewriteRule ^index\\\\.php$ - [L]\\nRewriteCond %{REQUEST_FILENAME} !-f\\nRewriteCond %{REQUEST_FILENAME} !-d\\nRewriteRule . \/wp-test\/index.php [L]\\n<\/IfModule>\\n# END WordPress\\n\\n# BEGIN Restrict access to debug.log\\n<Files debug.log>\\nOrder allow,deny\\nDeny from all\\n<\/Files>\\n# END Restrict access to debug.log\\n\"\n  ]',
+                '[\n    \"C:\\\\xampp\\\\htdocs\\\\wp-test\\\\.htaccess\",\n    \"# BEGIN WordPress\\n# The directives (lines) between \\\"BEGIN WordPress\\\" and \\\"END WordPress\\\" are\\n# dynamically generated, and should only be modified via WordPress filters.\\n# Any changes to the directives between these markers will be overwritten.\\n<IfModule mod_rewrite.c>\\nRewriteEngine On\\nRewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\\nRewriteBase \/wp-test\/\\nRewriteRule ^index\\\\.php$ - [L]\\nRewriteCond %{REQUEST_FILENAME} !-f\\nRewriteCond %{REQUEST_FILENAME} !-d\\nRewriteRule . \/wp-test\/index.php [L]\\n<\/IfModule>\\n# END WordPress\\n\\n# BEGIN Restrict access to debug.log\\n<Files debug.log>\\nOrder allow,deny\\nDeny from all\\n<\/Files>\\n# END Restrict access to debug.log\\n\"\n  ]'
             ]
         ];
     }
@@ -49,10 +49,11 @@ class ProcessJsonWithConstantsTest extends TestCase
     /**
      * @dataProvider processDataProvider
      */
-    public function testProcessJson( $inputJson, $expectedData)
+    public function testProcessJson( $inputJson, $expectedJson)
     {
         $result = ChatCompletionV2Element::processJsonWithConstants( $inputJson);
-        $this->assertEquals( $expectedData, $result, "Failed asserting that two objects are equal.");
+        
+        $this->assertEquals( $expectedJson, $result, "Failed asserting that two objects are equal.");
     }
     
 }
