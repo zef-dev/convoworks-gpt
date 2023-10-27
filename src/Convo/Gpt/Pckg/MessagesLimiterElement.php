@@ -114,6 +114,11 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             }
         }
         
+        $new_messages = array_merge( 
+            $this->_removeEndingUserMessages( $truncated), 
+            $new_messages
+        );
+        
         $this->_logger->debug( 'Truncated messages ['.print_r( $truncated, true).']');
         
         // SUMMARIZE
@@ -121,6 +126,21 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         $new_messages = array_merge( [['role'=>'system', 'content' => $summarized]], $new_messages);
         
         return $new_messages;
+    }
+    
+    private function _removeEndingUserMessages( &$truncated) 
+    {
+        if ( count( $truncated)) 
+        {
+            if ( $truncated[count( $truncated) - 1]['role'] === 'user') 
+            {
+                return array_merge( 
+                    [array_pop( $truncated)], 
+                    $this->_removeEndingUserMessages( $truncated)
+                );
+            }
+        }
+        return [];
     }
     
     private function _sumarize( $conversation) 
