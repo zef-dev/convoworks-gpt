@@ -208,8 +208,8 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 return is_numeric($constantValue) ? $constantValue : json_encode($constantValue);
             }
             
-            // If it's not a defined constant, wrap as string value
-            return '"'.$constantName.'"';
+            // If it's not a defined constant, leave as is
+            return $constantName;
         }, $json);
             
         // Restore the escaped double quotes

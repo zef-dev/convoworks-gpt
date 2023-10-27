@@ -9,6 +9,8 @@ class ProcessJsonWithConstantsTest extends TestCase
     public function processDataProvider()
     {
         define( 'CONSTANT_VALUE', 'My String Value');
+        define( 'ELEMENT', 'ELEMENT String Value');
+        define( 'NESTED_CONSTANT', 'NESTED_CONSTANT String Value');
         return [
             [
                 '{ "a": "Here is some FILE_APPEND text", "b": FILE_APPEND }',
@@ -20,7 +22,7 @@ class ProcessJsonWithConstantsTest extends TestCase
             ],
             [
                 '["element1", "element2", ELEMENT]',
-                '["element1", "element2", "ELEMENT"]'
+                '["element1", "element2", '.json_encode( constant( "ELEMENT")).']'
             ],
             [
                 '{"mixed": "Text ELEMENT"}',
@@ -28,12 +30,12 @@ class ProcessJsonWithConstantsTest extends TestCase
             ],
             
             [
-                '{"value": CONSTANT, "number": 123}',
-                '{"value": "CONSTANT", "number": 123}'
+                '{"value": NOT_CONSTANT, "number": 123}',
+                '{"value": NOT_CONSTANT, "number": 123}'
             ],
             [
                 '{"object": {"nested_constant": NESTED_CONSTANT}}',
-                '{"object": {"nested_constant": "NESTED_CONSTANT"}}'
+                '{"object": {"nested_constant": '.json_encode( constant( "NESTED_CONSTANT")).'}}'
             ],
             [
                 '{"boolean_true": TRUE, "boolean_false": FALSE, "null_value": NULL}',
