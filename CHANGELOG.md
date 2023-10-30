@@ -1,6 +1,11 @@
 
 # Convoworks GPT WordPress plugin
 
+### 0.6.0 Improved Chat Functions Execution
+
+- Enhanced the execution of chat functions: Included fixes for JSON parsing, handled endless loops better, and improved error handling.
+- Optimized the trimming of conversation messages. 
+
 ### 0.5.0 Chat functions support
 
 * New Chat GPT API component with support for functions
