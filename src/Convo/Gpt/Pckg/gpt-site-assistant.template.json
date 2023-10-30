@@ -431,7 +431,6 @@
                                 "scope_type": "request",
                                 "parameters": "service",
                                 "properties": {
-                                    "active_theme": "${wp_call_user_func( \"wp_get_theme\")}",
                                     "extensions": "${call_user_func( \"get_loaded_extensions\")}",
                                     "phpversion": "${call_user_func(\"phpversion\")}"
                                 },
@@ -450,7 +449,7 @@
                             "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
                             "namespace": "convo-gpt",
                             "properties": {
-                                "content": "## Additional Context: Website system info:\n\n* home_url: ${home_url()}\n* ABSPATH: ${ constant( \"ABSPATH\")}\n* website name: ${ wp_call_user_func( 'get_bloginfo', ['name'] )}\n* PHP version ${phpversion}\n\n### Loaded PHP Extensions\n\n${implode( ', ', extensions)}\n\n### Active theme\n\nname: ${active_theme.get(\"Name\")}\nuri: ${active_theme.get(\"ThemeURI\")}\nversion: ${active_theme.get(\"Version\")}\n\n### Active plugins \n\n${implode( ', ', get_option('active_plugins'))}",
+                                "content": "## Additional Context: Website system info:\n\n* home_url: ${home_url()}\n* ABSPATH: ${ constant( \"ABSPATH\")}\n* website name: ${ wp_call_user_func( 'get_bloginfo', ['name'] )}\n* PHP version ${phpversion}\n\n### Loaded PHP Extensions\n\n${implode( ', ', extensions)}\n\n### Active theme\n\nslug: ${wp_call_user_func( \"get_template\")}\n\n### Active plugins \n\n${implode( ', ', get_option('active_plugins'))}",
                                 "_component_id": "4gulzovx-gzvz-d5hy-ulnk-vfaeuthrua2e"
                             }
                         }
