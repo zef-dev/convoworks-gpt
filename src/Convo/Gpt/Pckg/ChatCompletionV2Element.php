@@ -183,6 +183,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         return $httpResponse;
     }
     
+    /**
+     * Tries to correct invalid JSON data in cases when GPT uses PHP constants in function calls
+     * @param string $json
+     * @return string
+     */
     public static function processJsonWithConstants($json)
     {
         // Placeholder for escaped double quotes
@@ -215,7 +220,32 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         // Restore the escaped double quotes
         $json = str_replace($PLACEHOLDER, $PATTERN, $json);
         
-        return $json;
+        $data = json_decode( $json, true); 
+        
+        if ( json_last_error() !== JSON_ERROR_NONE) {
+            return $json;
+        }
+        
+        $data = self::resolveStringConstantValues( $data);
+        
+        return json_encode( $data);
+    }
+    
+    /**
+     * Resolves eventual PHP constants passed as string values.
+     * @param array $data
+     * @return array
+     */
+    public static function resolveStringConstantValues( $data)
+    {
+        foreach ( $data as $key=>$val) {
+            if ( is_string( $val) && defined( $val)) {
+                $data[$key] = constant( $val);
+            } else if ( is_array( $val)) {
+                $data[$key] = self::resolveStringConstantValues( $val);
+            }
+        }
+        return $data;
     }
     
     private function _registerExecution( $functionName, $functionData)

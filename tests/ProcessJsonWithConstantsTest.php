@@ -14,7 +14,7 @@ class ProcessJsonWithConstantsTest extends TestCase
         return [
             [
                 '{ "a": "Here is some FILE_APPEND text", "b": FILE_APPEND }',
-                '{ "a": "Here is some FILE_APPEND text", "b": '.json_encode( constant( "FILE_APPEND")).' }'
+                '{"a":"Here is some FILE_APPEND text","b":'.json_encode( constant( "FILE_APPEND")).'}'
             ],
             [
                 '{"constant":CONSTANT_VALUE}',
@@ -22,11 +22,11 @@ class ProcessJsonWithConstantsTest extends TestCase
             ],
             [
                 '["element1", "element2", ELEMENT]',
-                '["element1", "element2", '.json_encode( constant( "ELEMENT")).']'
+                '["element1","element2",'.json_encode( constant( "ELEMENT")).']'
             ],
             [
                 '{"mixed": "Text ELEMENT"}',
-                '{"mixed": "Text ELEMENT"}'
+                '{"mixed":"Text ELEMENT"}'
             ],
             
             [
@@ -35,11 +35,19 @@ class ProcessJsonWithConstantsTest extends TestCase
             ],
             [
                 '{"object": {"nested_constant": NESTED_CONSTANT}}',
-                '{"object": {"nested_constant": '.json_encode( constant( "NESTED_CONSTANT")).'}}'
+                '{"object":{"nested_constant":'.json_encode( constant( "NESTED_CONSTANT")).'}}'
+            ],
+            [
+                '{"object": {"nested_constant": "NESTED_CONSTANT"}}',
+                '{"object":{"nested_constant":'.json_encode( constant( "NESTED_CONSTANT")).'}}'
             ],
             [
                 '{"boolean_true": TRUE, "boolean_false": FALSE, "null_value": NULL}',
-                '{"boolean_true": true, "boolean_false": false, "null_value": null}'
+                '{"boolean_true":true,"boolean_false":false,"null_value":null}'
+            ],
+            [
+                '["/home/fohovotaha8776/web/zealous-zebra-1ckjj.instawp.xyz/public_html/.htaccess", "# Prevent access to debug.log\n<Files \"debug.log\">\n    Order allow,deny\n    Deny from all\n</Files>\n", "FILE_APPEND"]',
+                '["\/home\/fohovotaha8776\/web\/zealous-zebra-1ckjj.instawp.xyz\/public_html\/.htaccess","# Prevent access to debug.log\n<Files \"debug.log\">\n    Order allow,deny\n    Deny from all\n<\/Files>\n",8]'
             ],
             [
                 '[\n    \"C:\\\\xampp\\\\htdocs\\\\wp-test\\\\.htaccess\",\n    \"# BEGIN WordPress\\n# The directives (lines) between \\\"BEGIN WordPress\\\" and \\\"END WordPress\\\" are\\n# dynamically generated, and should only be modified via WordPress filters.\\n# Any changes to the directives between these markers will be overwritten.\\n<IfModule mod_rewrite.c>\\nRewriteEngine On\\nRewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]\\nRewriteBase \/wp-test\/\\nRewriteRule ^index\\\\.php$ - [L]\\nRewriteCond %{REQUEST_FILENAME} !-f\\nRewriteCond %{REQUEST_FILENAME} !-d\\nRewriteRule . \/wp-test\/index.php [L]\\n<\/IfModule>\\n# END WordPress\\n\\n# BEGIN Restrict access to debug.log\\n<Files debug.log>\\nOrder allow,deny\\nDeny from all\\n<\/Files>\\n# END Restrict access to debug.log\\n\"\n  ]',
