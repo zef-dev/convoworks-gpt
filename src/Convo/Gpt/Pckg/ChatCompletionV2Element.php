@@ -257,7 +257,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
         
         if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
-            throw new RefuseFunctionCallException( 'You were already warned to stop invoking ['.$functionName.'] after ['.$this->_callStack[$key].'] attempts. Breaking the further execution.');
+            throw new RefuseFunctionCallException( 'You were already warned to stop invoking ['.$functionName.'] with arguments ['.$functionData.'] after ['.$this->_callStack[$key].'] attempts. Breaking the further execution.');
         }
         
         $this->_callStack[$key] = $this->_callStack[$key] + 1;
