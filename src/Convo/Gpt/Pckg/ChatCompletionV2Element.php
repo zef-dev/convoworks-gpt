@@ -159,7 +159,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             
             try {
                 
-                $function_data = self::processJsonWithConstants( $function_data);
+                if ( strpos( $function_data, '"callback": "defined"') === false && strpos( $function_data, '"callback": "constant"') === false) {
+                    $this->_logger->debug( 'Going to preprocess JSON ['.$function_data.']');
+                    $function_data = self::processJsonWithConstants( $function_data);
+                }
+                
                 $this->_logger->debug( 'Got processed JSON ['.$function_data.']');
                 $this->_registerExecution( $function_name, $function_data);
                 $function   =   $this->_findFunction( $function_name);
