@@ -73,8 +73,12 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
             $elem->read( $request, $response);
         }
         
-        $params        =    $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
-        return $this->evaluateString( $this->_resultData);
+        $params     =   $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
+        $result     =   $this->evaluateString( $this->_resultData);
+        if ( is_string( $result)) {
+            return $result;
+        }
+        return json_encode( $result);
     }
     
     private function _getDefaults()
