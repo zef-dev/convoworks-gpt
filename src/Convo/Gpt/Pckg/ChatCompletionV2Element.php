@@ -105,12 +105,13 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $this->_callStack = [];
         
         $this->_functions = [];
-        foreach ( $this->_functionsDefinition as $elem)   {
+        $this->_messages = [];
+        
+        foreach ( $this->_messagesDefinition as $elem)   {
             $elem->read( $request, $response);
         }
         
-        $this->_messages = [];
-        foreach ( $this->_messagesDefinition as $elem)   {
+        foreach ( $this->_functionsDefinition as $elem)   {
             $elem->read( $request, $response);
         }
         
