@@ -66,7 +66,7 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
             if ( isset( $message['function_call'])) {
                 continue;
             }
-            $conversation[] = $message['role'].': '.$message['content'];
+            $conversation[] = ucfirst( $message['role']).': '.$message['content'];
         }
         
         $max_count      =   intval( $this->evaluateString( $this->_properties['messages_count']));
@@ -108,9 +108,13 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
     {
         $system     =   $this->evaluateString( $this->_properties['system_message']);
         
+        $serialized =   '**Conversation to generate questions from**
+
+'.$serialized;
+        
         $messages   =   [
             [ 'role' => 'system', 'content' => $system],
-            [ 'role' => 'user', 'content' => $serialized],
+            [ 'role' => 'system', 'content' => $serialized],
         ];
         
         $api_key        =   $this->evaluateString( $this->_properties['api_key']);
