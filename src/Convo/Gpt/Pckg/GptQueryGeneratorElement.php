@@ -94,8 +94,8 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
         $questions = [];
         
         foreach ( $lines as $line) {
-            if ( strpos( $line, ":") !== false) {
-                $question = trim(substr( $line, strpos( $line, ":") + 1));
+            if ( strpos( $line, ":") === 1 || strpos( $line, ".") === 1) {
+                $question = trim(substr( $line, 2));
                 if (!empty($question)) {
                     $questions[] = $question;
                 }
@@ -106,16 +106,29 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
     
     private function _generateQuestions( $serialized) 
     {
-        $system     =   $this->evaluateString( $this->_properties['system_message']);
+        $embeded = false;
+        if ( strpos( $this->_properties['system_message'], '${conversation}') !== false) {
+            $embeded = true;
+        }
         
         $serialized =   '**Conversation to generate questions from**
-
+            
 '.$serialized;
         
-        $messages   =   [
-            [ 'role' => 'system', 'content' => $system],
-            [ 'role' => 'system', 'content' => $serialized],
-        ];
+        if ( $embeded) {
+            $system     =   $this->evaluateString( $this->_properties['system_message'], ['conversation' => $serialized]);
+            $messages   =   [
+                [ 'role' => 'system', 'content' => $system],
+            ];
+        } else {
+            $system     =   $this->evaluateString( $this->_properties['system_message']);
+            $messages   =   [
+                [ 'role' => 'system', 'content' => $system],
+                [ 'role' => 'system', 'content' => $serialized],
+            ];
+        }
+        
+
         
         $api_key        =   $this->evaluateString( $this->_properties['api_key']);
         $api            =   $this->_gptApiFactory->getApi( $api_key);
