@@ -8,7 +8,7 @@
  * UID: convoworks-gpt
  * Plugin URI: https://github.com/zef-dev/convoworks-gpt
  * Author: ZEF Development
- * Version: 0.06.00
+ * Version: 0.07.00-RC02
  * Author URI: https://zef.dev
  * Text Domain: convoworks-gpt
  */
