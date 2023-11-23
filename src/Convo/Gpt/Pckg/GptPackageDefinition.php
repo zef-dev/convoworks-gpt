@@ -552,6 +552,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'The number of messages to keep after summarization.',
                         'valueType' => 'string'
                     ],
+                    'include_functions' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => array(),
+                        'defaultValue' => false,
+                        'name' => 'Include functions',
+                        'description' => 'If true, function results will also be summarized',
+                        'valueType' => 'boolean'
+                    ],
                     'api_key' => $API_KEY,
                     'apiOptions' => [
                         'editor_type' => 'params',

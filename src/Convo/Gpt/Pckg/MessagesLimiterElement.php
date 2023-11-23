@@ -21,6 +21,8 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
     
     private $_messages = [];
 
+    private $_includeFunctions;
+
 
     /**
      * @var IConversationElement[]
@@ -39,6 +41,8 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
                 $this->addChild($element);
             }
         }
+        
+        $this->_includeFunctions = $properties['include_functions'] ?? '';
     }
     
     public function registerMessage( $message)
@@ -90,6 +94,8 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             return $messages;
         }
         
+        $include = boolval( $this->evaluateString( $this->_includeFunctions));
+        
         // TRUNCATE
         $new_messages = [];
         $truncated = [];
@@ -103,9 +109,16 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             
             if ( $i < $count_to_trim) 
             {
-                if ( isset( $message['function_call'])) {
-                    continue;
+                if ( $include) {
+                    if ( isset( $message['function_call'])) {
+                        continue;
+                    }
+                } else {
+                    if ( $message['role'] === 'function' || isset( $message['function_call'])) {
+                        continue;
+                    }
                 }
+
                 $truncated[] = $message;
             } 
             else 
