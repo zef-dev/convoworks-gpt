@@ -137,6 +137,8 @@ For more information on the OpenAI Moderation API and its capabilities, refer to
 
 The GPT Query Generator element allows you to create context-rich questions from a given conversation. These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions by providing additional context and insights.
 
+In your system message, you can use the `${conversation}` expression, which contains a serialized conversation summary. If omitted, the serialized conversation will be attached as a separate system prompt.
+
 **Parameters:**
 
 * `System Message` - Sets initial context and format for the conversation.

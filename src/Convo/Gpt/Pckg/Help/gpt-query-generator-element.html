@@ -2,12 +2,19 @@
     <h3>GPT Query Generator</h3>
 
     <p>
-        The GPT Query Generator element allows you to create context-rich questions from a given conversation. These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions by providing additional context and insights. 
+        The GPT Query Generator element allows you to create context-rich questions from a given conversation. 
+        These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions 
+        by providing additional context and insights. 
     </p>
 
     <h3>System Message</h3>
     <p>
-        A predetermined prompt that sets the initial context and format for the conversation. This message provides the GPT with a structure to follow when generating questions.
+        A predetermined prompt that sets the initial context and format for the conversation. 
+        This message provides the GPT with a structure to follow when generating questions.
+    </p>
+    <p>
+        In your system message, you can use the <code>${conversation}</code> expression, which contains a serialized conversation summary. 
+        If omitted, the serialized conversation will be attached as a separate system prompt.
     </p>
 
     <h3>Messages</h3>
