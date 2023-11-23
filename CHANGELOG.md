@@ -1,10 +1,15 @@
 
 # Convoworks GPT WordPress plugin
 
+### 0.7.0 Include Function Results in Summarization
+
+* Added the ability to include function results in the summarization process.
+* Introduced `${conversation}`, a conversation summary that can be utilized within the query generator prompt.
+
 ### 0.6.0 Improved Chat Functions Execution
 
-- Enhanced the execution of chat functions: Included fixes for JSON parsing, handled endless loops better, and improved error handling.
-- Optimized the trimming of conversation messages. 
+* Enhanced the execution of chat functions: Included fixes for JSON parsing, handled endless loops better, and improved error handling.
+* Optimized the trimming of conversation messages. 
 
 ### 0.5.0 Chat functions support
 
