@@ -103,7 +103,7 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             
             if ( $i < $count_to_trim) 
             {
-                if ( $message['role'] === 'function' || isset( $message['function_call'])) {
+                if ( isset( $message['function_call'])) {
                     continue;
                 }
                 $truncated[] = $message;
@@ -152,7 +152,12 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         
         $temp = [];
         foreach ( $conversation as $message) {
-            $temp[] = $message['role'].': '.$message['content'];
+            if ( isset( $message['name'])) {
+                $temp[] = ucfirst($message['role']).' - '.$message['name'].'(): '.$message['content'];
+            } else {
+                $temp[] = ucfirst($message['role']).': '.$message['content'];
+            }
+            
         }
         
         $messages[] =   [
