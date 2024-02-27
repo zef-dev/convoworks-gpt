@@ -155,7 +155,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         {
             $messages       =   array_merge(
                 $messages,
-                [$httpResponse['choices'][0]['message']],
+                [$httpResponse['choices'][0]['message']]
             );
             
             try {
