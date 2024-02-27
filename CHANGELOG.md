@@ -1,6 +1,10 @@
 
 # Convoworks GPT WordPress plugin
 
+### 0.7.1 Arry syntax fix
+
+* Corrected extra comma issue in `ChatCompletionV2Element` which caused error on the PHP 7.2
+
 ### 0.7.0 Include Function Results in Summarization
 
 * Added the ability to include function results in the summarization process.
