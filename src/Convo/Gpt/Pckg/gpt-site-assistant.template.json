@@ -13,8 +13,8 @@
         "variables": {
             "API_KEY": "",
             "DEFAULT_TEMPERATURE": "${0.1}",
-            "DEFAULT_MAX_TOKENS": "${8000}",
-            "DEFAULT_MODEL": "gpt-3.5-turbo-16k",
+            "DEFAULT_MAX_TOKENS": "${4000}",
+            "DEFAULT_MODEL": "gpt-4-turbo-preview",
             "MAX_MESSAGES": "${28}",
             "TRUNCATE_TO": "${14}",
             "MAX_EXECUTION_TIME": "${120}"
