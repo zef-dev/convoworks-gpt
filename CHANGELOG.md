@@ -1,6 +1,10 @@
 
 # Convoworks GPT WordPress plugin
 
+### 0.7.2 JSON schema fix
+
+* Fixed `args` argument definition for the `call_user_func_array` in `gpt-site-assistant.template.json`
+
 ### 0.7.1 Arry syntax fix
 
 * Corrected extra comma issue in `ChatCompletionV2Element` which caused error on the PHP 7.2

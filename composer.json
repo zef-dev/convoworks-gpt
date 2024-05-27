@@ -9,7 +9,7 @@
         "chatgpt",
         "wordpress"
     ],
-    "version": "0.07.01",
+    "version": "0.07.02",
     "require": {
         "php": "^7.2"
     },
