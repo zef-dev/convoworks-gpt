@@ -16,7 +16,7 @@ use Convo\Gpt\RefuseFunctionCallException;
 
 class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer, IMessages
 {
-    
+
     /**
      * @var GptApiFactory
      */
@@ -31,8 +31,16 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
      * @var IChatFunction[]
      */
     private $_functions = [];
-    
+
     private $_messages = [];
+
+    /**
+     * @var array
+     * All new message objects that are created during one call (repoetitive function calls).
+     * If there is a singkle response meesage, it will contain just it.
+     */
+
+    private $_newMessages = [];
 
     /**
      * @var IConversationElement[]
@@ -43,27 +51,27 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
      * @var IConversationElement[]
      */
     private $_messagesDefinition = [];
-    
+
     private $_callStack  =  [];
-    
+
     public function __construct( $properties, $gptApiFactory)
     {
         parent::__construct( $properties);
-        
+
         $this->_gptApiFactory  =	$gptApiFactory;
-        
+
         foreach ( $properties['ok'] as $element) {
             $this->_ok[] = $element;
             $this->addChild($element);
         }
-        
+
         if ( isset( $properties['functions'])) {
             foreach ( $properties['functions'] as $element) {
                 $this->_functionsDefinition[] = $element;
                 $this->addChild($element);
             }
         }
-        
+
         if ( isset( $properties['message_provider'])) {
             foreach ( $properties['message_provider'] as $element) {
                 $this->_messagesDefinition[] = $element;
@@ -71,27 +79,27 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             }
         }
     }
-    
+
     public function getFunctions()
     {
         return $this->_functions;
     }
-    
+
     public function registerFunction( $function)
     {
         $this->_functions[] = $function;
     }
-    
+
     public function registerMessage( $message)
     {
         $this->_messages[] = $message;
     }
-    
+
     public function getMessages()
     {
-        return $this->_messages;
+        return array_merge( $this->_messages, $this->_newMessages);
     }
-    
+
     public function getConversation()
     {
         return array_map( function ( $item) {
@@ -99,36 +107,19 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             return $item;
         }, $this->_messages);
     }
-    
+
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
         $this->_callStack = [];
-        
-        $this->_functions = [];
-        $this->_messages = [];
-        
-        foreach ( $this->_messagesDefinition as $elem)   {
-            $elem->read( $request, $response);
-        }
-        
-        foreach ( $this->_functionsDefinition as $elem)   {
-            $elem->read( $request, $response);
-        }
-        
-//         $system_message =   $this->evaluateString( $this->_properties['system_message']);
-//         $messages       =   $this->evaluateString( $this->_properties['messages']);
 
-//         $messages       =   array_merge(
-//             [[ 'role' => 'system', 'content' => $system_message]],
-//             $messages);
-        
-        $http_response  =  $this->_chatCompletion( $this->_messages);
-        $http_response  =  $this->_handleResponse( $http_response, $this->_messages, $request, $response);
-        
+        $this->_prepeareConversationContext( $request, $response);
+
+        $http_response  =  $this->_chatCompletion();
+        $http_response  =  $this->_handleResponse( $http_response, $request, $response);
+
         $last_message   =  $http_response['choices'][0]['message'];
         $this->registerMessage( $last_message);
-//         array_shift( $messages);
-        
+
         $params         =  $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'response' => $http_response,
@@ -139,32 +130,43 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
             }),
             'last_message' => $last_message,
         ]);
-        
+
         foreach ( $this->_ok as $elem)   {
             $elem->read( $request, $response);
         }
     }
-    
-    private function _handleResponse( $httpResponse, &$messages, $request, $response)
+
+    private function _prepeareConversationContext( IConvoRequest $request, IConvoResponse $response)
+    {
+        $this->_functions = [];
+        $this->_messages = [];
+
+        foreach ( $this->_messagesDefinition as $elem)   {
+            $elem->read( $request, $response);
+        }
+
+        foreach ( $this->_functionsDefinition as $elem)   {
+            $elem->read( $request, $response);
+        }
+    }
+
+    private function _handleResponse( $httpResponse, $request, $response)
     {
         $function_name   =   $httpResponse['choices'][0]['message']['function_call']['name'] ?? null;
         $function_data   =   $httpResponse['choices'][0]['message']['function_call']['arguments'] ?? null;
         $auto_execute    =   true;
-        
+
         if ( $function_name && $auto_execute)
         {
-            $messages       =   array_merge(
-                $messages,
-                [$httpResponse['choices'][0]['message']]
-            );
-            
+            $this->_newMessages[] = $httpResponse['choices'][0]['message'];
+
             try {
-                
+
                 if ( strpos( $function_data, '"callback": "defined"') === false && strpos( $function_data, '"callback": "constant"') === false) {
                     $this->_logger->debug( 'Going to preprocess JSON ['.$function_data.']');
                     $function_data = self::processJsonWithConstants( $function_data);
                 }
-                
+
                 $this->_logger->debug( 'Got processed JSON ['.$function_data.']');
                 $this->_registerExecution( $function_name, $function_data);
                 $function   =   $this->_findFunction( $function_name);
@@ -175,19 +177,18 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $this->_logger->warning( $e);
                 $result = json_encode( [ 'error' => $e->getMessage()]);
             }
-            
-            $messages       =   array_merge(
-                $messages,
-                [[ 'role' => 'function', 'name' => $function_name, 'content' => $result]]
-                );
-            $httpResponse   =   $this->_chatCompletion( $messages);
-            
-            return $this->_handleResponse( $httpResponse, $messages, $request, $response);
+
+            $this->_newMessages[] = [ 'role' => 'function', 'name' => $function_name, 'content' => $result];
+
+            $this->_prepeareConversationContext( $request, $response);
+            $httpResponse   =   $this->_chatCompletion();
+
+            return $this->_handleResponse( $httpResponse, $request, $response);
         }
-        
+
         return $httpResponse;
     }
-    
+
     /**
      * Tries to correct invalid JSON data in cases when GPT uses PHP constants in function calls
      * @param string $json
@@ -199,43 +200,43 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $PLACEHOLDER = "***convo-json-placeholder***";
         // Pattern representing escaped double quotes in JSON
         $PATTERN = '\\\\"';
-        
+
         // Temporarily replace escaped double quotes with a placeholder
         $json = str_replace($PATTERN, $PLACEHOLDER, $json);
-        
+
         $json = preg_replace_callback('/("[^"]*")|(\b[A-Z_]+\b)/', function ($matches) {
             // If part of a string, return as is
             if ($matches[1]) return $matches[1];
-            
+
             $constantName = $matches[2];
-            
+
             // Check if it is a defined constant
             if (defined($constantName)) {
                 // Get the value of the constant
                 $constantValue = constant($constantName);
-                
+
                 // Replace with the actual value of the constant, ensuring it's JSON-encoded
                 return is_numeric($constantValue) ? $constantValue : json_encode($constantValue);
             }
-            
+
             // If it's not a defined constant, leave as is
             return $constantName;
         }, $json);
-            
+
         // Restore the escaped double quotes
         $json = str_replace($PLACEHOLDER, $PATTERN, $json);
-        
-        $data = json_decode( $json, true); 
-        
+
+        $data = json_decode( $json, true);
+
         if ( json_last_error() !== JSON_ERROR_NONE) {
             return $json;
         }
-        
+
         $data = self::resolveStringConstantValues( $data);
-        
+
         return json_encode( $data);
     }
-    
+
     /**
      * Resolves eventual PHP constants passed as string values.
      * @param array $data
@@ -252,7 +253,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
         return $data;
     }
-    
+
     private function _registerExecution( $functionName, $functionData)
     {
         $MAX_ATTEMPTS = 3;
@@ -260,24 +261,24 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         if ( !isset( $this->_callStack[$key])) {
             $this->_callStack[$key] = 0;
         }
-        
+
         if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
             throw new RefuseFunctionCallException( 'You were already warned to stop invoking ['.$functionName.'] with arguments ['.$functionData.'] after ['.$this->_callStack[$key].'] attempts. Breaking the further execution.');
         }
-        
+
         $this->_callStack[$key] = $this->_callStack[$key] + 1;
-        
+
         if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
             throw new \Exception( 'Caution: Please avoid invoking the ['.$functionName.'] function with arguments ['.$functionData.'] again! Compliance is crucial. Attempted invocations have reached ['.$this->_callStack[$key].'], while the maximum allowed is ['.$MAX_ATTEMPTS.'].');
         }
     }
-    
+
     /**
      * @param string $functionName
      * @throws ComponentNotFoundException
      * @return \Convo\Gpt\IChatFunction
      */
-    private function _findFunction( $functionName) 
+    private function _findFunction( $functionName)
     {
         foreach ( $this->_functions as $function) {
             if ( $function->accepts( $functionName)) {
@@ -286,41 +287,34 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
         throw new ComponentNotFoundException( 'Function ['.$functionName.'] not found');
     }
-    
-    private function _chatCompletion( $messages)
+
+    private function _chatCompletion()
     {
-        $messages = array_map( function ( $item) {
-            unset( $item['transient']);
-            return $item;
-        }, $messages);
-        
         $api_key    =   $this->evaluateString( $this->_properties['api_key']);
         $api        =   $this->_gptApiFactory->getApi( $api_key);
-        
-        $this->_logger->debug( 'Got messages ============');
-        $this->_logger->debug( "\n".json_encode( $messages, JSON_PRETTY_PRINT));
-        $this->_logger->debug( '============');
-        
-        $http_response   =   $api->chatCompletion( $this->_buildApiOptions( $messages));
+        $http_response   =   $api->chatCompletion( $this->_buildApiOptions());
         return $http_response;
     }
-    
-    private function _buildApiOptions( $messages)
+
+    private function _buildApiOptions()
     {
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
-        
+
         if ( count( $this->getFunctions())) {
             $options['functions'] = [];
             foreach ( $this->getFunctions() as $function) {
                 $options['functions'][] = $function->getDefinition();
             }
         }
-        
-        $options['messages'] = $messages;
-        
+
+        $options['messages'] = array_map( function ( $item) {
+            unset( $item['transient']);
+            return $item;
+        }, $this->getMessages());
+
         return $options;
     }
-    
+
     // UTIL
     public function __toString()
     {

@@ -1,5 +1,9 @@
 
-# Convoworks GPT WordPress plugin
+## Convoworks GPT WordPress plugin
+
+### 0.7.3 Regenerate context
+
+* In function call scenarios, prompt (and functions) are now rebuilt for each GPT API call.
 
 ### 0.7.2 JSON schema fix
 
