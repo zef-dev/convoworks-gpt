@@ -13,6 +13,7 @@ use Convo\Gpt\IChatFunctionContainer;
 use Convo\Core\ComponentNotFoundException;
 use Convo\Gpt\IMessages;
 use Convo\Gpt\RefuseFunctionCallException;
+use Convo\Gpt\Util;
 
 class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer, IMessages
 {
@@ -108,6 +109,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }, $this->_messages);
     }
 
+
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
         $this->_callStack = [];
@@ -164,7 +166,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
                 if ( strpos( $function_data, '"callback": "defined"') === false && strpos( $function_data, '"callback": "constant"') === false) {
                     $this->_logger->debug( 'Going to preprocess JSON ['.$function_data.']');
-                    $function_data = self::processJsonWithConstants( $function_data);
+                    $function_data = Util::processJsonWithConstants( $function_data);
                 }
 
                 $this->_logger->debug( 'Got processed JSON ['.$function_data.']');
@@ -187,105 +189,6 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
 
         return $httpResponse;
-    }
-
-    /**
-     * Tries to correct invalid JSON data in cases when GPT uses PHP constants in function calls
-     * @param string $json
-     * @return string
-     */
-    public static function processJsonWithConstants($json)
-    {
-        // Placeholder for escaped double quotes
-        $PLACEHOLDER = "***convo-json-placeholder***";
-        // Pattern representing escaped double quotes in JSON
-        $PATTERN = '\\\\"';
-
-        // Temporarily replace escaped double quotes with a placeholder
-        $json = str_replace($PATTERN, $PLACEHOLDER, $json);
-
-        $json = preg_replace_callback('/("[^"]*")|(\b[A-Z_]+\b)/', function ($matches) {
-            // If part of a string, return as is
-            if ($matches[1]) return $matches[1];
-
-            $constantName = $matches[2];
-
-            // Check if it is a defined constant
-            if (defined($constantName)) {
-                // Get the value of the constant
-                $constantValue = constant($constantName);
-
-                // Replace with the actual value of the constant, ensuring it's JSON-encoded
-                return is_numeric($constantValue) ? $constantValue : json_encode($constantValue);
-            }
-
-            // If it's not a defined constant, leave as is
-            return $constantName;
-        }, $json);
-
-        // Restore the escaped double quotes
-        $json = str_replace($PLACEHOLDER, $PATTERN, $json);
-
-        $data = json_decode( $json, true);
-
-        if ( json_last_error() !== JSON_ERROR_NONE) {
-            return $json;
-        }
-
-        $data = self::resolveStringConstantValues( $data);
-
-        return json_encode( $data);
-    }
-
-    /**
-     * Resolves eventual PHP constants passed as string values.
-     * @param array $data
-     * @return array
-     */
-    public static function resolveStringConstantValues( $data)
-    {
-        foreach ( $data as $key=>$val) {
-            if ( is_string( $val) && defined( $val)) {
-                $data[$key] = constant( $val);
-            } else if ( is_array( $val)) {
-                $data[$key] = self::resolveStringConstantValues( $val);
-            }
-        }
-        return $data;
-    }
-
-    private function _registerExecution( $functionName, $functionData)
-    {
-        $MAX_ATTEMPTS = 3;
-        $key = md5($functionName.'-'.$functionData);
-        if ( !isset( $this->_callStack[$key])) {
-            $this->_callStack[$key] = 0;
-        }
-
-        if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
-            throw new RefuseFunctionCallException( 'You were already warned to stop invoking ['.$functionName.'] with arguments ['.$functionData.'] after ['.$this->_callStack[$key].'] attempts. Breaking the further execution.');
-        }
-
-        $this->_callStack[$key] = $this->_callStack[$key] + 1;
-
-        if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
-            throw new \Exception( 'Caution: Please avoid invoking the ['.$functionName.'] function with arguments ['.$functionData.'] again! Compliance is crucial. Attempted invocations have reached ['.$this->_callStack[$key].'], while the maximum allowed is ['.$MAX_ATTEMPTS.'].');
-        }
-    }
-
-    /**
-     * @param string $functionName
-     * @throws ComponentNotFoundException
-     * @return \Convo\Gpt\IChatFunction
-     */
-    private function _findFunction( $functionName)
-    {
-        foreach ( $this->_functions as $function) {
-            if ( $function->accepts( $functionName)) {
-                return $function;
-            }
-        }
-        throw new ComponentNotFoundException( 'Function ['.$functionName.'] not found');
     }
 
     private function _chatCompletion()
@@ -314,6 +217,41 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
         return $options;
     }
+
+    /**
+     * @param string $functionName
+     * @throws ComponentNotFoundException
+     * @return \Convo\Gpt\IChatFunction
+     */
+    private function _findFunction( $functionName)
+    {
+        foreach ( $this->_functions as $function) {
+            if ( $function->accepts( $functionName)) {
+                return $function;
+            }
+        }
+        throw new ComponentNotFoundException( 'Function ['.$functionName.'] not found');
+    }
+
+    private function _registerExecution( $functionName, $functionData)
+    {
+        $MAX_ATTEMPTS = 3;
+        $key = md5($functionName.'-'.$functionData);
+        if ( !isset( $this->_callStack[$key])) {
+            $this->_callStack[$key] = 0;
+        }
+
+        if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
+            throw new RefuseFunctionCallException( 'You were already warned to stop invoking ['.$functionName.'] with arguments ['.$functionData.'] after ['.$this->_callStack[$key].'] attempts. Breaking the further execution.');
+        }
+
+        $this->_callStack[$key] = $this->_callStack[$key] + 1;
+
+        if ( $this->_callStack[$key] > $MAX_ATTEMPTS) {
+            throw new \Exception( 'Caution: Please avoid invoking the ['.$functionName.'] function with arguments ['.$functionData.'] again! Compliance is crucial. Attempted invocations have reached ['.$this->_callStack[$key].'], while the maximum allowed is ['.$MAX_ATTEMPTS.'].');
+        }
+    }
+
 
     // UTIL
     public function __toString()
