@@ -2,6 +2,7 @@
 
 namespace Convo\Gpt\Pckg;
 
+use Convo\Core\ComponentNotFoundException;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
@@ -10,7 +11,6 @@ use Convo\Core\Params\IServiceParamsScope;
 use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IChatFunction;
 use Convo\Gpt\IChatFunctionContainer;
-use Convo\Core\ComponentNotFoundException;
 use Convo\Gpt\IMessages;
 use Convo\Gpt\RefuseFunctionCallException;
 use Convo\Gpt\Util;
@@ -101,12 +101,20 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         return array_merge( $this->_messages, $this->_newMessages);
     }
 
+    public function getMessagesClean()
+    {
+        $ALLOWED = ['role', 'content', 'name', 'function_call'];
+        return array_map(function ($item) use ($ALLOWED) {
+            return array_intersect_key($item, array_flip($ALLOWED));
+        }, $this->getMessages());
+    }
     public function getConversation()
     {
-        return array_map( function ( $item) {
-            unset( $item['transient']);
-            return $item;
-        }, $this->_messages);
+        return array_filter( $this->getMessages(), function ( $message) {
+            if ( !isset( $message['transient']) || !$message['transient']) {
+                return true;
+            }
+        });
     }
 
 
@@ -120,16 +128,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $http_response  =  $this->_handleResponse( $http_response, $request, $response);
 
         $last_message   =  $http_response['choices'][0]['message'];
-        $this->registerMessage( $last_message);
+        $this->_newMessages[] = $last_message;
 
         $params         =  $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
             'response' => $http_response,
-            'messages' => array_filter( $this->_messages, function ( $message) {
-                if ( !isset( $message['transient']) || !$message['transient']) {
-                    return true;
-                }
-            }),
+            'messages' => $this->getConversation(),
             'last_message' => $last_message,
         ]);
 
@@ -156,10 +160,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     {
         $function_name   =   $httpResponse['choices'][0]['message']['function_call']['name'] ?? null;
         $function_data   =   $httpResponse['choices'][0]['message']['function_call']['arguments'] ?? null;
-        $auto_execute    =   true;
 
-        if ( $function_name && $auto_execute)
+        if ( $function_name)
         {
+            $this->_logger->info( 'Going to execute function ['.$function_name.']');
+
             $this->_newMessages[] = $httpResponse['choices'][0]['message'];
 
             try {
@@ -204,16 +209,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $options = $this->getService()->evaluateArgs( $this->_properties['apiOptions'], $this);
 
         if ( count( $this->getFunctions())) {
-            $options['functions'] = [];
-            foreach ( $this->getFunctions() as $function) {
-                $options['functions'][] = $function->getDefinition();
-            }
+            $options['functions'] = array_map( function ( $function) {
+                return $function->getDefinition();
+            }, $this->getFunctions());
         }
 
-        $options['messages'] = array_map( function ( $item) {
-            unset( $item['transient']);
-            return $item;
-        }, $this->getMessages());
+        $options['messages'] = $this->getMessagesClean();
 
         return $options;
     }
