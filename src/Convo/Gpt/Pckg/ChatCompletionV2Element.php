@@ -51,6 +51,11 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     /**
      * @var IConversationElement[]
      */
+    private $_newMessageFlow = [];
+
+    /**
+     * @var IConversationElement[]
+     */
     private $_messagesDefinition = [];
 
     private $_callStack  =  [];
@@ -69,6 +74,13 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         if ( isset( $properties['functions'])) {
             foreach ( $properties['functions'] as $element) {
                 $this->_functionsDefinition[] = $element;
+                $this->addChild($element);
+            }
+        }
+
+        if ( isset( $properties['new_message_flow'])) {
+            foreach ( $properties['new_message_flow'] as $element) {
+                $this->_newMessageFlow[] = $element;
                 $this->addChild($element);
             }
         }
@@ -128,7 +140,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $http_response  =  $this->_handleResponse( $http_response, $request, $response);
 
         $last_message   =  $http_response['choices'][0]['message'];
-        $this->_newMessages[] = $last_message;
+        $this->_handleNewMessage( $request, $response, $last_message, $http_response);
 
         $params         =  $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
@@ -156,6 +168,23 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
     }
 
+    private function _handleNewMessage( IConvoRequest $request, IConvoResponse $response, $message, $httpResponse=null)
+    {
+        $this->_logger->debug( 'Handling new message ['.print_r( $message, true).']['.print_r( $httpResponse, true).']');
+
+        $this->_newMessages[] = $message;
+
+        $params         =  $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        $params->setServiceParam( $this->evaluateString( $this->_properties['result_var']), [
+            'response' => $httpResponse,
+            'last_message' => $message,
+        ]);
+
+        foreach ( $this->_newMessageFlow as $elem)   {
+            $elem->read( $request, $response);
+        }
+    }
+
     private function _handleResponse( $httpResponse, $request, $response)
     {
         $function_name   =   $httpResponse['choices'][0]['message']['function_call']['name'] ?? null;
@@ -164,8 +193,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         if ( $function_name)
         {
             $this->_logger->info( 'Going to execute function ['.$function_name.']');
-
-            $this->_newMessages[] = $httpResponse['choices'][0]['message'];
+            $this->_handleNewMessage( $request, $response, $httpResponse['choices'][0]['message'], $httpResponse);
 
             try {
 
@@ -185,7 +213,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $result = json_encode( [ 'error' => $e->getMessage()]);
             }
 
-            $this->_newMessages[] = [ 'role' => 'function', 'name' => $function_name, 'content' => $result];
+            $this->_handleNewMessage( $request, $response, [ 'role' => 'function', 'name' => $function_name, 'content' => $result]);
 
             $this->_prepeareConversationContext( $request, $response);
             $httpResponse   =   $this->_chatCompletion();

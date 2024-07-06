@@ -7,7 +7,7 @@ use Convo\Core\Factory\PackageProviderFactory;
 use Convo\Gpt\GptApiFactory;
 use Convo\Core\Expression\ExpressionFunction;
 
-class GptPackageDefinition extends AbstractPackageDefinition 
+class GptPackageDefinition extends AbstractPackageDefinition
 {
     const NAMESPACE    =    'convo-gpt';
 
@@ -15,28 +15,28 @@ class GptPackageDefinition extends AbstractPackageDefinition
      * @var PackageProviderFactory
      */
     private $_packageProviderFactory;
-    
+
     /**
      * @var GptApiFactory
      */
     private $_gptApiFactory;
-    
+
     public function __construct(
         \Psr\Log\LoggerInterface $logger, $packageProviderFactory, $gptApiFactory
     ) {
         $this->_packageProviderFactory  =   $packageProviderFactory;
         $this->_gptApiFactory           =   $gptApiFactory;
-        
+
         parent::__construct( $logger, self::NAMESPACE, __DIR__);
-        
+
         $this->registerTemplate( __DIR__ .'/gpt-example-chat.template.json');
         $this->registerTemplate( __DIR__ .'/gpt-site-assistant.template.json');
     }
-    
+
     public function getFunctions()
     {
         $functions = [];
-        
+
         $stop_words = [
             "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at",
             "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could",
@@ -52,19 +52,19 @@ class GptPackageDefinition extends AbstractPackageDefinition
             "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've",
             "your", "yours", "yourself", "yourselves"
         ];
-        
-        
+
+
         $functions[] = new ExpressionFunction(
             'tokenize_string',
             function ($text, $stopWords=null) {
                 return sprintf('tokenize_string(%s)', var_export( $text, true), var_export( $stopWords, true));
             },
             function($args, $text, $stopWords=null) use ( $stop_words) {
-                
+
                 if ( is_null( $stopWords)) {
                     $stopWords = $stop_words;
                 }
-                
+
                 $text = wp_strip_all_tags( $text);
                 $text = strtolower( $text);
                 $text = preg_replace("#[[:punct:]]#", "", $text);
@@ -73,10 +73,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 return implode( ' ', $meaningful_tokens);
             }
         );
-        
+
         return $functions;
     }
-    
+
     protected function _initDefintions()
     {
         $API_KEY = [
@@ -87,7 +87,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             'description' => 'Your OpenAI API key',
             'valueType' => 'string'
         ];
-        
+
         return [
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
@@ -157,7 +157,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct( $gptApiFactory)
                         {
                             $this->_gptApiFactory	   =   $gptApiFactory;
@@ -218,6 +218,15 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Dynamically registers available functions the agent can utilize.',
                         'valueType' => 'class'
                     ],
+                    'new_message_flow' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'New message flow',
+                        'description' => 'Executed after each new message is created.',
+                        'valueType' => 'class'
+                    ],
                     'ok' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
@@ -237,7 +246,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_workflow' => 'read',
                     '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory {
                     private $_gptApiFactory;
-                    
+
                     public function __construct($gptApiFactory) {
                         $this->_gptApiFactory = $gptApiFactory;
                     }
@@ -309,7 +318,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct( $gptApiFactory)
                         {
                             $this->_gptApiFactory = $gptApiFactory;
@@ -383,7 +392,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct( $gptApiFactory)
                         {
                             $this->_gptApiFactory = $gptApiFactory;
@@ -475,7 +484,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct($gptApiFactory)
                         {
                             $this->_gptApiFactory = $gptApiFactory;
@@ -598,7 +607,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct($gptApiFactory)
                         {
                             $this->_gptApiFactory = $gptApiFactory;
@@ -831,7 +840,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct( $gptApiFactory)
                         {
                             $this->_gptApiFactory	   =   $gptApiFactory;
@@ -935,7 +944,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct( $gptApiFactory)
                         {
                             $this->_gptApiFactory	   =   $gptApiFactory;
@@ -1011,7 +1020,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
-                        
+
                         public function __construct( $gptApiFactory)
                         {
                             $this->_gptApiFactory	   =   $gptApiFactory;
