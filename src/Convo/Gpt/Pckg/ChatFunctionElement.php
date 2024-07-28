@@ -17,19 +17,19 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     private $_parameters;
     private $_defaults;
     private $_required;
-    
+
     private $_requestData;
     private $_resultData;
-    
+
     /**
      * @var IConversationElement[]
      */
     private $_ok = [];
-    
+
     public function __construct( $properties)
     {
         parent::__construct( $properties);
-        
+
         $this->_name            =   $properties['name'];
         $this->_description     =   $properties['description'];
         $this->_parameters      =   $properties['parameters'];
@@ -37,13 +37,13 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         $this->_required        =   $properties['required'];
         $this->_requestData     =   $properties['request_data'];
         $this->_resultData      =   $properties['result_data'];
-        
+
         foreach ( $properties['ok'] as $element) {
             $this->_ok[] = $element;
             $this->addChild($element);
         }
     }
-    
+
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
         /** @var \Convo\Gpt\IChatFunctionContainer $container */
@@ -51,28 +51,33 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         $container->registerFunction( $this);
     }
 
-    
+    /**
+     * @param IConvoRequest $request
+     * @param IConvoResponse $response
+     * @param string $data
+     * @return string
+     */
     public function execute( IConvoRequest $request, IConvoResponse $response, $data)
     {
         $data = json_decode( $data, true);
         $error = json_last_error();
         if ( $error !== JSON_ERROR_NONE) {
-            throw new \Exception( 'JSON parsing error: '.json_last_error_msg());   
+            throw new \Exception( 'JSON parsing error: '.json_last_error_msg());
         }
         $this->_logger->debug( 'Got data decoded ['.print_r( $data, true).']');
         $data = array_merge( $this->_getDefaults(), $data);
         $this->_logger->debug( 'Got data with defaults ['.print_r( $data, true).']');
-        
+
         $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $data_var      =    $this->evaluateString( $this->_requestData);
         $params->setServiceParam( $data_var, $data);
-        
+
         $this->_logger->info( 'Executing function ['.$this->getName().']. Arguments available as ['.$data_var.']');
-        
+
         foreach ( $this->_ok as $elem) {
             $elem->read( $request, $response);
         }
-        
+
         $params     =   $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
         $result     =   $this->evaluateString( $this->_resultData);
         if ( is_string( $result)) {
@@ -80,7 +85,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         }
         return json_encode( $result);
     }
-    
+
     private function _getDefaults()
     {
         $defaults = $this->evaluateString( $this->_defaults);
@@ -89,17 +94,17 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         }
         return [];
     }
-    
+
     public function accepts( $functionName)
     {
         return $this->getName() === $functionName;
     }
-    
+
     public function getName()
     {
         return $this->evaluateString( $this->_name);
     }
-    
+
     public function getDefinition()
     {
         $parameters = $this->getService()->evaluateArgs( $this->_parameters, $this);
@@ -116,7 +121,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
             ],
         ];
     }
-    
+
     // UTIL
     public function __toString()
     {

@@ -7,28 +7,28 @@ use Convo\Core\Workflow\IConvoResponse;
 
 interface IChatFunction
 {
-    
+
     /**
      * @param string $functionName
      * @return bool
      */
     public function accepts( $functionName);
-    
+
     /**
      * @return string
      */
     public function getName();
-    
+
     /**
      * @return array
      */
     public function getDefinition();
-    
+
     /**
      * @param IConvoRequest $request
      * @param IConvoResponse $response
-     * @param array $data
-     * @return array
+     * @param string $data
+     * @return string
      */
     public function execute( IConvoRequest $request, IConvoResponse $response, $data);
 }
