@@ -654,6 +654,52 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SystemMessageGroupElement',
+                'Group System Messages',
+                'Groups own with all child system messages into single one.',
+                [
+                    'content' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => ['large' => true],
+                        'defaultValue' => '',
+                        'name' => 'Message content',
+                        'description' => 'The text content of the system message.',
+                        'valueType' => 'string'
+                    ],
+                    'trim_children' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => [],
+                        'defaultValue' => false,
+                        'name' => 'Trim child prompts',
+                        'description' => 'Enabling trim, you can join child messages inline',
+                        'valueType' => 'boolean'
+                    ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Executes a sub-flow to provide messages which should be grouped',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">GROUP SYSTEM</span>' .
+                        ' <br>{{component.properties.content}}' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'system-message-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatFunctionElement',
                 'Chat Function',
                 'Function definition that can be used with Completion API based elements',
