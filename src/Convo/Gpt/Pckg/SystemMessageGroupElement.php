@@ -81,7 +81,7 @@ class SystemMessageGroupElement extends AbstractWorkflowContainerComponent imple
             }
         } else {
             foreach ( $this->_messages as $message) {
-                $content .= $message['content'];
+                $content .= "\n".$message['content'];
             }
         }
 
