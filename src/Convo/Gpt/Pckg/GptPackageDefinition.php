@@ -3,7 +3,6 @@
 namespace Convo\Gpt\Pckg;
 
 use Convo\Core\Factory\AbstractPackageDefinition;
-use Convo\Core\Factory\PackageProviderFactory;
 use Convo\Gpt\GptApiFactory;
 use Convo\Core\Expression\ExpressionFunction;
 
@@ -12,19 +11,13 @@ class GptPackageDefinition extends AbstractPackageDefinition
     const NAMESPACE    =    'convo-gpt';
 
     /**
-     * @var PackageProviderFactory
-     */
-    private $_packageProviderFactory;
-
-    /**
      * @var GptApiFactory
      */
     private $_gptApiFactory;
 
     public function __construct(
-        \Psr\Log\LoggerInterface $logger, $packageProviderFactory, $gptApiFactory
+        \Psr\Log\LoggerInterface $logger, $gptApiFactory
     ) {
-        $this->_packageProviderFactory  =   $packageProviderFactory;
         $this->_gptApiFactory           =   $gptApiFactory;
 
         parent::__construct( $logger, self::NAMESPACE, __DIR__);

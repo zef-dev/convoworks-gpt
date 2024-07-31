@@ -11,7 +11,7 @@ class GptPlugin
      * @var IPackageDescriptor
      */
     private $_package;
-    
+
     public function __construct()
     {
     }
@@ -20,12 +20,12 @@ class GptPlugin
     {
         add_action( 'init', [ $this, 'init']);
     }
-    
+
     public function init()
     {
         if ( !defined( 'CONVOWP_VERSION')) {
             error_log( 'GPT: Convoworks WP is not present. Exiting ...');
-            
+
             add_action( 'admin_notices', function () {
                 echo '<div class="notice notice-warning is-dismissible">
       <p><b>Convoworks GPT</b> requires <b>Convoworks WP</b> plugin to be installed and activated</p>
@@ -33,10 +33,10 @@ class GptPlugin
             });
                 return;
         }
-        
+
         add_action( 'register_convoworks_package', [$this, 'gptPackageRegister'], 10, 2);
     }
-    
+
     /**
      * @param \Convo\Core\Factory\PackageProviderFactory $packageProviderFactory
      * @param \Psr\Container\ContainerInterface $container
@@ -44,7 +44,7 @@ class GptPlugin
     public function gptPackageRegister( $packageProviderFactory, $container) {
         $packageProviderFactory->registerPackage( $this->getGptPackage( $container));
     }
-    
+
     public function getGptPackage( $container)
     {
         if ( !isset( $this->_package))
@@ -55,13 +55,13 @@ class GptPlugin
                     $logger = $container->get( 'logger');
                     $logger->debug( 'Registering package ['.GptPackageDefinition::NAMESPACE.']');
                     return new GptPackageDefinition(
-                        $logger, $container->get('packageProviderFactory'), new GptApiFactory( $logger, $container->get('httpFactory')));
+                        $logger, new GptApiFactory( $logger, $container->get('httpFactory')));
                 });
         }
-        
+
         return $this->_package;
     }
-    
+
     // UTIL
     public function __toString()
     {
