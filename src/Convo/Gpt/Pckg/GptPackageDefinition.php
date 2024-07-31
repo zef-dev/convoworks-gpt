@@ -67,7 +67,49 @@ class GptPackageDefinition extends AbstractPackageDefinition
             }
         );
 
+        $functions[] = new ExpressionFunction(
+            'split_text_into_chunks', // Function name as used in expressions
+            function ($text, $maxChar = 30000, $margin = 1000) {
+                // Compile-time function, returns the PHP code to be executed
+                // This is typically used for caching or optimizing the expressions
+                return sprintf('split_text_into_chunks(%s, %s, %s)', $text, $maxChar, $margin);
+            },
+            function ($arguments, $text, $maxChar = 30000, $margin = 1000) {
+                // Runtime function, the actual PHP function to execute
+                return $this->_splitTextIntoChunks($text, $maxChar, $margin);
+            }
+        );
+
         return $functions;
+    }
+
+
+    private function _splitTextIntoChunks($text, $maxChar, $margin) {
+        $chunks = [];
+        $currentChunk = "";
+
+        $parts = preg_split('/(\.|\?|!)\s+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        foreach ($parts as $part) {
+            if (strlen($currentChunk . $part) > $maxChar) {
+                $chunks[] = $currentChunk;
+                $currentChunk = $part;
+            } else {
+                $currentChunk .= $part;
+            }
+        }
+
+        if (!empty(trim($currentChunk))) {
+            if ( strlen( $currentChunk) > $margin) {
+                $chunks[] = $currentChunk;
+            } else {
+                // append to the last one if it is a small chunk
+                $last_index = count( $chunks) - 1;
+                $chunks[$last_index] .= $currentChunk;
+            }
+
+        }
+
+        return $chunks;
     }
 
     protected function _initDefintions()

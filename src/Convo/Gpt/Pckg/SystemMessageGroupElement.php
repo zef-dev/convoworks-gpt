@@ -35,6 +35,7 @@ class SystemMessageGroupElement extends AbstractWorkflowContainerComponent imple
 
     public function read( IConvoRequest $request, IConvoResponse $response)
     {
+
         // collect inner messages first
         $this->_messages = [];
 
