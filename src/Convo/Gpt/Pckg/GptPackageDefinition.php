@@ -76,7 +76,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             },
             function ($arguments, $text, $maxChar = 30000, $margin = 1000) {
                 // Runtime function, the actual PHP function to execute
-                return $this->_splitTextIntoChunks($text, $maxChar, $margin);
+                return self::splitTextIntoChunks($text, $maxChar, $margin);
             }
         );
 
@@ -84,7 +84,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
     }
 
 
-    private function _splitTextIntoChunks($text, $maxChar, $margin) {
+    public static function splitTextIntoChunks($text, $maxChar, $margin) {
         $chunks = [];
         $currentChunk = "";
 
