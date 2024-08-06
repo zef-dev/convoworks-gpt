@@ -631,7 +631,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">MESSAGES LIMITER</span>' .
+                        'template' => '<div class="code"><span class="statement">GPT MESSAGES LIMITER</span>' .
                         ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
                         '<br>{{component.properties.system_message}}' .
                         '</div>'
@@ -656,6 +656,51 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'type' => 'file',
                         'filename' => 'messages-limiter-element.html'
                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SimpleMessagesLimiterElement',
+                'Simple Messages Limiter',
+                'Limits messages size by simply removing the oldest ones.',
+                [
+                    'max_count' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${20}',
+                        'name' => 'Max messages to keep',
+                        'description' => 'The maximum number of messages before the conversation is summarized.',
+                        'valueType' => 'string'
+                    ],
+                    'truncate_to' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${10}',
+                        'name' => 'Truncate message count',
+                        'description' => 'The number of messages to keep after summarization.',
+                        'valueType' => 'string'
+                    ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Provides the conversation messages that need to be summarized.',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">SIMPLE MESSAGES LIMITER</span>' .
+                        ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
+                        '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
