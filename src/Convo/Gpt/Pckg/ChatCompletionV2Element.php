@@ -159,6 +159,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $this->_functions = [];
         $this->_messages = [];
 
+        if ( empty( $this->_newMessageFlow)) {
+            $this->_logger->warning('Compatibility mode - New message not handled, not clearing up new messages buffer');
+        } else {
+            $this->_newMessages = [];
+        }
+
         foreach ( $this->_messagesDefinition as $elem)   {
             $elem->read( $request, $response);
         }
