@@ -1,7 +1,10 @@
 {
     "private": true,
-    "version": "0.07.02",
-    "scripts": {},
+    "version": "0.08.00",
+    "scripts": {
+        "build" : "node sync-version.js && node build.js",
+        "sync-version": "node sync-version.js"
+    },
     "devDependencies": {
         "archiver": "^5.3.2",
         "fs-extra": "^11.2.0",
