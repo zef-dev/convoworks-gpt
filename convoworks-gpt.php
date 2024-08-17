@@ -7,7 +7,7 @@
  * Description: GPT related workflow components
  * UID: convoworks-gpt
  * Plugin URI: https://github.com/zef-dev/convoworks-gpt
- * Update URI: https://github.com/zef-dev/convoworks-gpt/update.json
+ * Update URI: https://raw.githubusercontent.com/zef-dev/convoworks-gpt/main/update.json
  * Author: ZEF Development
  * Version: 0.8.14
  * Author URI: https://zef.dev
