@@ -33,8 +33,6 @@ run_convoworks_gpt_plugin();
 
 function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
 {
-    error_log("Plugin file: " . $plugin_file);
-
     static $response = false;
 
     if (empty($plugin_data['UpdateURI']) || !empty($update)) {
@@ -58,7 +56,9 @@ function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
     $custom_plugins_data = json_decode($response['body'], true);
 
     if (!empty($custom_plugins_data[$plugin_file])) {
-        return $custom_plugins_data[$plugin_file];
+        $custom_data = $custom_plugins_data[$plugin_file];
+        $custom_data['slug'] = $plugin_file; // Add slug property here
+        return (object) $custom_data;
     } else {
         return $update;
     }
