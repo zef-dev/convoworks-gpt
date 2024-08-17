@@ -3,23 +3,20 @@ name: Build and Release
 on:
     push:
         tags:
-            - "v*" # Triggers the workflow when pushing a tag that starts with 'v'
+            - "v*"
 
 jobs:
     build:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Debug GITHUB_TOKEN
-              run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
-
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v2
 
             - name: Set up Node.js
               uses: actions/setup-node@v3
               with:
-                  node-version: "14" # Adjust the Node.js version if needed
+                  node-version: "14"
 
             - name: Install Node.js dependencies
               run: npm install
@@ -30,7 +27,7 @@ jobs:
             - name: Set up PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: "7.4" # Specify the PHP version your project needs
+                  php-version: "7.4"
                   tools: composer
 
             - name: Install PHP dependencies
@@ -39,29 +36,21 @@ jobs:
             - name: Run build script
               run: npm run build
 
-            - name: Extract version number
-              id: extract_version
-              run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
             - name: Create Release
               id: create_release
               uses: actions/create-release@v1
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # Use PAT_TOKEN instead of GITHUB_TOKEN
               with:
                   tag_name: ${{ github.ref_name }}
                   release_name: Release ${{ env.VERSION }}
                   draft: false
                   prerelease: false
-                  body: |
-                      This release was automatically generated from the ${GITHUB_REF} tag.
-                      **Changes:**
-                      - Auto-sync and build using GitHub Actions.
 
             - name: Upload Release Asset
               uses: actions/upload-release-asset@v1
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/convoworks-gpt-${{ env.VERSION }}.zip # Correct path to your zip file
-                  asset_name: convoworks-gpt-${{ env.VERSION }}.zip # Name of the asset in the release
+                  asset_path: ./build/convoworks-gpt-${{ env.VERSION }}.zip
+                  asset_name: convoworks-gpt-${{ env.VERSION }}.zip
                   asset_content_type: application/zip
