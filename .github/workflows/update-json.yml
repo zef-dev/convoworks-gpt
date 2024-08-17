@@ -1,11 +1,11 @@
-name: Update Plugin JSON
+name: Update Plugin JSON and Sync Versions
 
 on:
     release:
         types: [published]
 
 jobs:
-    update-json:
+    update-json-and-sync-versions:
         runs-on: ubuntu-latest
 
         steps:
@@ -18,6 +18,19 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: "14"
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "7.4"
+
+            - name: Install dependencies
+              run: |
+                  npm install
+                  composer install --no-dev --prefer-dist
+
+            - name: Sync version in files
+              run: npm run sync-version # Assuming you have a script that syncs versions
 
             - name: Update JSON file
               run: |
@@ -33,16 +46,16 @@ jobs:
                       "new_version": "${version}",
                       "package": "${download_url}",
                       "requires": "5.0",
-                      "tested": "6.6",
+                      "tested": "5.8",
                       "last_updated": "${updated_date}"
                     }
                   }
                   EOL
 
-            - name: Commit and push updated JSON file
+            - name: Commit and push updated files
               run: |
                   git config --local user.email "action@github.com"
                   git config --local user.name "GitHub Action"
-                  git add update.json
-                  git commit -m "Update JSON for release ${{ github.event.release.tag_name }}"
+                  git add update.json composer.json convoworks-gpt.php
+                  git commit -m "Sync version and update JSON for release ${{ github.event.release.tag_name }}"
                   git push origin main
