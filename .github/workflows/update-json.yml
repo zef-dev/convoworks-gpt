@@ -46,7 +46,7 @@ jobs:
                       "new_version": "${version}",
                       "package": "${download_url}",
                       "requires": "5.0",
-                      "tested": "5.8",
+                      "tested": "6.6",
                       "last_updated": "${updated_date}"
                     }
                   }

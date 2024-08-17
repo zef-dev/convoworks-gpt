@@ -33,6 +33,8 @@ run_convoworks_gpt_plugin();
 
 function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
 {
+    error_log("Plugin file: " . $plugin_file);
+
     static $response = false;
 
     if (empty($plugin_data['UpdateURI']) || !empty($update)) {
@@ -61,6 +63,6 @@ function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
         return $update;
     }
 }
-add_filter('update_plugins_convoworks-gpt/convoworks-gpt.php', 'convoworks_gpt_check_for_updates', 10, 3);
+add_filter('update_plugins_raw.githubusercontent.com', 'convoworks_gpt_check_for_updates', 10, 3);
 
 
