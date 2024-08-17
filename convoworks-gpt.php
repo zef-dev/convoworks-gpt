@@ -9,7 +9,7 @@
  * Plugin URI: https://github.com/zef-dev/convoworks-gpt
  * Update URI: https://github.com/zef-dev/convoworks-gpt/update.json
  * Author: ZEF Development
- * Version: 0.08.00
+ * Version: 0.8.14
  * Author URI: https://zef.dev
  * Text Domain: convoworks-gpt
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
-define( 'CONVO_GPT_VERSION', '0.08.00' );
+define( 'CONVO_GPT_VERSION', '0.8.14' );
 define( 'CONVO_GPT_DIR', __DIR__);
 define( 'CONVO_GPT_URL' , plugin_dir_url( __FILE__));
 define( 'CONVO_GPT_PATH' , __FILE__);
