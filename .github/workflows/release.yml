@@ -10,6 +10,9 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Debug GITHUB_TOKEN
+              run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
+
             - name: Checkout code
               uses: actions/checkout@v3
 
