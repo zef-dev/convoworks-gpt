@@ -1,6 +1,14 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.8.0
+
+* Added simple messages limiter
+* Chat completion now rebuilds context even adter function calls
+* Chat completion now has on a new message flow to more transparent messages handling
+* Added `split_text_into_chunks()` el function  
+* Added `SystemMessageGroupElement` for grouping prompt parts into the single system message. 
+
 ### 0.7.3 Regenerate context
 
 * In function call scenarios, prompt (and functions) are now rebuilt for each GPT API call.
