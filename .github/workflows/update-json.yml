@@ -9,8 +9,10 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
+            - name: Checkout main branch
               uses: actions/checkout@v3
+              with:
+                  ref: main # Explicitly check out the main branch
 
             - name: Set up Node.js
               uses: actions/setup-node@v3
@@ -19,18 +21,12 @@ jobs:
 
             - name: Update JSON file
               run: |
-                  # Extract version from the release tag
                   version="${{ github.event.release.tag_name }}"
-                  # Ensure the version format matches expectations (e.g., strip leading 'v')
                   version="${version#v}"
 
-                  # Generate the download URL
                   download_url="https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/convoworks-gpt-${version}.zip"
-
-                  # Get the current date for 'last_updated'
                   updated_date=$(date -u +"%Y-%m-%d")
 
-                  # Update the update.json file
                   cat > update.json <<EOL
                   {
                     "convoworks-gpt/convoworks-gpt.php": {
