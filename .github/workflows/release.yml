@@ -47,7 +47,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   tag_name: ${{ github.ref }}
-                  release_name: Release ${{ steps.extract_version.outputs.VERSION }}
+                  release_name: Release ${{ env.VERSION }}
                   draft: false
                   prerelease: false
                   body: |
@@ -59,6 +59,6 @@ jobs:
               uses: actions/upload-release-asset@v1
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/convoworks-gpt-${{ steps.extract_version.outputs.VERSION }}.zip # Correct path to your zip file
-                  asset_name: convoworks-gpt-${{ steps.extract_version.outputs.VERSION }}.zip # Name of the asset in the release
+                  asset_path: ./build/convoworks-gpt-${{ env.VERSION }}.zip # Correct path to your zip file
+                  asset_name: convoworks-gpt-${{ env.VERSION }}.zip # Name of the asset in the release
                   asset_content_type: application/zip

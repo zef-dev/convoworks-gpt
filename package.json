@@ -1,6 +1,6 @@
 {
     "private": true,
-    "version": "0.8.2",
+    "version": "0.8.3",
     "scripts": {
         "build" : "node sync-version.js && node build.js",
         "sync-version": "node sync-version.js"
