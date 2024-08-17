@@ -18,7 +18,7 @@ npm install
 To build the deployment package, run this command, which will create the plugin zip. The version is taken from the `package.json` file:
 
 ```bash
-node build.js
+node run build
 ```
 
 ### Installation & Quick Start
@@ -113,8 +113,6 @@ This element serves as a wrapper for the OpenAI Embeddings API, enabling the ret
 
 
 For more information on available API options, refer to the [Embeddings API Reference - OpenAI API](https://platform.openai.com/docs/api-reference/embeddings).
-
-
 
 ### GPT Moderation API
 
