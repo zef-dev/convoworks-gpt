@@ -3,7 +3,7 @@ name: Build and Release
 on:
     push:
         tags:
-            - "v*"
+            - "v*" # Triggers the workflow when pushing a tag that starts with 'v'
 
 jobs:
     build:
@@ -11,7 +11,7 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Set up Node.js
               uses: actions/setup-node@v3
@@ -39,27 +39,9 @@ jobs:
             - name: Debug - List files in build directory
               run: ls -al ./build
 
-            - name: Extract version number
-              id: extract_version
-              run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
-            - name: Create Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v1
               with:
-                  tag_name: ${{ github.ref_name }}
-                  release_name: Release ${{ env.VERSION }}
-                  draft: false
-                  prerelease: false
-
-            - name: Upload Release Asset
-              uses: actions/upload-release-asset@v1
+                  files: ./build/convoworks-gpt-${{ github.ref_name }}.zip
               env:
-                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # Try passing PAT directly here
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./build/convoworks-gpt-${{ env.VERSION }}.zip
-                  asset_name: convoworks-gpt-${{ env.VERSION }}.zip
-                  asset_content_type: application/zip
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # Use PAT_TOKEN instead of GITHUB_TOKEN
