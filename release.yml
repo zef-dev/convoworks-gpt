@@ -1,0 +1,59 @@
+name: Build and Release
+
+on:
+    push:
+        tags:
+            - "v*" # Triggers the workflow when pushing a tag that starts with 'v'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "14" # Adjust the Node.js version if needed
+
+            - name: Install Node.js dependencies
+              run: npm install
+
+            - name: Sync version across files
+              run: npm run sync-version
+
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "7.4" # Specify the PHP version your project needs
+                  tools: composer
+
+            - name: Install PHP dependencies
+              run: composer install --no-dev --prefer-dist
+
+            - name: Run build script
+              run: npm run build
+
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release ${{ github.ref }}
+                  draft: false
+                  prerelease: false
+                  body: |
+                      This release was automatically generated from the ${GITHUB_REF} tag.
+                      **Changes:**
+                      - Auto-sync and build using GitHub Actions.
+
+            - name: Upload Release Asset
+              uses: actions/upload-release-asset@v1
+              with:
+                  name: ${pluginSlug}-v${{ github.ref }}.zip
+                  path: ./build/${pluginSlug}-v${{ github.ref }}.zip
+                  label: "Plugin Zip"
