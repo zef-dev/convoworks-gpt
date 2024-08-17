@@ -1,0 +1,52 @@
+name: Update Plugin JSON
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    update-json:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "14"
+
+            - name: Update JSON file
+              run: |
+                  # Extract version from the release tag
+                  version="${{ github.event.release.tag_name }}"
+                  # Ensure the version format matches expectations (e.g., strip leading 'v')
+                  version="${version#v}"
+
+                  # Generate the download URL
+                  download_url="https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/convoworks-gpt-${version}.zip"
+
+                  # Get the current date for 'last_updated'
+                  updated_date=$(date -u +"%Y-%m-%d")
+
+                  # Update the update.json file
+                  cat > update.json <<EOL
+                  {
+                    "convoworks-gpt/convoworks-gpt.php": {
+                      "new_version": "${version}",
+                      "package": "${download_url}",
+                      "requires": "5.0",
+                      "tested": "6.6",
+                      "last_updated": "${updated_date}"
+                    }
+                  }
+                  EOL
+
+            - name: Commit and push updated JSON file
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add update.json
+                  git commit -m "Update JSON for release ${{ github.event.release.tag_name }}"
+                  git push origin main

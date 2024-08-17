@@ -7,6 +7,7 @@
  * Description: GPT related workflow components
  * UID: convoworks-gpt
  * Plugin URI: https://github.com/zef-dev/convoworks-gpt
+ * Update URI: https://github.com/zef-dev/convoworks-gpt/update.json
  * Author: ZEF Development
  * Version: 0.08.00
  * Author URI: https://zef.dev
@@ -29,4 +30,37 @@ function run_convoworks_gpt_plugin() {
     $plugin->register();
 }
 run_convoworks_gpt_plugin();
+
+function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
+{
+    static $response = false;
+
+    if (empty($plugin_data['UpdateURI']) || !empty($update)) {
+        return $update;
+    }
+
+    if ($response === false) {
+        $response = wp_remote_get($plugin_data['UpdateURI']);
+    }
+
+    if (is_a($response, 'WP_Error')) {
+        /** @var WP_Error $response */
+        error_log('Error updating plugin [Convoworks GPT]: '.implode("\n", $response->get_error_messages()));
+        return $update;
+    }
+
+    if (empty($response['body'])) {
+        return $update;
+    }
+
+    $custom_plugins_data = json_decode($response['body'], true);
+
+    if (!empty($custom_plugins_data[$plugin_file])) {
+        return $custom_plugins_data[$plugin_file];
+    } else {
+        return $update;
+    }
+}
+add_filter('update_plugins_convoworks-gpt/convoworks-gpt.php', 'convoworks_gpt_check_for_updates', 10, 3);
+
 
