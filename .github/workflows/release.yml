@@ -56,6 +56,8 @@ jobs:
 
             - name: Upload Release Asset
               uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }} # Try passing PAT directly here
               with:
                   upload_url: ${{ steps.create_release.outputs.upload_url }}
                   asset_path: ./build/convoworks-gpt-${{ env.VERSION }}.zip
