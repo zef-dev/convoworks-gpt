@@ -39,6 +39,13 @@ jobs:
             - name: Debug - List files in build directory
               run: ls -al ./build
 
+            - name: Debug - Check file existence
+              run: |
+                  if [ ! -f "./build/convoworks-gpt-${{ github.ref_name }}.zip" ]; then
+                    echo "Error: File not found!"
+                    exit 1
+                  fi
+
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v1
               with:
