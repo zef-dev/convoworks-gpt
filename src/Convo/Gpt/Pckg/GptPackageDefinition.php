@@ -86,6 +86,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
 
     public static function splitTextIntoChunks($text, $maxChar, $margin) {
         $chunks = [];
+        if (empty($text)) {
+            return $chunks;
+        }
         $currentChunk = "";
 
         $parts = preg_split('/(\.|\?|!)\s+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
