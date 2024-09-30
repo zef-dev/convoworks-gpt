@@ -80,6 +80,11 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
 
         $params     =   $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
         $result     =   $this->evaluateString( $this->_resultData);
+        if ( is_callable( $result)) {
+            $this->_logger->info( 'Executing callable result');
+            $result = $result();
+        }
+
         if ( is_string( $result)) {
             return $result;
         }
