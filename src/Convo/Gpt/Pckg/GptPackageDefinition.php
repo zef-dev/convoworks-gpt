@@ -859,11 +859,16 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span>' .
-                        ' <b>{{component.properties.name}}('.
-                        '<span ng-repeat="(key,val) in component.properties.parameters track by key">{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>'.
-                        ') => {{component.properties.result_data}}</b>' .
-                        '</div>'
+                        'template' =>
+                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> '.
+                            '<b>{{component.properties.name}}(' .
+                            // Conditional to check if parameters is a string or an array
+                            '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">'.
+                            '{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>' .
+                            // If parameters is a string, display it directly
+                            '<span ng-if="isString(component.properties.parameters)">{{ component.properties.parameters }}</span>' .
+                            ') => {{component.properties.result_data}}</b>
+                        </div>'
                     ],
                     '_workflow' => 'read',
                     '_descend' => 'true',
