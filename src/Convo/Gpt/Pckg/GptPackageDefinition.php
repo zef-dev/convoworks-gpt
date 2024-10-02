@@ -880,6 +880,78 @@ class GptPackageDefinition extends AbstractPackageDefinition
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\ExternalChatFunctionElement',
+                'External Chat Function',
+                'Function definition that can be used with Completion API based elements',
+                [
+                    'name' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Function name',
+                        'description' => 'Unique function name',
+                        'valueType' => 'string'
+                    ],
+                    'description' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Description',
+                        'description' => 'Function description',
+                        'valueType' => 'string'
+                    ],
+                    'parameters' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [
+                        ],
+                        'defaultValue' => [],
+                        'name' => 'Function parameters',
+                        'description' => 'Function parameter definitions',
+                        'valueType' => 'array'
+                    ],
+                    'required' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Required',
+                        'description' => 'Array of required fields',
+                        'valueType' => 'string'
+                    ],
+                    'defaults' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Default values',
+                        'description' => 'Associative array containing fields and their default values',
+                        'valueType' => 'string'
+                    ],
+                    'execute' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Callable',
+                        'description' => 'Function on other callable.',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' =>
+                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> '.
+                            '<b>{{component.properties.name}}(' .
+                            '<span>{{ component.properties.parameters }}</span>' .
+                            ')</b>
+                        </div>'
+                    ],
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    // '_help' =>  [
+                    //     'type' => 'file',
+                    //     'filename' => 'chat-function-element.html'
+                    // ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatAppElement',
                 'x!Autonomous Chat',
                 'Chat handler which can be configured to autonomously execute actions in the workflow',
