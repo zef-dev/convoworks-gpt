@@ -83,7 +83,7 @@ class ExternalChatFunctionElement extends AbstractWorkflowContainerComponent imp
 
                 $data       =   json_decode( $data, true);
                 $data       =   array_merge( $this->_functionData['defaults'], $data);
-                $result     =   $this->_functionData['execute']( $data, $this->_convoServiceInstance);
+                $result     =   $this->_functionData['execute']( $data);
 
                 if ( is_string( $result)) {
                     return $result;
