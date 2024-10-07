@@ -1,6 +1,10 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.9.0 External gpt functions element
+
+* Added `ExternalChatFunctionElement` which allows registering GPT functions from 3rd party plugins
+
 ### 0.8.0
 
 * Added simple messages limiter
