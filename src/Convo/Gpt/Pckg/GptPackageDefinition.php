@@ -252,7 +252,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
                         'defaultValue' => [],
                         'defaultOpen' => false,
-                        'name' => 'Function',
+                        'name' => 'Function (Deprecated)',
                         'description' => 'Dynamically registers available functions the agent can utilize.',
                         'valueType' => 'class'
                     ],
@@ -938,16 +938,16 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'template' =>
                         '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> '.
                             '<b>{{component.properties.name}}(' .
-                            '<span>{{ component.properties.parameters }}</span>' .
-                            ')</b>
+                            '{{ component.properties.parameters }}' .
+                            ')  => {{ component.properties.execute }}</b>
                         </div>'
                     ],
                     '_workflow' => 'read',
                     '_descend' => 'true',
-                    // '_help' =>  [
-                    //     'type' => 'file',
-                    //     'filename' => 'chat-function-element.html'
-                    // ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'external-chat-function-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
