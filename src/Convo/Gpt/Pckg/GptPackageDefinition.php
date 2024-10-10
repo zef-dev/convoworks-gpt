@@ -80,6 +80,21 @@ class GptPackageDefinition extends AbstractPackageDefinition
             }
         );
 
+        $functions[] = new ExpressionFunction(
+            'serialize_gpt_messages',
+            function ($messages) {
+                return sprintf('serialize_gpt_messages(%s)', var_export($messages, true));
+            },
+            function ($args, $messages) {
+                // Map each message object to a readable string
+                return implode("\n\n", array_map(function($message) {
+                    $role = ucfirst($message['role']); // Capitalize the role
+                    return sprintf("%s: %s", $role, $message['content']);
+                }, $messages));
+            }
+        );
+
+
         return $functions;
     }
 
