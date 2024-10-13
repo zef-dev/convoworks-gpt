@@ -1,6 +1,10 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.9.1 Serialize messages function
+
+* Added `serialize_gpt_messages()` function for serialisation messages into readable string.
+
 ### 0.9.0 External gpt functions element
 
 * Added `ExternalChatFunctionElement` which allows registering GPT functions from 3rd party plugins
