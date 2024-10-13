@@ -62,6 +62,15 @@ ${tokenize_string(your_raw_text, ["custom", "stop", "words"])}
 **Default Stop Words:**  
 The default stop words list includes common English words like "a", "about", "above", and so forth. These words are typically removed to produce a cleaner, more meaningful representation of the input.
 
+
+### `serialize_gpt_messages`
+
+This function serializes messages into human readable string.
+
+**Parameters:**  
+* `$messages` - Array of messages (in a GPT API format) that should be serialized
+  
+
 ## Components
 
 ### GPT Chat Completion API Element
