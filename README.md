@@ -262,6 +262,20 @@ Function definition that can be used with Completion API based elements.
 **Flows:**
 * `OK flow` - Workflow executed when an action is requested through this function.
 
+### External GPT Chat Function
+
+This function definition can be used with Completion API-based elements. Unlike the regular chat functions element, this one delegates function execution via a Callable parameter.
+
+**Parameters:**
+
+* `Function Name` - A unique name for identifying the function.
+* `Description` - A description of what the function does.
+* `Function Parameters` - Definitions of all the parameters required by this function.
+* `Defaults` - An associative array specifying default values for the function parameters.
+* `Required` - A list of mandatory fields required for this function.
+* `Callable` - A variable that holds the callable (e.g., function). When the function is executed, a single parameter (associative array) is passed, containing all defined parameters.
+
+
 
 ## Deprecated components
 
