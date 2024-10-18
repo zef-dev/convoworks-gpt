@@ -170,25 +170,6 @@ This element allows you to validate input with the OpenAI Moderation API. The Mo
 For more information on the OpenAI Moderation API and its capabilities, refer to the [OpenAI Moderation API documentation](https://platform.openai.com/docs/api-reference/moderations).
 
 
-### GPT Query Generator
-
-The GPT Query Generator element allows you to create context-rich questions from a given conversation. These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions by providing additional context and insights.
-
-In your system message, you can use the `${conversation}` expression, which contains a serialized conversation summary. If omitted, the serialized conversation will be attached as a separate system prompt.
-
-**Parameters:**
-
-* `System Message` - Sets initial context and format for the conversation.
-* `Messages` - Array of messages representing the GPT chat completion, acting as the primary context for question generation.
-* `Messages Count` - Number of recent conversation messages to be considered.
-* `Result Variable Name` - Variable storing the generated questions.
-* `API key` - Your OpenAI API key.
-* `API Options` - Parameters for the GPT chat completion API.
-
-**Flows:**
-* `OK Flow` - Executes after successful question generation.
-
-
 ### System Message
 
 The System Message element defines a system-generated message within the chat context. These messages are primarily used in conjunction with the **GPT Chat Completion API v2** to prepend system-level information or context to a conversation. This can be useful for providing agents with a consistent introduction or setting the tone for the conversation.
@@ -280,6 +261,27 @@ This function definition can be used with Completion API-based elements. Unlike 
 ## Deprecated components
 
 The following components are associated with the now-deprecated OpenAI endpoints. While these components remain in the package to ensure your existing services continue to function, they are no longer visible in the toolbox.
+
+
+### GPT Query Generator
+
+The GPT Query Generator element allows you to create context-rich questions from a given conversation. These questions can be utilized to query a knowledge database, enhancing GPT chat completion-based interactions by providing additional context and insights.
+
+In your system message, you can use the `${conversation}` expression, which contains a serialized conversation summary. If omitted, the serialized conversation will be attached as a separate system prompt.
+
+**Parameters:**
+
+* `System Message` - Sets initial context and format for the conversation.
+* `Messages` - Array of messages representing the GPT chat completion, acting as the primary context for question generation.
+* `Messages Count` - Number of recent conversation messages to be considered.
+* `Result Variable Name` - Variable storing the generated questions.
+* `API key` - Your OpenAI API key.
+* `API Options` - Parameters for the GPT chat completion API.
+
+**Flows:**
+* `OK Flow` - Executes after successful question generation.
+
+
 
 ### GPT Completion API Element
 
