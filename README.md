@@ -8,17 +8,17 @@ This is a development version and it is yet decided will this package be part of
 
 ## Building the Plugin
 
-You can use the prebuilt plugin version (in the `./build` folder) or you can build it by yourself.
+You can use the prebuilt plugin version (in the releases section https://github.com/zef-dev/convoworks-gpt/releases) or you can build it by yourself.
 
 When using it for the first time, you have to install the node packages. Navigate to the project root and enter the following command:
 
 ```bash
 npm install
 ```
-To build the deployment package, run this command, which will create the plugin zip. The version is taken from the `package.json` file:
+To build the deployment package (plugin) on your own, run this command, which will create the plugin zip. The version is taken from the `package.json` file:
 
 ```bash
-node run build
+npm run build
 ```
 
 ### Installation & Quick Start
