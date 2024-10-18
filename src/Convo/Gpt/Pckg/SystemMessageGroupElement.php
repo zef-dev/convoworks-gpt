@@ -11,7 +11,6 @@ use Convo\Gpt\IMessages;
 class SystemMessageGroupElement extends AbstractWorkflowContainerComponent implements IConversationElement, IMessages
 {
 
-    private $_content;
     private $_trimChildren;
 
     /**
@@ -25,7 +24,6 @@ class SystemMessageGroupElement extends AbstractWorkflowContainerComponent imple
     {
         parent::__construct( $properties);
 
-        $this->_content            =   $properties['content'];
         $this->_trimChildren       =   $properties['trim_children'];
         foreach ( $properties['message_provider'] as $element) {
             $this->_messagesDefinition[] = $element;
@@ -74,7 +72,7 @@ class SystemMessageGroupElement extends AbstractWorkflowContainerComponent imple
 
 
     private function _getCompleteContent() {
-        $content = $this->evaluateString( $this->_content);
+        $content = '';
         $trim = $this->evaluateString( $this->_trimChildren);
         if ( $trim) {
             foreach ( $this->_messages as $message) {
@@ -82,7 +80,7 @@ class SystemMessageGroupElement extends AbstractWorkflowContainerComponent imple
             }
         } else {
             foreach ( $this->_messages as $message) {
-                $content .= "\n".$message['content'];
+                $content .= "\n\n".$message['content'];
             }
         }
 
@@ -93,6 +91,6 @@ class SystemMessageGroupElement extends AbstractWorkflowContainerComponent imple
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'['.$this->_content.']['.count( $this->_messagesDefinition).']';
+        return parent::__toString().'['.$this->_trimChildren.']['.count( $this->_messagesDefinition).']';
     }
 }
