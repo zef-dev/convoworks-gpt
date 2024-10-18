@@ -1,6 +1,11 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.9.2 Updated Service Templates
+
+- Updated both service templates to take advantage of new features.
+- Revised documentation and help files.
+
 ### 0.9.1 Serialize messages function
 
 * Added `serialize_gpt_messages()` function for serialisation messages into readable string.
