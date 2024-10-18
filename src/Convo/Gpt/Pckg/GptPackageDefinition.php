@@ -682,20 +682,20 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 'Simple Messages Limiter',
                 'Limits messages size by simply removing the oldest ones.',
                 [
-                    'max_count' => [
+                  'max_count' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${20}',
-                        'name' => 'Max messages to keep',
-                        'description' => 'The maximum number of messages before the conversation is summarized.',
+                        'name' => 'Max Messages to Keep',
+                        'description' => 'The maximum number of messages allowed before the conversation is trimmed.',
                         'valueType' => 'string'
                     ],
                     'truncate_to' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${10}',
-                        'name' => 'Truncate message count',
-                        'description' => 'The number of messages to keep after summarization.',
+                        'name' => 'Truncate Message Count',
+                        'description' => 'The number of messages to retain after trimming.',
                         'valueType' => 'string'
                     ],
                     'message_provider' => [
@@ -707,7 +707,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => true,
                         'name' => 'Messages',
-                        'description' => 'Provides the conversation messages that need to be summarized.',
+                        'description' => 'Provides the conversation messages to be trimmed.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -719,6 +719,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'simple-message-limiter-element.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(

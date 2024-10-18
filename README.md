@@ -193,6 +193,16 @@ Limits the size of messages by summarizing the oldest ones.
 * `Messages` - Provides the conversation messages.
 
 
+### Simple Message Limiter
+
+Limits the size of messages by trimming the array to a defined size.
+
+**Parameters:**
+
+* `Max messages to keep` - The maximum number of messages allowed before the conversation is trimmed.
+* `Truncate message count` - The number of messages to retain after trimming.
+* `Messages` - Provides the initial conversation messages array.
+
 
 ### Chat Function
 
