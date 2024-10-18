@@ -3,23 +3,25 @@
     <p>This advanced component enables you to perform chat completion API calls with more dynamic capabilities and additional contexts.</p>
 
     <h3>Result Variable Name</h3>
-    <p>The variable that stores the API completion response.</p>
+    <p>The variable that stores the API completion response. Default is <strong>status</strong>, and it can hold various response details such as the full response body or the last message returned by GPT.</p>
 
-    <h3>API options</h3>
-    <p>Configuration options for the chat completion API, such as the model used, temperature, and token limit.</p>
+    <h3>API Options</h3>
+    <p>Configuration options for the chat completion API, such as the model, temperature, and token limit.</p>
 
     <h3>Messages</h3>
-    <p>Defines a sub-flow that provides messages or context for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.</p>
+    <p>Defines a sub-flow that provides messages (full conversation, including the prompt) and GPT functions for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.
+        <br>
+        When handling GPT function calls, this flow is executed (messages are rebuilt) before each subsequent GPT API call. This allows GPT function calls to affect the prompt definition.
+    </p>
 
     <h3>Function (deprecated)</h3>
-    <p><em>This flow is deprecated. Now you can register function in the messages flow.</em>
+    <p><em>This flow is deprecated. You can now register functions in the Messages flow.</em>
         <br>
-        Allows dynamic registration of available functions that the agent can use during the conversation.</p>
-
-    <h3>New message flow</h3>
-    <p>This flow is executed after each GPT response or request. Use this flow to rwgister messages in your conversation.
-
+        Allows dynamic registration of available functions that the agent can use during the conversation.
     </p>
+
+    <h3>New Message Flow</h3>
+    <p>This flow is executed after each GPT response or request. Use this flow to register messages in your conversation.</p>
 
     <table class="table">
         <thead>
@@ -31,20 +33,19 @@
         <tbody>
             <tr>
                 <td><code class="status-prop" title="Click to copy expression">response</code></td>
-                <td>Full response body as an associative array</td>
+                <td>Full response body as an associative array.</td>
             </tr>
             <tr>
                 <td><code class="status-prop" title="Click to copy expression">last_message</code></td>
-                <td>Last message (returned from GPT) as associative array</td>
+                <td>Last message returned from GPT as an associative array.</td>
             </tr>
         </tbody>
     </table>
 
-    <h3>OK flow</h3>
+    <h3>OK Flow</h3>
     <p>This flow is executed once the API call is finished and the result variable is ready for further actions.</p>
 
-
-    Inside the <strong>OK flow</strong>, you can access response data through a variabole defined by <strong>Result Variable Name</strong> and it's properties.
+    <p>Inside the <strong>OK flow</strong>, you can access response data through the variable defined by <strong>Result Variable Name</strong> and its properties.</p>
 
     <table class="table">
         <thead>
@@ -56,15 +57,15 @@
         <tbody>
             <tr>
                 <td><code class="status-prop" title="Click to copy expression">response</code></td>
-                <td>Full response body as an associative array</td>
+                <td>Full response body as an associative array.</td>
             </tr>
             <tr>
                 <td><code class="status-prop" title="Click to copy expression">messages</code></td>
-                <td>Array of all messages in conversation. Available only when New messages flow is empty (for back compatibility)</td>
+                <td>An array of all messages in the conversation. Available only when the New Message Flow is empty (for backward compatibility).</td>
             </tr>
             <tr>
                 <td><code class="status-prop" title="Click to copy expression">last_message</code></td>
-                <td>Last message (returned from GPT) as associative array</td>
+                <td>Last message returned from GPT as an associative array.</td>
             </tr>
         </tbody>
     </table>
@@ -72,7 +73,6 @@
     <hr>
 
     <p>
-        Check for more on available API options at <a href="https://platform.openai.com/docs/api-reference/chat" target="_blank">Chat Completion API Reference - OpenAI API</a>
+        Check for more details on available API options at <a href="https://platform.openai.com/docs/api-reference/chat" target="_blank">Chat Completion API Reference - OpenAI API</a>.
     </p>
-
 </div>

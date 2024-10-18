@@ -124,14 +124,16 @@ This advanced component enables you to perform chat completion API calls with mo
 
 **Parameters:**
 
-* `Result Variable Name` - Default `status`. The variable that stores the API completion response. Defaults to `status`, this is the variable name that stores response information. (`response` : full API response, `messages`: array of messages for current conversation, `last_message`: the last message (returned from GPT) as associative array)
+* `Result Variable Name` - Default: `status`. The variable that stores the API completion response. By default, it is `status`, but this can be changed. The available values are: `response` (full API response), `messages` (array of messages for the current conversation), and `last_message` (the last message returned by GPT as an associative array).
 * `API key` - Your OpenAI API key.
-* `API options` - Configuration options for the chat completion API, such as the model used, temperature, and token limit.
-* 
+* `API options` - Configuration options for the chat completion API, such as the model, temperature, and token limit.
+
 **Flows:**
-* `Messages` - Defines a sub-flow that provides messages or context for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine context.
-* `Function` -  Allows dynamic registration of available functions that the agent can use during the conversation.
-* `OK flow` -  This flow is executed once the API call is finished and the result variable is ready for further actions.
+
+* `Messages` - Defines a sub-flow that provides messages (the full conversation, including the prompt) and GPT functions for the chat completion API. This allows you to prepend agent definitions, add external data, or use conditional logic to determine the context. When handling GPT function calls, this flow is executed (messages are rebuilt) before each subsequent GPT API call, allowing function calls to affect the prompt definition.
+* `New Message Flow` - This flow is executed after each GPT response or request. Use this flow to register new messages (default `${status.last_message}`) in your conversation.
+* `OK Flow` - This flow is executed once the API call is finished.
+
 
 
 ### GPT Embeddings Element
