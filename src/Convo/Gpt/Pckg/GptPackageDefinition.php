@@ -796,13 +796,13 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatFunctionElement',
                 'Chat Function',
-                'Function definition that can be used with Completion API based elements',
+                'Function definition that can be used with Chat Completion API-based elements.',
                 [
                     'name' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Function name',
+                        'name' => 'Function Name',
                         'description' => 'Unique function name',
                         'valueType' => 'string'
                     ],
@@ -820,7 +820,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                             'multiple' => true
                         ],
                         'defaultValue' => [],
-                        'name' => 'Function parameters',
+                        'name' => 'Function Parameters',
                         'description' => 'Function parameter definitions',
                         'valueType' => 'array'
                     ],
@@ -844,7 +844,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => 'data',
-                        'name' => 'Request data variable',
+                        'name' => 'Request Data Variable',
                         'description' => 'Variable name used for function arguments',
                         'valueType' => 'string'
                     ],
@@ -852,7 +852,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${function_result}',
-                        'name' => 'Function result',
+                        'name' => 'Function Result',
                         'description' => 'Expression that will evaluate to the function result',
                         'valueType' => 'string'
                     ],
@@ -864,7 +864,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         ],
                         'defaultValue' => [],
                         'defaultOpen' => false,
-                        'name' => 'OK flow',
+                        'name' => 'OK Flow',
                         'description' => 'Flow to be executed when action is requested',
                         'valueType' => 'class'
                     ],
@@ -873,10 +873,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'template' =>
                         '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> '.
                             '<b>{{component.properties.name}}(' .
-                            // Conditional to check if parameters is a string or an array
                             '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">'.
                             '{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>' .
-                            // If parameters is a string, display it directly
                             '<span ng-if="isString(component.properties.parameters)">{{ component.properties.parameters }}</span>' .
                             ') => {{component.properties.result_data}}</b>
                         </div>'
@@ -893,13 +891,13 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ExternalChatFunctionElement',
                 'External Chat Function',
-                'Function definition that can be used with Completion API based elements',
+                'Function definition variant which delegates actual execution to a passed callable.',
                 [
                     'name' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Function name',
+                        'name' => 'Function Name',
                         'description' => 'Unique function name',
                         'valueType' => 'string'
                     ],
@@ -913,10 +911,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                     'parameters' => [
                         'editor_type' => 'text',
-                        'editor_properties' => [
-                        ],
+                        'editor_properties' => [],
                         'defaultValue' => [],
-                        'name' => 'Function parameters',
+                        'name' => 'Function Parameters',
                         'description' => 'Function parameter definitions',
                         'valueType' => 'array'
                     ],
@@ -932,7 +929,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '',
-                        'name' => 'Default values',
+                        'name' => 'Default Values',
                         'description' => 'Associative array containing fields and their default values',
                         'valueType' => 'string'
                     ],
@@ -941,7 +938,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'editor_properties' => [],
                         'defaultValue' => '',
                         'name' => 'Callable',
-                        'description' => 'Function on other callable.',
+                        'description' => 'Function or other callable',
                         'valueType' => 'string'
                     ],
                     '_preview_angular' => [
@@ -961,6 +958,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     ],
                 ]
             ),
+
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\ChatAppElement',
