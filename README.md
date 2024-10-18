@@ -71,6 +71,34 @@ This function serializes messages into human readable string.
 * `$messages` - Array of messages (in a GPT API format) that should be serialized
   
 
+### `split_text_into_chunks`
+
+**Description:**  
+The `split_text_into_chunks` function splits a large text document into smaller chunks, making it suitable for indexing in a vector database. The function ensures that chunks are split at natural language boundaries (e.g., after a period, question mark, or exclamation mark) and adheres to a defined maximum character length. If a chunk is smaller than the margin, it gets appended to the previous chunk to avoid small, incomplete segments.
+
+**Parameters:**  
+* `$text` - The input text to be split into chunks.
+* `$maxChar` (optional) - The maximum number of characters allowed in each chunk. The default is `30,000` characters.
+* `$margin` (optional) - A margin to avoid creating very small chunks. If the final chunk is smaller than the margin, it will be appended to the previous chunk. The default margin is `1,000` characters.
+
+**Usage:**  
+To split a large document into chunks with default settings:
+```
+${split_text_into_chunks(large_document)}
+```
+
+To split a large document with custom chunk size and margin:
+```
+${split_text_into_chunks(large_document, 20000, 500)}
+```
+
+**How it works:**  
+1. The function processes the text by splitting it at sentence boundaries (periods, question marks, or exclamation marks).
+2. It accumulates text segments into chunks until the combined length exceeds the `maxChar` limit.
+3. Any chunk smaller than the margin is appended to the previous chunk, ensuring that no small, incomplete chunks are created.
+
+
+
 ## Components
 
 ### GPT Chat Completion API Element
