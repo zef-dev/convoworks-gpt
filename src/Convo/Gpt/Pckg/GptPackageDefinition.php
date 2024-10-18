@@ -23,7 +23,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
         parent::__construct( $logger, self::NAMESPACE, __DIR__);
 
         $this->registerTemplate( __DIR__ .'/gpt-example-chat.template.json');
-        $this->registerTemplate( __DIR__ .'/gpt-site-assistant.template.json');
+        $this->registerTemplate( __DIR__ .'/gpt-site-admin.template.json');
     }
 
     public function getFunctions()
