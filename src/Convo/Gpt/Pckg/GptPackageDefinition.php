@@ -758,22 +758,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SystemMessageGroupElement',
                 'Group System Messages',
-                'Groups own with all child system messages into single one.',
+                'Groups itself with all child system messages into a single one.',
                 [
-                    'content' => [
-                        'editor_type' => 'desc',
-                        'editor_properties' => ['large' => true],
-                        'defaultValue' => '',
-                        'name' => 'Message content',
-                        'description' => 'The text content of the system message.',
-                        'valueType' => 'string'
-                    ],
                     'trim_children' => [
                         'editor_type' => 'boolean',
                         'editor_properties' => [],
                         'defaultValue' => false,
-                        'name' => 'Trim child prompts',
-                        'description' => 'Enabling trim, you can join child messages inline',
+                        'name' => 'Trim Child Prompts',
+                        'description' => 'Enable this option to join child messages inline.',
                         'valueType' => 'boolean'
                     ],
                     'message_provider' => [
@@ -782,7 +774,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => true,
                         'name' => 'Messages',
-                        'description' => 'Executes a sub-flow to provide messages which should be grouped',
+                        'description' => 'Executes a sub-flow to provide the messages to be grouped.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -796,7 +788,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'system-message-element.html'
+                        'filename' => 'group-system-messages-element.html'
                     ],
                 ]
             ),

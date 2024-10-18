@@ -199,6 +199,17 @@ The System Message element defines a system-generated message within the chat co
 For use cases and more details on how system messages can be integrated with the Chat Completion API v2, refer to the associated component documentation.
 
 
+### Group System Messages
+
+This component groups itself with all child system messages into a single one. It helps in managing multiple system messages more effectively by combining them.
+
+**Parameters:**
+
+* `Trim Child Prompts` - When enabled, child messages are joined inline to create a more compact output.
+* `Messages` - Defines a sub-flow that provides the messages to be grouped (System Message elements). The sub-flow executes to retrieve and group messages that are part of the conversation.
+
+
+
 ### Conversation Messages
 
 The Conversation Messages element plays a pivotal role in handling conversations with the **GPT Chat Completion API v2**. It manages the storage and provision of the entire conversation that needs to be sent to the API. This ensures that the context and flow of the conversation remain intact during API interactions.
