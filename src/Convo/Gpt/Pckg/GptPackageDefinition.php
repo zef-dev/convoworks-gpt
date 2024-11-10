@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Convo\Gpt\Pckg;
 
@@ -16,14 +18,15 @@ class GptPackageDefinition extends AbstractPackageDefinition
     private $_gptApiFactory;
 
     public function __construct(
-        \Psr\Log\LoggerInterface $logger, $gptApiFactory
+        \Psr\Log\LoggerInterface $logger,
+        $gptApiFactory
     ) {
         $this->_gptApiFactory           =   $gptApiFactory;
 
-        parent::__construct( $logger, self::NAMESPACE, __DIR__);
+        parent::__construct($logger, self::NAMESPACE, __DIR__);
 
-        $this->registerTemplate( __DIR__ .'/gpt-example-chat.template.json');
-        $this->registerTemplate( __DIR__ .'/gpt-site-admin.template.json');
+        $this->registerTemplate(__DIR__ . '/gpt-example-chat.template.json');
+        $this->registerTemplate(__DIR__ . '/gpt-site-admin.template.json');
     }
 
     public function getFunctions()
@@ -31,39 +34,200 @@ class GptPackageDefinition extends AbstractPackageDefinition
         $functions = [];
 
         $stop_words = [
-            "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "aren't", "as", "at",
-            "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "can't", "cannot", "could",
-            "couldn't", "did", "didn't", "do", "does", "doesn't", "doing", "don't", "down", "during", "each", "few", "for", "from",
-            "further", "had", "hadn't", "has", "hasn't", "have", "haven't", "having", "he", "he'd", "he'll", "he's", "her", "here",
-            "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in",
-            "into", "is", "isn't", "it", "it's", "its", "itself", "let's", "me", "more", "most", "mustn't", "my", "myself", "no",
-            "nor", "not", "of", "off", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own",
-            "same", "shan't", "she", "she'd", "she'll", "she's", "should", "shouldn't", "so", "some", "such", "than", "that", "that's",
-            "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're",
-            "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "wasn't", "we", "we'd", "we'll",
-            "we're", "we've", "were", "weren't", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who",
-            "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll", "you're", "you've",
-            "your", "yours", "yourself", "yourselves"
+            "a",
+            "about",
+            "above",
+            "after",
+            "again",
+            "against",
+            "all",
+            "am",
+            "an",
+            "and",
+            "any",
+            "are",
+            "aren't",
+            "as",
+            "at",
+            "be",
+            "because",
+            "been",
+            "before",
+            "being",
+            "below",
+            "between",
+            "both",
+            "but",
+            "by",
+            "can't",
+            "cannot",
+            "could",
+            "couldn't",
+            "did",
+            "didn't",
+            "do",
+            "does",
+            "doesn't",
+            "doing",
+            "don't",
+            "down",
+            "during",
+            "each",
+            "few",
+            "for",
+            "from",
+            "further",
+            "had",
+            "hadn't",
+            "has",
+            "hasn't",
+            "have",
+            "haven't",
+            "having",
+            "he",
+            "he'd",
+            "he'll",
+            "he's",
+            "her",
+            "here",
+            "here's",
+            "hers",
+            "herself",
+            "him",
+            "himself",
+            "his",
+            "how",
+            "how's",
+            "i",
+            "i'd",
+            "i'll",
+            "i'm",
+            "i've",
+            "if",
+            "in",
+            "into",
+            "is",
+            "isn't",
+            "it",
+            "it's",
+            "its",
+            "itself",
+            "let's",
+            "me",
+            "more",
+            "most",
+            "mustn't",
+            "my",
+            "myself",
+            "no",
+            "nor",
+            "not",
+            "of",
+            "off",
+            "on",
+            "once",
+            "only",
+            "or",
+            "other",
+            "ought",
+            "our",
+            "ours",
+            "ourselves",
+            "out",
+            "over",
+            "own",
+            "same",
+            "shan't",
+            "she",
+            "she'd",
+            "she'll",
+            "she's",
+            "should",
+            "shouldn't",
+            "so",
+            "some",
+            "such",
+            "than",
+            "that",
+            "that's",
+            "the",
+            "their",
+            "theirs",
+            "them",
+            "themselves",
+            "then",
+            "there",
+            "there's",
+            "these",
+            "they",
+            "they'd",
+            "they'll",
+            "they're",
+            "they've",
+            "this",
+            "those",
+            "through",
+            "to",
+            "too",
+            "under",
+            "until",
+            "up",
+            "very",
+            "was",
+            "wasn't",
+            "we",
+            "we'd",
+            "we'll",
+            "we're",
+            "we've",
+            "were",
+            "weren't",
+            "what",
+            "what's",
+            "when",
+            "when's",
+            "where",
+            "where's",
+            "which",
+            "while",
+            "who",
+            "who's",
+            "whom",
+            "why",
+            "why's",
+            "with",
+            "won't",
+            "would",
+            "wouldn't",
+            "you",
+            "you'd",
+            "you'll",
+            "you're",
+            "you've",
+            "your",
+            "yours",
+            "yourself",
+            "yourselves"
         ];
 
 
         $functions[] = new ExpressionFunction(
             'tokenize_string',
-            function ($text, $stopWords=null) {
-                return sprintf('tokenize_string(%s)', var_export( $text, true), var_export( $stopWords, true));
+            function ($text, $stopWords = null) {
+                return sprintf('tokenize_string(%s)', var_export($text, true), var_export($stopWords, true));
             },
-            function($args, $text, $stopWords=null) use ( $stop_words) {
+            function ($args, $text, $stopWords = null) use ($stop_words) {
 
-                if ( is_null( $stopWords)) {
+                if (is_null($stopWords)) {
                     $stopWords = $stop_words;
                 }
 
-                $text = wp_strip_all_tags( $text);
-                $text = strtolower( $text);
+                $text = wp_strip_all_tags($text);
+                $text = strtolower($text);
                 $text = preg_replace("#[[:punct:]]#", "", $text);
                 $tokens = explode(' ', $text);
-                $meaningful_tokens = array_diff( $tokens, $stopWords);
-                return implode( ' ', $meaningful_tokens);
+                $meaningful_tokens = array_diff($tokens, $stopWords);
+                return implode(' ', $meaningful_tokens);
             }
         );
 
@@ -87,7 +251,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             },
             function ($args, $messages) {
                 // Map each message object to a readable string
-                return implode("\n\n", array_map(function($message) {
+                return implode("\n\n", array_map(function ($message) {
                     $role = ucfirst($message['role']); // Capitalize the role
                     return sprintf("%s: %s", $role, $message['content']);
                 }, $messages));
@@ -99,7 +263,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
     }
 
 
-    public static function splitTextIntoChunks($text, $maxChar, $margin) {
+    public static function splitTextIntoChunks($text, $maxChar, $margin)
+    {
         $chunks = [];
         if (empty($text)) {
             return $chunks;
@@ -117,14 +282,13 @@ class GptPackageDefinition extends AbstractPackageDefinition
         }
 
         if (!empty(trim($currentChunk))) {
-            if ( strlen( $currentChunk) > $margin) {
+            if (strlen($currentChunk) > $margin) {
                 $chunks[] = $currentChunk;
             } else {
                 // append to the last one if it is a small chunk
-                $last_index = count( $chunks) - 1;
+                $last_index = count($chunks) - 1;
                 $chunks[$last_index] .= $currentChunk;
             }
-
         }
 
         return $chunks;
@@ -202,22 +366,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
-                        '<br>{{component.properties.system_message}}' .
-                        '</div>'
+                            '<br>{{component.properties.system_message}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory       =   $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new ChatCompletionElement( $properties, $this->_gptApiFactory);
+                            return new ChatCompletionElement($properties, $this->_gptApiFactory);
                         }
                     },
                     '_help' =>  [
@@ -241,6 +405,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
+                    'api_url' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'https://api.openai.com/v1/chat/completions',
+                        'name' => 'API url',
+                        'description' => 'URL to the API endpoint. By default (or empty), using OpenAI API endpoint https://api.openai.com/v1/chat/completions',
+                        'valueType' => 'string'
+                    ],
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => ['multiple' => true],
@@ -292,20 +464,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT COMPLETION API</span>' .
-                        ' => <b>{{component.properties.result_var}}</b>' .
-                        '</div>'
+                            ' => <b>{{component.properties.result_var}}</b>' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory {
-                    private $_gptApiFactory;
+                        private $_gptApiFactory;
 
-                    public function __construct($gptApiFactory) {
-                        $this->_gptApiFactory = $gptApiFactory;
-                    }
-                    public function createComponent($properties, $service) {
-                        return new ChatCompletionV2Element($properties, $this->_gptApiFactory);
-                    }
+                        public function __construct($gptApiFactory)
+                        {
+                            $this->_gptApiFactory = $gptApiFactory;
+                        }
+                        public function createComponent($properties, $service)
+                        {
+                            return new ChatCompletionV2Element($properties, $this->_gptApiFactory);
+                        }
                     },
                     '_help' => [
                         'type' => 'file',
@@ -363,22 +537,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">EMBEDDINGS API</span>' .
-                        '<br>{{component.properties.input}}' .
-                        '</div>'
+                            '<br>{{component.properties.input}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
                             $this->_gptApiFactory = $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new EmbeddingsElement( $properties, $this->_gptApiFactory);
+                            return new EmbeddingsElement($properties, $this->_gptApiFactory);
                         }
                     },
                     '_help' =>  [
@@ -437,22 +611,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">MODERATION API</span>' .
-                        '<br>{{component.properties.input}}' .
-                        '</div>'
+                            '<br>{{component.properties.input}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
                             $this->_gptApiFactory = $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new ModerationApiElement( $properties, $this->_gptApiFactory);
+                            return new ModerationApiElement($properties, $this->_gptApiFactory);
                         }
                     },
                     '_help' =>  [
@@ -478,8 +652,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CONVERSATION</span>' .
-                        ' <b>{{component.properties.messages}}</b>' .
-                        '</div>'
+                            ' <b>{{component.properties.messages}}</b>' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -499,9 +673,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     'system_message' => [
                         'editor_type' => 'desc',
                         'editor_properties' => [],
-                        'defaultValue' => 'Considering all the prior conversation including the previous summaries, '.
-                        'please generate a concise summary capturing the key points and significant themes up until now. '.
-                        'Please ensure the summary contains all necessary information to understand the context of the current conversation.',
+                        'defaultValue' => 'Considering all the prior conversation including the previous summaries, ' .
+                            'please generate a concise summary capturing the key points and significant themes up until now. ' .
+                            'Please ensure the summary contains all necessary information to understand the context of the current conversation.',
                         'name' => 'System message',
                         'description' => 'Main, system prompt which instructs how to summarize the conversation.',
                         'valueType' => 'string'
@@ -558,9 +732,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">GPT MESSAGES LIMITER</span>' .
-                        ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
-                        '<br>{{component.properties.system_message}}' .
-                        '</div>'
+                            ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
+                            '<br>{{component.properties.system_message}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -590,7 +764,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 'Simple Messages Limiter',
                 'Limits messages size by simply removing the oldest ones.',
                 [
-                  'max_count' => [
+                    'max_count' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
                         'defaultValue' => '${20}',
@@ -621,8 +795,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">SIMPLE MESSAGES LIMITER</span>' .
-                        ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
-                        '</div>'
+                            ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -650,8 +824,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
-                        ' <br>{{component.properties.content}}' .
-                        '</div>'
+                            ' <br>{{component.properties.content}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -688,8 +862,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">GROUP SYSTEM</span>' .
-                        ' <br>{{component.properties.content}}' .
-                        '</div>'
+                            ' <br>{{component.properties.content}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -779,9 +953,9 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' =>
-                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> '.
+                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> ' .
                             '<b>{{component.properties.name}}(' .
-                            '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">'.
+                            '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">' .
                             '{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>' .
                             '<span ng-if="isString(component.properties.parameters)">{{ component.properties.parameters }}</span>' .
                             ') => {{component.properties.result_data}}</b>
@@ -852,7 +1026,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' =>
-                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> '.
+                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> ' .
                             '<b>{{component.properties.name}}(' .
                             '{{ component.properties.parameters }}' .
                             ')  => {{ component.properties.execute }}</b>
@@ -935,12 +1109,12 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">GPT GENERATE QUESTIONS</span>' .
-                        '<br>{{component.properties.messages}}' .
-                        '</div>'
+                            '<br>{{component.properties.messages}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
@@ -1047,22 +1221,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">AUTONOMOUS CHAT</span>' .
-                        '<br>{{component.properties.system_message}}' .
-                        '</div>'
+                            '<br>{{component.properties.system_message}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory       =   $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new ChatAppElement( $properties, $this->_gptApiFactory);
+                            return new ChatAppElement($properties, $this->_gptApiFactory);
                         }
                     },
                     '_help' =>  [
@@ -1151,22 +1325,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">TURBO CHAT</span>' .
-                        '<br>{{component.properties.system_message}}' .
-                        '</div>'
+                            '<br>{{component.properties.system_message}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory       =   $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new TurboChatAppElement( $properties, $this->_gptApiFactory);
+                            return new TurboChatAppElement($properties, $this->_gptApiFactory);
                         }
                     },
                     '_help' =>  [
@@ -1227,22 +1401,22 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">COMPLETION API</span>' .
-                        '<br>{{component.properties.prompt}}' .
-                        '</div>'
+                            '<br>{{component.properties.prompt}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
-                    '_factory' => new class ( $this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_gptApiFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_gptApiFactory;
 
-                        public function __construct( $gptApiFactory)
+                        public function __construct($gptApiFactory)
                         {
-                            $this->_gptApiFactory	   =   $gptApiFactory;
+                            $this->_gptApiFactory       =   $gptApiFactory;
                         }
-                        public function createComponent( $properties, $service)
+                        public function createComponent($properties, $service)
                         {
-                            return new CompletionElement( $properties, $this->_gptApiFactory);
+                            return new CompletionElement($properties, $this->_gptApiFactory);
                         }
                     },
                     '_help' =>  [
@@ -1320,10 +1494,10 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">CHAT ACTION</span>' .
-                        ' <b>{{component.properties.title}}</b>' .
-                        '<br>action_id = {{component.properties.action_id}}' .
-//                        ' <br>  {{component.properties.content}} ' .
-                        '</div>'
+                            ' <b>{{component.properties.title}}</b>' .
+                            '<br>action_id = {{component.properties.action_id}}' .
+                            //                        ' <br>  {{component.properties.content}} ' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -1359,8 +1533,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">PROMPT</span>' .
-                        ' <b>{{component.properties.title}}</b>' .
-                        '</div>'
+                            ' <b>{{component.properties.title}}</b>' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -1408,8 +1582,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">PROMPT SECTION</span>' .
-                        ' <b>{{component.properties.title}}</b>' .
-                        '</div>'
+                            ' <b>{{component.properties.title}}</b>' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
@@ -1437,8 +1611,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">VALIDATION ERROR</span>' .
-                        ' {{component.properties.message}}' .
-                        '</div>'
+                            ' {{component.properties.message}}' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
