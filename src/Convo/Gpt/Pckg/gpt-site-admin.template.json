@@ -330,41 +330,31 @@
                                         "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
                                         "namespace": "convo-core",
                                         "properties": {
-                                            "test": "${status.last_message.function_call}",
+                                            "test": "${status.last_message.tool_calls}",
                                             "then": [
                                                 {
-                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "test": "${status.last_message.content}",
-                                                        "then": [
+                                                        "name": null,
+                                                        "data_collection": "${status.last_message.tool_calls}",
+                                                        "item": "item",
+                                                        "elements": [
                                                             {
-                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
                                                                 "namespace": "convo-core",
                                                                 "properties": {
-                                                                    "type": "default",
-                                                                    "text": "${status.last_message.content}",
-                                                                    "append": false,
-                                                                    "alexa_domain": "normal",
-                                                                    "alexa_emotion": "neutral",
-                                                                    "alexa_emotion_intensity": "medium",
-                                                                    "_component_id": "j3fjdd7e-gro1-gccy-k78b-rei5njyxugdb"
+                                                                    "log_message": "ID: ${item.value.id}\n${item.value.function.name}( \n${item.value.function.arguments}\n)",
+                                                                    "log_level": "info",
+                                                                    "disable_test_view": false,
+                                                                    "_component_id": "dn9ilhpu-gij6-irom-vuwx-k29oqn9d2p16"
                                                                 }
                                                             }
                                                         ],
-                                                        "else_if": [],
-                                                        "else": [],
-                                                        "_component_id": "im2aaywa-2zut-qtbb-weeo-a05oio04tch4"
-                                                    }
-                                                },
-                                                {
-                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
-                                                    "namespace": "convo-core",
-                                                    "properties": {
-                                                        "log_message": "${status.last_message.function_call.name}( \n${status.last_message.function_call.arguments}\n)",
-                                                        "log_level": "info",
-                                                        "disable_test_view": false,
-                                                        "_component_id": "8pt5fceb-z3rc-zmhd-8rap-iv4yybscomji"
+                                                        "offset": null,
+                                                        "limit": null,
+                                                        "loop_until": "",
+                                                        "_component_id": "jqviswwp-s50a-negh-spf9-2ef1wkybw7wr"
                                                     }
                                                 }
                                             ],
@@ -373,20 +363,20 @@
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ElseIfElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "test": "${status.last_message.role === 'function'}",
+                                                        "test": "${status.last_message.role === 'tool'}",
                                                         "then": [
                                                             {
                                                                 "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
                                                                 "namespace": "convo-core",
                                                                 "properties": {
-                                                                    "log_message": "${status.last_message.name} => ${status.last_message.content}",
+                                                                    "log_message": "${status.last_message.tool_call_id} => ${status.last_message.content}",
                                                                     "log_level": "info",
                                                                     "disable_test_view": false,
-                                                                    "_component_id": "aq1gugvm-meib-kri4-c3a6-d7wchfgu5z5x"
+                                                                    "_component_id": "zdblrvvd-hgq5-hufz-h7um-7279br1yqtis"
                                                                 }
                                                             }
                                                         ],
-                                                        "_component_id": "zn3muv0i-6mr3-uh2o-ira0-gfc3jca4yw4m"
+                                                        "_component_id": "sgcpelum-2g9k-mr4r-2lkp-auzuxktifymy"
                                                     }
                                                 }
                                             ],
@@ -401,11 +391,11 @@
                                                         "alexa_domain": "normal",
                                                         "alexa_emotion": "neutral",
                                                         "alexa_emotion_intensity": "medium",
-                                                        "_component_id": "bg186vzb-nq0l-abqv-xac4-xffkldsmk1rs"
+                                                        "_component_id": "wrdjv9hq-krzd-htkm-pnyz-3ziw8ndckacp"
                                                     }
                                                 }
                                             ],
-                                            "_component_id": "ukccewhs-x5ka-mwoa-be5e-8pjmqaqbhs4w"
+                                            "_component_id": "iaexotrw-htpg-fj72-rapz-vn68u3pvyhvr"
                                         }
                                     },
                                     {
@@ -477,7 +467,7 @@
                             "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
                             "namespace": "convo-gpt",
                             "properties": {
-                                "content": "### Additional Context: Date and Time\n\n-   Today is ${date('l jS F Y')}\n-   Tomorrow is ${date('l jS F Y', strtotime('tomorrow'))}\n-   Current time is ${date('h:i:s A')}",
+                                "content": "## Additional Context: Date and Time\n\n-   Today is ${date('l jS F Y')}\n-   Tomorrow is ${date('l jS F Y', strtotime('tomorrow'))}\n-   Current time is ${date('h:i:s A')}",
                                 "_component_id": "hpqp5xfz-gjnc-0tac-badb-n5nzpzfppee1"
                             }
                         },

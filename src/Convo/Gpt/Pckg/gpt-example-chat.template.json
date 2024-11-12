@@ -359,41 +359,31 @@
                                         "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
                                         "namespace": "convo-core",
                                         "properties": {
-                                            "test": "${status.last_message.function_call}",
+                                            "test": "${status.last_message.tool_calls}",
                                             "then": [
                                                 {
-                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "test": "${status.last_message.content}",
-                                                        "then": [
+                                                        "name": null,
+                                                        "data_collection": "${status.last_message.tool_calls}",
+                                                        "item": "item",
+                                                        "elements": [
                                                             {
-                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
                                                                 "namespace": "convo-core",
                                                                 "properties": {
-                                                                    "type": "default",
-                                                                    "text": "${status.last_message.content}",
-                                                                    "append": false,
-                                                                    "alexa_domain": "normal",
-                                                                    "alexa_emotion": "neutral",
-                                                                    "alexa_emotion_intensity": "medium",
-                                                                    "_component_id": "ocb5xagy-mgyq-efbc-4owr-uuxeblvbthwr"
+                                                                    "log_message": "ID: ${item.value.id}\n${item.value.function.name}( \n${item.value.function.arguments}\n)",
+                                                                    "log_level": "info",
+                                                                    "disable_test_view": false,
+                                                                    "_component_id": "fjamiwm5-firz-tati-ul7d-nt5jwarzf3cg"
                                                                 }
                                                             }
                                                         ],
-                                                        "else_if": [],
-                                                        "else": [],
-                                                        "_component_id": "n2wbxmpr-evsa-4vvx-rxzz-el2vyg2gjz1b"
-                                                    }
-                                                },
-                                                {
-                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
-                                                    "namespace": "convo-core",
-                                                    "properties": {
-                                                        "log_message": "${status.last_message.function_call.name}( \n${status.last_message.function_call.arguments}\n)",
-                                                        "log_level": "info",
-                                                        "disable_test_view": false,
-                                                        "_component_id": "ferjsbbz-sjso-ob8i-g9r4-5f5u6ur9m02z"
+                                                        "offset": null,
+                                                        "limit": null,
+                                                        "loop_until": "",
+                                                        "_component_id": "vmpzdggh-hhz7-dilm-qwlp-c8cr3ztz4jqh"
                                                     }
                                                 }
                                             ],
@@ -402,20 +392,20 @@
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\ElseIfElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
-                                                        "test": "${status.last_message.role === 'function'}",
+                                                        "test": "${status.last_message.role === 'tool'}",
                                                         "then": [
                                                             {
                                                                 "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
                                                                 "namespace": "convo-core",
                                                                 "properties": {
-                                                                    "log_message": "${status.last_message.name} => ${status.last_message.content}",
+                                                                    "log_message": "${status.last_message.tool_call_id} => ${status.last_message.content}",
                                                                     "log_level": "info",
                                                                     "disable_test_view": false,
-                                                                    "_component_id": "dqnyytyd-ou1k-rg95-crep-pv8dc10xktdj"
+                                                                    "_component_id": "n36ewmrk-ydrq-ed9b-qjbq-gjl48tot8gk9"
                                                                 }
                                                             }
                                                         ],
-                                                        "_component_id": "fkukrubv-3nja-xcyi-nvb8-oqu8ikb1wyfz"
+                                                        "_component_id": "iest10je-a31u-v847-jtmi-wlngco8jtmjw"
                                                     }
                                                 }
                                             ],
@@ -430,11 +420,11 @@
                                                         "alexa_domain": "normal",
                                                         "alexa_emotion": "neutral",
                                                         "alexa_emotion_intensity": "medium",
-                                                        "_component_id": "zbsfas6u-oiel-gqku-0rdf-x2lmrdirxqw4"
+                                                        "_component_id": "kjoswk3f-pfvx-0yj7-sfko-batm4b9wpvol"
                                                     }
                                                 }
                                             ],
-                                            "_component_id": "dun3unzq-eked-hquo-tu4s-ayk5dlwjtdro"
+                                            "_component_id": "nsgfgrhc-xz09-ufvv-jwct-6j4v6hfj1ltc"
                                         }
                                     },
                                     {
