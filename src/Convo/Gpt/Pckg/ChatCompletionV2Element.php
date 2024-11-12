@@ -239,9 +239,9 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     private function _chatCompletion()
     {
         $api_key    =   $this->evaluateString($this->_properties['api_key']);
-        $api_url   =   $this->evaluateString($this->_properties['api_url']);
-        $api        =   $this->_gptApiFactory->getApi($api_key);
-        $http_response   =   $api->chatCompletion($this->_buildApiOptions(), $api_url);
+        $base_url   =   $this->evaluateString($this->_properties['base_url']);
+        $api        =   $this->_gptApiFactory->getApi($api_key, $base_url);
+        $http_response   =   $api->chatCompletion($this->_buildApiOptions());
         return $http_response;
     }
 
@@ -258,9 +258,6 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                     'function' => $function->getDefinition(),
                 ];
             }
-            // $options['functions'] = array_map(function ($function) {
-            //     return $function->getDefinition();
-            // }, $this->getFunctions());
         }
 
         $options['messages'] = $this->getMessagesClean();

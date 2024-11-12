@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Convo\Gpt;
 
@@ -7,34 +9,32 @@ use Convo\Core\Util\IHttpFactory;
 
 class GptApiFactory
 {
-    
+
     /**
      * @var IHttpFactory
      */
     private $_httpFactory;
-    
+
     /**
      * @var \Psr\Log\LoggerInterface
      */
     private $_logger;
-    
-    public function __construct( $logger, $httpFactory)
+
+    public function __construct($logger, $httpFactory)
     {
         $this->_logger = $logger;
         $this->_httpFactory = $httpFactory;
     }
 
-    public function getApi( $apiKey)
+    public function getApi($apiKey, $baseUrl = null)
     {
-        return new GptApi( $this->_logger, $this->_httpFactory, $apiKey);
+        return new GptApi($this->_logger, $this->_httpFactory, $apiKey, $baseUrl);
     }
-    
-    
+
+
     // UTIL
     public function __toString()
     {
-        return get_class( $this).'[]';
+        return get_class($this) . '[]';
     }
-
-
 }

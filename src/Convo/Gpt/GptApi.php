@@ -10,7 +10,10 @@ use Convo\Core\Util\HttpClientException;
 
 class GptApi
 {
+    const DEFAULT_BASE_URL = 'https://api.openai.com/v1/';
+
     private $_apiKey;
+    private $_baseUrl;
 
     /**
      * @var IHttpFactory
@@ -22,11 +25,13 @@ class GptApi
      */
     private $_logger;
 
-    public function __construct($logger, $httpFactory, $apiKey)
+    public function __construct($logger, $httpFactory, $apiKey, $baseUrl = null)
     {
         $this->_logger = $logger;
         $this->_httpFactory = $httpFactory;
         $this->_apiKey = $apiKey;
+        $this->_baseUrl = empty($baseUrl) ? self::DEFAULT_BASE_URL : $baseUrl;
+        $this->_logger->debug('GptApi created [' . $this->_baseUrl . ']');
     }
 
     /**
@@ -45,7 +50,7 @@ class GptApi
         $config = [];
 
         $client = $this->_httpFactory->getHttpClient($config);
-        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/completions', $headers, $data);
+        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, $this->_baseUrl . '/completions', $headers, $data);
 
         $response = $client->sendRequest($request);
 
@@ -58,11 +63,9 @@ class GptApi
         return $response_data;
     }
 
-    public function chatCompletion($data, $apiUrl = null)
+    public function chatCompletion($data)
     {
-        if (empty($apiUrl)) {
-            $apiUrl = 'https://api.openai.com/v1/chat/completions';
-        }
+        $apiUrl = $this->_baseUrl . '/chat/completions';
 
         $this->_logger->info('Performing request to [' . $apiUrl . ']');
 
@@ -108,7 +111,7 @@ class GptApi
         $config = [];
 
         $client = $this->_httpFactory->getHttpClient($config);
-        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/embeddings', $headers, $data);
+        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, $this->_baseUrl . '/embeddings', $headers, $data);
 
         $response = $client->sendRequest($request);
 
@@ -130,7 +133,7 @@ class GptApi
         $config = [];
 
         $client = $this->_httpFactory->getHttpClient($config);
-        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/moderations', $headers, $data);
+        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, $this->_baseUrl . '/moderations', $headers, $data);
 
         $response = $client->sendRequest($request);
 
@@ -152,7 +155,7 @@ class GptApi
         $config = [];
 
         $client = $this->_httpFactory->getHttpClient($config);
-        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, 'https://api.openai.com/v1/images/generations', $headers, $data);
+        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, $this->_baseUrl . '/images/generations', $headers, $data);
 
         $response = $client->sendRequest($request);
 
@@ -166,6 +169,6 @@ class GptApi
     // UTIL
     public function __toString()
     {
-        return get_class($this) . '[]';
+        return get_class($this) . '[' . $this->_baseUrl . ']';
     }
 }

@@ -405,12 +405,12 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
-                    'api_url' => [
+                    'base_url' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => 'https://api.openai.com/v1/chat/completions',
-                        'name' => 'API url',
-                        'description' => 'URL to the API endpoint. By default (or empty), using OpenAI API endpoint https://api.openai.com/v1/chat/completions',
+                        'defaultValue' => '',
+                        'name' => 'Base url',
+                        'description' => 'Base URL for the API endpoint. By default (or empty), using OpenAI API endpoint https://api.openai.com/v1',
                         'valueType' => 'string'
                     ],
                     'apiOptions' => [
