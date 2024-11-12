@@ -203,7 +203,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $function_name   =   $tool_call['function']['name'] ?? null;
                 $function_data   =   $tool_call['function']['arguments'] ?? null;
 
-                if ($tool_id && $function_name) {
+                if ($function_name) {
                     $this->_logger->info('Going to execute tool function [' . $tool_id . '][' . $function_name . ']');
 
                     try {
