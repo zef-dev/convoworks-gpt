@@ -337,8 +337,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
             'editor_type' => 'text',
             'editor_properties' => [],
             'defaultValue' => '',
-            'name' => 'Base url',
-            'description' => 'Base URL for the API endpoint. By default (or empty), using OpenAI API endpoint https://api.openai.com/v1',
+            'name' => 'Base URL',
+            'description' => 'Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1',
             'valueType' => 'string'
         ];
 
