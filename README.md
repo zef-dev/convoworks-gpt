@@ -119,6 +119,7 @@ This is an OpenAI API wrapper element, which allows you to make calls and get th
 * `Messages` - An array of conversation messages, including the `assistant` and `user` roles.
 * `Result Variable Name` - Defaults to `status`, this is the variable name that stores the complete API response. Access the completion text with: `${status.choices[0]["message"]["content"]}`
 * `API key` - Your OpenAI API key.
+* `Base URL` - Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1
 * `API options` - Options for the [OpenAI Chat Completion API](https://platform.openai.com/docs/api-reference/chat).
 
 **Flows:**
@@ -133,6 +134,7 @@ This advanced component enables you to perform chat completion API calls with mo
 
 * `Result Variable Name` - Default: `status`. The variable that stores the API completion response. By default, it is `status`, but this can be changed. The available values are: `response` (full API response), `messages` (array of messages for the current conversation), and `last_message` (the last message returned by GPT as an associative array).
 * `API key` - Your OpenAI API key.
+* `Base URL` - Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1
 * `API options` - Configuration options for the chat completion API, such as the model, temperature, and token limit.
 
 **Flows:**
@@ -152,6 +154,7 @@ This element serves as a wrapper for the OpenAI Embeddings API, enabling the ret
 * `Input` - The string to be embedded. Recommended preprocessing using `tokenize_string()`: `${ tokenize_string( your_raw_text)}`.
 * `Status Variable` - The variable that contains the complete API response. Access the embedding value with: `${status.data[0].embedding}`.
 * `API key` - Your OpenAI API key.
+* `Base URL` - Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1
 * `API options` - Options for the Embeddings API.
 
 **Flows:**
@@ -169,6 +172,7 @@ This element allows you to validate input with the OpenAI Moderation API. The Mo
 * `Input` - Text for moderation.
 * `Result Variable Name` - Variable storing the moderation API response.
 * `API key` - Your OpenAI API key.
+* `Base URL` - Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1
 * `API options` - Options for the OpenAI Moderation API.
 
 **Flows:**
@@ -218,6 +222,7 @@ Limits the size of messages by summarizing the oldest ones.
 * `Max messages to keep` - Maximum message count before older messages get summarized.
 * `Truncate to this number of messages` - Message count after truncation.
 * `API key` - Your OpenAI API key.
+* `Base URL` - Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1
 * `API options` - Options for summarizing the conversation.
 * `Messages` - Provides the conversation messages.
 
