@@ -25,7 +25,7 @@ npm run build
 
 * Download and activate **Convoworks WP** through your plugin installer (available on [WordPress.org](https://wordpress.org/plugins/convoworks-wp/)). No additional configuration is required.
 * Upload the **convoworks-gpt** plugin zip file through your WordPress plugin installer and activate it.
-* In your WP admin panel, navigate to Convoworks WP, click on **Create new**, enter the desired name, select the **GPT Example Chat** template, and press **Submit**.
+* In your WP admin panel, navigate to Convoworks WP, click on **Create new**, enter the desired name, select the **GPT Example Chat** or **GPT Site Admin** template, and press **Submit**.
 * In your newly created service, navigate to the **Variables** view and enter your OpenAI key into the `GPT_API_KEY` variable.
 * Navigate to the **Test view** to try it out.
 
@@ -33,6 +33,23 @@ npm run build
 
 * Navigate to the Configuration view and enable the Convo Chat platform (no additional settings are needed).
 * Use the shortcode to display it on the front end: `[convo_chat service_id="gpt-example-chat" title="Example Chat"]`
+
+
+## Service Templates
+
+### GPT Example Chat
+
+This template provides a simple and interactive chat experience. It includes a basic system prompt and, additionally, loads up to 10 pages into the chat context using retrieval-augmented generation (RAG). This approach makes it a ready-to-use chatbot for small business websites with a few pages, helping users find information that might otherwise be hard to locate.
+
+The template also includes a simple GPT function example that can generate a random number.
+
+This template is a solid base for building your next public-facing chat.
+
+### GPT Site Admin
+
+The GPT Site Admin template is designed as a robust AI assistant to help manage your system. In addition to basic instructions, this bot has access to PHP's `call_user_func()` function, enabling it to fetch and manipulate posts, create files, and more.
+
+For more details, check out [The GPT Site Admin: A New Era of AI Integration with WordPress](https://convoworks.com/the-gpt-site-assistant-a-new-era-of-ai-integration-with-wordpress/).
 
 
 ## Functions
