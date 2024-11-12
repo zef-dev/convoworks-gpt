@@ -71,6 +71,13 @@ This function serializes messages into human readable string.
 * `$messages` - Array of messages (in a GPT API format) that should be serialized
   
 
+### `unserialize_gpt_messages`
+
+This function deserializes a human-readable conversation string back into an array of messages in GPT API format.
+
+**Parameters:**  
+* `$string` - A string containing serialized conversation messages, formatted with roles and content, that should be converted back to an array format.
+
 ### `split_text_into_chunks`
 
 **Description:**  
