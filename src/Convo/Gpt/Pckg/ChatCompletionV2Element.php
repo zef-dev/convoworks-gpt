@@ -136,7 +136,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     {
         $this->_callStack = [];
 
-        $this->_prepeareConversationContext($request, $response);
+        $this->_prepareConversationContext($request, $response);
 
         $http_response  =  $this->_chatCompletion();
         $http_response  =  $this->_handleResponse($http_response, $request, $response);
@@ -156,7 +156,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
     }
 
-    private function _prepeareConversationContext(IConvoRequest $request, IConvoResponse $response)
+    private function _prepareConversationContext(IConvoRequest $request, IConvoResponse $response)
     {
         $this->_functions = [];
         $this->_messages = [];
@@ -227,7 +227,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                     $this->_readNewMessageFlow($request, $response, ['role' => 'tool', 'tool_call_id' => $tool_id, 'content' => $result]);
                 }
             }
-            $this->_prepeareConversationContext($request, $response);
+            $this->_prepareConversationContext($request, $response);
             $httpResponse   =   $this->_chatCompletion();
 
             return $this->_handleResponse($httpResponse, $request, $response);
