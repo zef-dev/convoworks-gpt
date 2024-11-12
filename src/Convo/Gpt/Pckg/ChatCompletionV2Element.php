@@ -195,7 +195,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
     private function _handleResponse($httpResponse, $request, $response)
     {
-        if (isset($httpResponse['choices'][0]['message']['tool_calls'])) {
+        if (isset($httpResponse['choices'][0]['message']['tool_calls']) && !empty($httpResponse['choices'][0]['message']['tool_calls'])) {
             $this->_readNewMessageFlow($request, $response, $httpResponse['choices'][0]['message'], $httpResponse);
 
             foreach ($httpResponse['choices'][0]['message']['tool_calls'] as $tool_call) {
@@ -239,7 +239,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     private function _chatCompletion()
     {
         $api_key    =   $this->evaluateString($this->_properties['api_key']);
-        $base_url   =   $this->evaluateString($this->_properties['base_url']);
+        $base_url   =   $this->evaluateString($this->_properties['base_url'] ?? null);
         $api        =   $this->_gptApiFactory->getApi($api_key, $base_url);
         $http_response   =   $api->chatCompletion($this->_buildApiOptions());
         return $http_response;

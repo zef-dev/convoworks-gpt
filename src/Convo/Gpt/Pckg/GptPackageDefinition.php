@@ -304,6 +304,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
             'description' => 'Your OpenAI API key',
             'valueType' => 'string'
         ];
+        $BASE_URL = [
+            'editor_type' => 'text',
+            'editor_properties' => [],
+            'defaultValue' => '',
+            'name' => 'Base url',
+            'description' => 'Base URL for the API endpoint. By default (or empty), using OpenAI API endpoint https://api.openai.com/v1',
+            'valueType' => 'string'
+        ];
 
         return [
             new \Convo\Core\Factory\ComponentDefinition(
@@ -337,6 +345,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
+                    'base_url' => $BASE_URL,
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => [
@@ -405,14 +414,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
-                    'base_url' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Base url',
-                        'description' => 'Base URL for the API endpoint. By default (or empty), using OpenAI API endpoint https://api.openai.com/v1',
-                        'valueType' => 'string'
-                    ],
+                    'base_url' => $BASE_URL,
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => ['multiple' => true],
@@ -510,6 +512,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
+                    'base_url' => $BASE_URL,
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => [
@@ -584,6 +587,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
+                    'base_url' => $BASE_URL,
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => [
@@ -705,6 +709,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'boolean'
                     ],
                     'api_key' => $API_KEY,
+                    'base_url' => $BASE_URL,
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => ['multiple' => true],
@@ -1080,6 +1085,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'valueType' => 'string'
                     ],
                     'api_key' => $API_KEY,
+                    'base_url' => $BASE_URL,
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => [

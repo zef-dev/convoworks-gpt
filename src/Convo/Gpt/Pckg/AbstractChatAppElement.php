@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Convo\Gpt\Pckg;
 
@@ -27,40 +29,40 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
      * @var IChatPrompt[]
      */
     protected $_chatPrompts = [];
-    
-    
-    public function __construct( $properties, $gptApiFactory)
+
+
+    public function __construct($properties, $gptApiFactory)
     {
-        parent::__construct( $properties);
-        
-        $this->_gptApiFactory  =	$gptApiFactory;
-        
-        foreach ( $properties['prompts'] as $element) {
+        parent::__construct($properties);
+
+        $this->_gptApiFactory  =    $gptApiFactory;
+
+        foreach ($properties['prompts'] as $element) {
             $this->_prompts[] = $element;
             $this->addChild($element);
         }
     }
-    
+
     // ELEMENT
-    public function read( IConvoRequest $request, IConvoResponse $response)
+    public function read(IConvoRequest $request, IConvoResponse $response)
     {
         $this->_chatPrompts = [];
-        foreach ( $this->_prompts as $prompt) {
-            $prompt->read( $request, $response);
+        foreach ($this->_prompts as $prompt) {
+            $prompt->read($request, $response);
         }
     }
-    
+
     // PROMPTS CONTAINER
     public function getDepth()
     {
         return 1;
     }
-    
+
     public function getPrompts()
     {
         return $this->_chatPrompts;
     }
-    
+
 
     /**
      * {@inheritDoc}
@@ -69,136 +71,136 @@ abstract class AbstractChatAppElement extends AbstractWorkflowContainerComponent
     public function getActions()
     {
         $actions = [];
-        
-        foreach ( $this->_chatPrompts as $prompt) {
-            $actions = array_merge( $actions, $prompt->getActions());
+
+        foreach ($this->_chatPrompts as $prompt) {
+            $actions = array_merge($actions, $prompt->getActions());
         }
         return $actions;
     }
-    
-    public function registerPrompt( $prompt)
+
+    public function registerPrompt($prompt)
     {
         $this->_chatPrompts[] = $prompt;
     }
-    
+
     public function getPromptContent()
     {
-        $str    =   $this->evaluateString( $this->_properties['system_message']);
-        $skip   =   $this->evaluateString( $this->_properties['skipChildPrompts'] ?? false);
-        
-        if ( !$skip) {
-            foreach ( $this->_chatPrompts as $prompt) {
+        $str    =   $this->evaluateString($this->_properties['system_message']);
+        $skip   =   $this->evaluateString($this->_properties['skipChildPrompts'] ?? false);
+
+        if (!$skip) {
+            foreach ($this->_chatPrompts as $prompt) {
                 $str .= "\n\n\n";
                 $str .= $prompt->getPromptContent();
             }
         }
-        
+
         return $str;
     }
 
-    
+
     // ACTIONS
-    
+
     /**
      * @param string $actionId
      * @throws DataItemNotFoundException
      * @return \Convo\Gpt\IChatAction
      */
-    protected function _getActionById( $actionId)
+    protected function _getActionById($actionId)
     {
-        foreach ( $this->getActions() as $action)
-        {
-            if ( $action->accepts( $actionId)) {
+        foreach ($this->getActions() as $action) {
+            if ($action->accepts($actionId)) {
                 return $action;
             }
         }
-        throw new DataItemNotFoundException( 'Action ['.$actionId.'] not found');
+        throw new DataItemNotFoundException('Action [' . $actionId . '] not found');
     }
-    
-    protected function _isActionCandidate( $message)
+
+    protected function _isActionCandidate($message)
     {
-        if ( strpos( $message, 'action_id') !== false) {
+        if (strpos($message, 'action_id') !== false) {
             return true;
         }
-        if ( strpos( $message, '{') !== false) {
+        if (strpos($message, '{') !== false) {
             return true;
         }
-        if ( strpos( $message, '}') !== false) {
+        if (strpos($message, '}') !== false) {
             return true;
         }
         return false;
     }
-    
-    protected function _parseActionJson( $message)
+
+    protected function _parseActionJson($message)
     {
-        $message    =   trim( $message);
-        $message    =   trim( $message, '`');
-        $message    =   stripslashes( $message);
-        
-        $json       =   json_decode( $message, true);
-        
-        if ( JSON_ERROR_NONE !== json_last_error()) {
-            $json       =   $this->_parseActionJsonWithGpt( $message);
+        $message    =   trim($message);
+        $message    =   trim($message, '`');
+        $message    =   stripslashes($message);
+
+        $json       =   json_decode($message, true);
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            $json       =   $this->_parseActionJsonWithGpt($message);
         }
-        
-        if ( !isset( $json['action_id']) || empty( $json['action_id'])) {
-            throw new \InvalidArgumentException( 'No action_id in JSON found in message ['.$message.']');
+
+        if (!isset($json['action_id']) || empty($json['action_id'])) {
+            throw new \InvalidArgumentException('No action_id in JSON found in message [' . $message . ']');
         }
-        
+
         return $json;
     }
-    
-    protected function _parseActionJsonWithGpt( $message)
+
+    protected function _parseActionJsonWithGpt($message)
     {
         $messages   =   [];
-        $message    =   'Extract just JSON information from the following message. '.
-        'In case of multiple JSONs, extract just the first one. Be succinct with your response.
+        $message    =   'Extract just JSON information from the following message. ' .
+            'In case of multiple JSONs, extract just the first one. Be succinct with your response.
 
-'.$message;
-        
+' . $message;
+
         $messages[] =   [
             'role' => 'user',
             'content' => $message
         ];
-        
-        
-        $this->_logger->debug( 'Parsing action message ============');
-        $this->_logger->debug( "\n".$message);
-        $this->_logger->debug( '============');
-        
-        $http_response  =   $this->_getGptApi()->chatCompletion( [
+
+
+        $this->_logger->debug('Parsing action message ============');
+        $this->_logger->debug("\n" . $message);
+        $this->_logger->debug('============');
+
+        $http_response  =   $this->_getGptApi()->chatCompletion([
             'model' => 'gpt-3.5-turbo',
             'temperature' => 0.7,
             'max_tokens' => 256,
             'messages' => $messages,
         ]);
         $bot_response   =   $http_response['choices'][0]['message']['content'];
-        
-        $bot_response   =   trim( $bot_response);
-        $bot_response   =   trim( $bot_response, '`');
-        
-        $json           =   json_decode( $bot_response, true);
-        
-        if ( JSON_ERROR_NONE !== json_last_error()) {
-            throw new \InvalidArgumentException( 'No valid JSON found in message ['.$message.']');
+
+        $bot_response   =   trim($bot_response);
+        $bot_response   =   trim($bot_response, '`');
+
+        $json           =   json_decode($bot_response, true);
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \InvalidArgumentException('No valid JSON found in message [' . $message . ']');
         }
-        
+
         return $json;
     }
-    
+
     // API
     /**
      * @return \Convo\Gpt\GptApi
      */
     protected function _getGptApi()
     {
-        $api_key    =   $this->evaluateString( $this->_properties['api_key']);
-        return $this->_gptApiFactory->getApi( $api_key);
+        $api_key    =   $this->evaluateString($this->_properties['api_key']);
+        $base_url   =   $this->evaluateString($this->_properties['base_url'] ?? null);
+        return $this->_gptApiFactory->getApi($api_key, $base_url);
     }
-    
+
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'[]';
+        return parent::__toString() . '[]';
     }
 }

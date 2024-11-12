@@ -134,7 +134,8 @@ class GptQueryGeneratorElement extends AbstractWorkflowContainerComponent implem
 
 
         $api_key        =   $this->evaluateString($this->_properties['api_key']);
-        $api            =   $this->_gptApiFactory->getApi($api_key);
+        $base_url       =   $this->evaluateString($this->_properties['base_url'] ?? null);
+        $api            =   $this->_gptApiFactory->getApi($api_key, $base_url);
 
         $http_response  =   $api->chatCompletion($this->_buildApiOptions($messages));
 
