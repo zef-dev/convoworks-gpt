@@ -250,14 +250,43 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 return sprintf('serialize_gpt_messages(%s)', var_export($messages, true));
             },
             function ($args, $messages) {
-                // Map each message object to a readable string
+                $filteredMessages = array_filter($messages, function ($message) {
+                    return in_array($message['role'], ['user', 'assistant'], true) && !empty(trim($message['content']));
+                });
+
                 return implode("\n\n", array_map(function ($message) {
-                    $role = ucfirst($message['role']); // Capitalize the role
+                    $role = ucfirst($message['role']);
                     return sprintf("%s: %s", $role, $message['content']);
-                }, $messages));
+                }, $filteredMessages));
             }
         );
 
+
+        $functions[] = new ExpressionFunction(
+            'unserialize_gpt_messages',
+            function ($string) {
+                return sprintf('unserialize_gpt_messages(%s)', var_export($string, true));
+            },
+            function ($args, $string) {
+                $messages = [];
+
+                $entries = preg_split("/\n\n+/", trim($string));
+
+                foreach ($entries as $entry) {
+                    if (preg_match('/^([A-Za-z]+):\s*(.*)$/s', $entry, $matches)) {
+                        $role = strtolower($matches[1]); // Convert role back to lowercase
+                        $content = $matches[2];
+
+                        $messages[] = [
+                            'role' => $role,
+                            'content' => $content,
+                        ];
+                    }
+                }
+
+                return $messages;
+            }
+        );
 
         return $functions;
     }
