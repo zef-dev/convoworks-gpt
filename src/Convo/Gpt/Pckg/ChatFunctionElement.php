@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Convo\Gpt\Pckg;
 
@@ -26,9 +28,9 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
      */
     private $_ok = [];
 
-    public function __construct( $properties)
+    public function __construct($properties)
     {
-        parent::__construct( $properties);
+        parent::__construct($properties);
 
         $this->_name            =   $properties['name'];
         $this->_description     =   $properties['description'];
@@ -38,17 +40,17 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         $this->_requestData     =   $properties['request_data'];
         $this->_resultData      =   $properties['result_data'];
 
-        foreach ( $properties['ok'] as $element) {
+        foreach ($properties['ok'] as $element) {
             $this->_ok[] = $element;
             $this->addChild($element);
         }
     }
 
-    public function read( IConvoRequest $request, IConvoResponse $response)
+    public function read(IConvoRequest $request, IConvoResponse $response)
     {
         /** @var \Convo\Gpt\IChatFunctionContainer $container */
-        $container = $this->findAncestor( '\Convo\Gpt\IChatFunctionContainer');
-        $container->registerFunction( $this);
+        $container = $this->findAncestor('\Convo\Gpt\IChatFunctionContainer');
+        $container->registerFunction($this);
     }
 
     /**
@@ -57,72 +59,72 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
      * @param string $data
      * @return string
      */
-    public function execute( IConvoRequest $request, IConvoResponse $response, $data)
+    public function execute(IConvoRequest $request, IConvoResponse $response, $data)
     {
-        $data = json_decode( $data, true);
+        $data = json_decode($data, true);
         $error = json_last_error();
-        if ( $error !== JSON_ERROR_NONE) {
-            throw new \Exception( 'JSON parsing error: '.json_last_error_msg());
+        if ($error !== JSON_ERROR_NONE) {
+            throw new \Exception('JSON parsing error: ' . json_last_error_msg());
         }
-        $this->_logger->debug( 'Got data decoded ['.print_r( $data, true).']');
-        $data = array_merge( $this->_getDefaults(), $data);
-        $this->_logger->debug( 'Got data with defaults ['.print_r( $data, true).']');
+        $this->_logger->debug('Got data decoded [' . print_r($data, true) . ']');
+        $data = array_merge($this->_getDefaults(), $data);
+        $this->_logger->info('Got data with defaults [' . print_r($data, true) . ']');
 
-        $params        =    $this->getService()->getComponentParams( IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-        $data_var      =    $this->evaluateString( $this->_requestData);
-        $params->setServiceParam( $data_var, $data);
+        $params        =    $this->getService()->getComponentParams(IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        $data_var      =    $this->evaluateString($this->_requestData);
+        $params->setServiceParam($data_var, $data);
 
-        $this->_logger->info( 'Executing function ['.$this->getName().']. Arguments available as ['.$data_var.']');
+        $this->_logger->info('Executing function [' . $this->getName() . ']. Arguments available as [' . $data_var . ']');
 
-        foreach ( $this->_ok as $elem) {
-            $elem->read( $request, $response);
+        foreach ($this->_ok as $elem) {
+            $elem->read($request, $response);
         }
 
-        $params     =   $this->getService()->getServiceParams( IServiceParamsScope::SCOPE_TYPE_REQUEST);
-        $result     =   $this->evaluateString( $this->_resultData);
-        if ( is_callable( $result)) {
-            $this->_logger->info( 'Executing callable result');
+        $params     =   $this->getService()->getServiceParams(IServiceParamsScope::SCOPE_TYPE_REQUEST);
+        $result     =   $this->evaluateString($this->_resultData);
+        if (is_callable($result)) {
+            $this->_logger->info('Executing callable result');
             $result = $result();
         }
 
-        if ( is_string( $result)) {
+        if (is_string($result)) {
             return $result;
         }
-        return json_encode( $result);
+        return json_encode($result);
     }
 
     private function _getDefaults()
     {
-        $defaults = $this->evaluateString( $this->_defaults);
-        if ( is_array( $defaults)) {
+        $defaults = $this->evaluateString($this->_defaults);
+        if (is_array($defaults)) {
             return $defaults;
         }
         return [];
     }
 
-    public function accepts( $functionName)
+    public function accepts($functionName)
     {
         return $this->getName() === $functionName;
     }
 
     public function getName()
     {
-        return $this->evaluateString( $this->_name);
+        return $this->evaluateString($this->_name);
     }
 
     public function getDefinition()
     {
-        $parameters = $this->getService()->evaluateArgs( $this->_parameters, $this);
-        if ( empty( $parameters)) {
+        $parameters = $this->getService()->evaluateArgs($this->_parameters, $this);
+        if (empty($parameters)) {
             $parameters = new \stdClass();
         }
         return [
             'name' => $this->getName(),
-            'description' => $this->evaluateString( $this->_description),
+            'description' => $this->evaluateString($this->_description),
             'parameters' => [
                 'type' => 'object',
                 'properties' => $parameters,
-                'required' => $this->evaluateString( $this->_required),
+                'required' => $this->evaluateString($this->_required),
             ],
         ];
     }
@@ -130,7 +132,6 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'['.$this->_name.']';
+        return parent::__toString() . '[' . $this->_name . ']';
     }
-
 }

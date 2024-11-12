@@ -117,7 +117,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
     public function getMessagesClean()
     {
-        $ALLOWED = ['role', 'content', 'name', 'function_call'];
+        $ALLOWED = ['role', 'content', 'refusal', 'tool_calls', 'tool_call_id'];
         return array_map(function ($item) use ($ALLOWED) {
             return array_intersect_key($item, array_flip($ALLOWED));
         }, $this->getMessages());
@@ -142,7 +142,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         $http_response  =  $this->_handleResponse($http_response, $request, $response);
 
         $last_message   =  $http_response['choices'][0]['message'];
-        $this->_handleNewMessage($request, $response, $last_message, $http_response);
+        $this->_readNewMessageFlow($request, $response, $last_message, $http_response);
 
         $params         =  $this->getService()->getComponentParams(IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
         $params->setServiceParam($this->evaluateString($this->_properties['result_var']), [
@@ -176,7 +176,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
     }
 
-    private function _handleNewMessage(IConvoRequest $request, IConvoResponse $response, $message, $httpResponse = null)
+    private function _readNewMessageFlow(IConvoRequest $request, IConvoResponse $response, $message, $httpResponse = null)
     {
         $this->_logger->debug('Handling new message [' . print_r($message, true) . '][' . print_r($httpResponse, true) . ']');
 
@@ -195,34 +195,38 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
     private function _handleResponse($httpResponse, $request, $response)
     {
-        $tool_id         =   $httpResponse['choices'][0]['message']['tool_calls'][0]['function']['id'] ?? null;
-        $function_name   =   $httpResponse['choices'][0]['message']['tool_calls'][0]['function']['name'] ?? null;
-        $function_data   =   $httpResponse['choices'][0]['message']['tool_calls'][0]['function']['arguments'] ?? null;
+        if (isset($httpResponse['choices'][0]['message']['tool_calls'])) {
+            $this->_readNewMessageFlow($request, $response, $httpResponse['choices'][0]['message'], $httpResponse);
 
-        if ($tool_id && $function_name) {
-            $this->_logger->info('Going to execute tool function [' . $tool_id . '][' . $function_name . ']');
-            $this->_handleNewMessage($request, $response, $httpResponse['choices'][0]['message'], $httpResponse);
+            foreach ($httpResponse['choices'][0]['message']['tool_calls'] as $tool_call) {
+                $tool_id         =   $tool_call['id'] ?? null;
+                $function_name   =   $tool_call['function']['name'] ?? null;
+                $function_data   =   $tool_call['function']['arguments'] ?? null;
 
-            try {
+                if ($tool_id && $function_name) {
+                    $this->_logger->info('Going to execute tool function [' . $tool_id . '][' . $function_name . ']');
 
-                if (strpos($function_data, '"callback": "defined"') === false && strpos($function_data, '"callback": "constant"') === false) {
-                    $this->_logger->debug('Going to preprocess JSON [' . $function_data . ']');
-                    $function_data = Util::processJsonWithConstants($function_data);
+                    try {
+
+                        if (strpos($function_data, '"callback": "defined"') === false && strpos($function_data, '"callback": "constant"') === false) {
+                            $this->_logger->debug('Going to preprocess JSON [' . $function_data . ']');
+                            $function_data = Util::processJsonWithConstants($function_data);
+                        }
+
+                        $this->_logger->debug('Got processed JSON [' . $function_data . ']');
+                        $this->_registerExecution($function_name, $function_data);
+                        $function   =   $this->_findFunction($function_name);
+                        $result     =   $function->execute($request, $response, $function_data);
+                    } catch (RefuseFunctionCallException $e) {
+                        throw $e;
+                    } catch (\Exception $e) {
+                        $this->_logger->warning($e);
+                        $result = json_encode(['error' => $e->getMessage()]);
+                    }
+
+                    $this->_readNewMessageFlow($request, $response, ['role' => 'tool', 'tool_call_id' => $tool_id, 'content' => $result]);
                 }
-
-                $this->_logger->debug('Got processed JSON [' . $function_data . ']');
-                $this->_registerExecution($function_name, $function_data);
-                $function   =   $this->_findFunction($function_name);
-                $result     =   $function->execute($request, $response, $function_data);
-            } catch (RefuseFunctionCallException $e) {
-                throw $e;
-            } catch (\Exception $e) {
-                $this->_logger->warning($e);
-                $result = json_encode(['error' => $e->getMessage()]);
             }
-
-            $this->_handleNewMessage($request, $response, ['role' => 'tool', 'tool_call_id' => $tool_id, 'content' => $result]);
-
             $this->_prepeareConversationContext($request, $response);
             $httpResponse   =   $this->_chatCompletion();
 
