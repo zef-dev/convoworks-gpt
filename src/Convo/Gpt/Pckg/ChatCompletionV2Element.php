@@ -117,7 +117,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
     public function getMessagesClean()
     {
-        $ALLOWED = ['role', 'content', 'refusal', 'tool_calls', 'tool_call_id'];
+        $ALLOWED = ['role', 'content', 'refusal', 'tool_calls', 'function_call', 'tool_call_id', 'name'];
         return array_map(function ($item) use ($ALLOWED) {
             return array_intersect_key($item, array_flip($ALLOWED));
         }, $this->getMessages());
