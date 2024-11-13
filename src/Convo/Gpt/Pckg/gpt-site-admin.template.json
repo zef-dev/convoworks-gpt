@@ -1,7 +1,7 @@
 {
     "template_id": "gpt-site-admin",
     "name": "GPT Site Admin",
-    "description": "This GPT-powered bot assists in managing WordPress sites by performing tasks such as updating posts, modifying taxonomy, and uploading images. Utilizing PHP and WordPress functions, it efficiently accesses and modifies site data as necessary.",
+    "description": "his GPT-powered bot assists in managing WordPress sites by performing tasks such as updating posts, modifying taxonomy, and uploading images. Utilizing PHP and WordPress functions, it efficiently accesses and modifies site data as necessary.",
     "service": {
         "convo_service_version": 40,
         "packages": [
@@ -332,6 +332,31 @@
                                         "properties": {
                                             "test": "${status.last_message.tool_calls}",
                                             "then": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "test": "${status.last_message.content}",
+                                                        "then": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "type": "default",
+                                                                    "text": "${status.last_message.content}",
+                                                                    "append": false,
+                                                                    "alexa_domain": "normal",
+                                                                    "alexa_emotion": "neutral",
+                                                                    "alexa_emotion_intensity": "medium",
+                                                                    "_component_id": "vzmwwgum-omq0-i55p-mnkw-hlslayr1jwlc"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "else_if": [],
+                                                        "else": [],
+                                                        "_component_id": "010foavn-0gks-ntq1-hyoy-levpl80aggkj"
+                                                    }
+                                                },
                                                 {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
                                                     "namespace": "convo-core",

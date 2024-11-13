@@ -362,6 +362,31 @@
                                             "test": "${status.last_message.tool_calls}",
                                             "then": [
                                                 {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "test": "${status.last_message.content}",
+                                                        "then": [
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\TextResponseElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "type": "default",
+                                                                    "text": "${status.last_message.content}",
+                                                                    "append": false,
+                                                                    "alexa_domain": "normal",
+                                                                    "alexa_emotion": "neutral",
+                                                                    "alexa_emotion_intensity": "medium",
+                                                                    "_component_id": "qnfrke4f-q0nj-rgd6-l6xv-v9jgf8mgp2d7"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "else_if": [],
+                                                        "else": [],
+                                                        "_component_id": "blognltp-jvvy-zopy-xljb-k0htgqw0wns4"
+                                                    }
+                                                },
+                                                {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
