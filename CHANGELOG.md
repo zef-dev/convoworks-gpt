@@ -1,6 +1,12 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.10.0 Catchup with OpenAI API changes - tools
+
+* GPT API components now support base url parameter, enabling using other AI providers
+* Chat compčletion element now uses functions as part of tools definition
+* Added `unserialize_gpt_messages()` function for unserializing stringified conversation into associative array.
+
 ### 0.9.2 Updated Service Templates
 
 - Updated both service templates to take advantage of new features.
