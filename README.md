@@ -43,7 +43,7 @@ This template provides a simple and interactive chat experience. It includes a b
 
 The template also includes a simple GPT function example that can generate a random number.
 
-This template is a solid base for building your next public-facing chat.
+This template is a solid base for building your next public-facing chat. For more details, check out [A Dead Simple RAG Setup for WordPress: AI Chatbots for Small Websites](https://convoworks.com/a-dead-simple-rag-setup-for-wordpress-ai-chatbots-for-small-websites/).
 
 ### GPT Site Admin
 
