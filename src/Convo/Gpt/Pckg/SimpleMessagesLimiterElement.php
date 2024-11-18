@@ -9,6 +9,7 @@ use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\IMessages;
+use Convo\Gpt\Util;
 
 class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent implements IConversationElement, IMessages
 {
@@ -52,10 +53,10 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
         }
 
         // TRUNCATE
-        $truncated = $this->_truncate(
+        $truncated = Util::truncate(
             $this->getMessages(),
-            $this->evaluateString($this->_properties['max_count']),
-            $this->evaluateString($this->_properties['truncate_to'])
+            (int)$this->evaluateString($this->_properties['max_count']),
+            (int)$this->evaluateString($this->_properties['truncate_to'])
         );
 
         $this->_logger->debug('Got messages after truncation [' . print_r($truncated, true) . ']');
@@ -66,29 +67,6 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
         foreach ($truncated as $message) {
             $container->registerMessage($message);
         }
-    }
-
-    /**
-     * Reduces array size to the specified number if length is greater than max. It cuts off from the beginning.
-     *
-     * @param array $messages Array of messages to potentially truncate.
-     * @param int $max Maximum allowed length of the array.
-     * @param int $to Number of items to keep in the array if truncation is necessary.
-     * @return array Truncated or original array.
-     */
-    private function _truncate($messages, $max, $to)
-    {
-        $count = count($messages);
-        $this->_logger->debug("Truncating messages [$count] to [$to] max [$max]");
-
-        if ($count > $max) {
-            // Calculate the number of items to remove from the start
-            $offset = $count - $to;
-            // Use array_slice to return the desired portion of the array
-            return array_slice($messages, $offset, $to);
-        }
-
-        return $messages;
     }
 
     // UTIL
