@@ -1,45 +1,45 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Convo\Gpt\Pckg\ChatCompletionV2Element;
+use Convo\Gpt\Util;
 
 class ProcessJsonWithConstantsTest extends TestCase
 {
-    
+
     public function processDataProvider()
     {
-        define( 'CONSTANT_VALUE', 'My String Value');
-        define( 'ELEMENT', 'ELEMENT String Value');
-        define( 'NESTED_CONSTANT', 'NESTED_CONSTANT String Value');
+        define('CONSTANT_VALUE', 'My String Value');
+        define('ELEMENT', 'ELEMENT String Value');
+        define('NESTED_CONSTANT', 'NESTED_CONSTANT String Value');
         return [
             [
                 '{ "a": "Here is some FILE_APPEND text", "b": FILE_APPEND }',
-                '{"a":"Here is some FILE_APPEND text","b":'.json_encode( constant( "FILE_APPEND")).'}'
+                '{"a":"Here is some FILE_APPEND text","b":' . json_encode(constant("FILE_APPEND")) . '}'
             ],
             [
                 '{"constant":CONSTANT_VALUE}',
-                '{"constant":'.json_encode( constant( "CONSTANT_VALUE")).'}'
+                '{"constant":' . json_encode(constant("CONSTANT_VALUE")) . '}'
             ],
             [
                 '["element1", "element2", ELEMENT]',
-                '["element1","element2",'.json_encode( constant( "ELEMENT")).']'
+                '["element1","element2",' . json_encode(constant("ELEMENT")) . ']'
             ],
             [
                 '{"mixed": "Text ELEMENT"}',
                 '{"mixed":"Text ELEMENT"}'
             ],
-            
+
             [
                 '{"value": NOT_CONSTANT, "number": 123}',
                 '{"value": NOT_CONSTANT, "number": 123}'
             ],
             [
                 '{"object": {"nested_constant": NESTED_CONSTANT}}',
-                '{"object":{"nested_constant":'.json_encode( constant( "NESTED_CONSTANT")).'}}'
+                '{"object":{"nested_constant":' . json_encode(constant("NESTED_CONSTANT")) . '}}'
             ],
             [
                 '{"object": {"nested_constant": "NESTED_CONSTANT"}}',
-                '{"object":{"nested_constant":'.json_encode( constant( "NESTED_CONSTANT")).'}}'
+                '{"object":{"nested_constant":' . json_encode(constant("NESTED_CONSTANT")) . '}}'
             ],
             [
                 '{"boolean_true": TRUE, "boolean_false": FALSE, "null_value": NULL}',
@@ -55,15 +55,14 @@ class ProcessJsonWithConstantsTest extends TestCase
             ]
         ];
     }
-    
+
     /**
      * @dataProvider processDataProvider
      */
-    public function testProcessJson( $inputJson, $expectedJson)
+    public function testProcessJson($inputJson, $expectedJson)
     {
-        $result = ChatCompletionV2Element::processJsonWithConstants( $inputJson);
-        
-        $this->assertEquals( $expectedJson, $result, "Failed asserting that two objects are equal.");
+        $result = Util::processJsonWithConstants($inputJson);
+
+        $this->assertEquals($expectedJson, $result, "Failed asserting that two objects are equal.");
     }
-    
 }
