@@ -26,7 +26,7 @@ class TrimMessagesTest extends TestCase
                 'truncateTo' => 3,
             ],
 
-            // Test Case 2: Truncate to last 5 messages
+            // Test Case 2: Truncate to last 7 messages
             [
                 'messages' => [
                     ['role' => 'user', 'content' => 'How are you?'],
@@ -37,16 +37,19 @@ class TrimMessagesTest extends TestCase
                     ['role' => 'tool', 'content' => 'Sunny, 75°F'],
                     ['role' => 'user', 'content' => 'What about tomorrow?'],
                     ['role' => 'assistant', 'content' => 'Let me check again.'],
+                    ['role' => 'user', 'content' => 'Thanks'],
                 ],
                 'expected' => [
+                    ['role' => 'user', 'content' => 'What is the weather for 2 days?'],
                     ['role' => 'assistant', 'content' => 'Let me check.'],
                     ['role' => 'tool_calls', 'content' => 'weather_api_call'],
                     ['role' => 'tool', 'content' => 'Sunny, 75°F'],
                     ['role' => 'user', 'content' => 'What about tomorrow?'],
                     ['role' => 'assistant', 'content' => 'Let me check again.'],
+                    ['role' => 'user', 'content' => 'Thanks'],
                 ],
-                'maxMessages' => 7,
-                'truncateTo' => 5,
+                'maxMessages' => 8,
+                'truncateTo' => 7,
             ],
 
             // Test Case 3: Preserve tool_calls and tools pair
@@ -77,7 +80,7 @@ class TrimMessagesTest extends TestCase
                 'truncateTo' => 3,
             ],
 
-            // Test Case 6: No tool_calls or tool
+            // Test Case 6: Keep grouped user & assistant
             [
                 'messages' => [
                     ['role' => 'assistant', 'content' => 'How can I help?'],
@@ -86,6 +89,7 @@ class TrimMessagesTest extends TestCase
                     ['role' => 'user', 'content' => 'How are you?'],
                 ],
                 'expected' => [
+                    ['role' => 'user', 'content' => 'Hello!'],
                     ['role' => 'assistant', 'content' => 'Hi there!'],
                     ['role' => 'user', 'content' => 'How are you?'],
                 ],
@@ -152,6 +156,31 @@ class TrimMessagesTest extends TestCase
                     ['role' => 'assistant', 'content' => 'You are wlcome'],
                 ],
                 'maxMessages' => 8,
+                'truncateTo' => 5,
+            ],
+
+
+            // Test Case 8: Truncate to last 5 messages and make sure cuto off part does not end with user message
+            [
+                'messages' => [
+                    ['role' => 'user', 'content' => 'How are you?'],
+                    ['role' => 'assistant', 'content' => 'I am fine, thank you.'],
+                    ['role' => 'user', 'content' => 'What is the weather?'],
+                    ['role' => 'assistant', 'content' => 'Let me check.'],
+                    ['role' => 'tool_calls', 'content' => 'weather_api_call'],
+                    ['role' => 'tool', 'content' => 'Sunny, 75°F'],
+                    ['role' => 'user', 'content' => 'What about tomorrow?'],
+                    ['role' => 'assistant', 'content' => 'Let me check again.'],
+                ],
+                'expected' => [
+                    ['role' => 'user', 'content' => 'What is the weather?'],
+                    ['role' => 'assistant', 'content' => 'Let me check.'],
+                    ['role' => 'tool_calls', 'content' => 'weather_api_call'],
+                    ['role' => 'tool', 'content' => 'Sunny, 75°F'],
+                    ['role' => 'user', 'content' => 'What about tomorrow?'],
+                    ['role' => 'assistant', 'content' => 'Let me check again.'],
+                ],
+                'maxMessages' => 7,
                 'truncateTo' => 5,
             ],
         ];

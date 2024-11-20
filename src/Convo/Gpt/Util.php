@@ -10,62 +10,106 @@ abstract class Util
     /**
      * Truncates conversation messages while preserving logical message structure.
      *
-     * Ensures that 'tool_calls' and 'tool' messages are kept together.
+     * Groups messages as follows:
+     * - A 'user' message followed by an 'assistant' message (max size 2)
+     * - A 'tool_calls' message followed by all subsequent 'tool' messages
+     *
+     * When reducing, it removes groups from the start until reaching the desired size.
+     * If a group is too large to remove without going below 'truncateTo', it stops.
      *
      * @param array $messages Array of messages to potentially truncate.
-     * @param int $max Maximum allowed length of the array.
-     * @param int $to Number of items to keep in the array if truncation is necessary.
+     * @param int $maxMessages Maximum allowed length of the array.
+     * @param int $truncateTo Minimum number of items to keep in the array if truncation is necessary.
      * @return array Truncated or original array.
      */
-    public static function truncate(array $messages, int $max, int $to): array
+    public static function truncate(array $messages, int $maxMessages, int $truncateTo): array
     {
-        $count = count($messages);
+        $totalMessages = count($messages);
 
         // If the number of messages is within the allowed max, return them as-is
-        if ($count <= $max) {
+        if ($totalMessages <= $maxMessages) {
             return $messages;
         }
 
-        $truncated = [];
-        $i = $count - 1;
+        // Group messages
+        $groups = [];
+        $i = 0;
+        $count = count($messages);
 
-        while ($i >= 0) {
-            $message = $messages[$i];
+        while ($i < $count) {
+            $group = [];
 
-            // If we've reached the desired number of messages and we're not in the middle of a tool group, break
-            if (count($truncated) >= $to && !in_array($message['role'], ['tool', 'tool_calls'])) {
-                break;
+            if ($messages[$i]['role'] === 'user') {
+                $group[] = $messages[$i];
+                $i++;
+
+                if ($i < $count && $messages[$i]['role'] === 'assistant') {
+                    $group[] = $messages[$i];
+                    $i++;
+                }
+            } elseif ($messages[$i]['role'] === 'tool_calls') {
+                $group[] = $messages[$i];
+                $i++;
+
+                while ($i < $count && $messages[$i]['role'] === 'tool') {
+                    $group[] = $messages[$i];
+                    $i++;
+                }
+            } else {
+                // Any other role, group it individually
+                $group[] = $messages[$i];
+                $i++;
             }
 
-            if ($message['role'] === 'tool') {
-                // Collect all preceding 'tool's
-                $toolGroup = [];
-                while ($i >= 0 && $messages[$i]['role'] === 'tool') {
-                    array_unshift($toolGroup, $messages[$i]);
-                    $i--;
-                }
-                // Now check if there is a 'tool_calls'
-                if ($i >= 0 && $messages[$i]['role'] === 'tool_calls') {
-                    array_unshift($toolGroup, $messages[$i]);
-                    $i--;
-                }
-                // Include the tool group
-                $truncated = array_merge($toolGroup, $truncated);
+            $groups[] = $group;
+        }
+
+        // Now, reduce groups from the start until total messages <= maxMessages and >= truncateTo
+        $currentTotalMessages = $totalMessages;
+        $groupIndex = 0;
+
+        while ($currentTotalMessages > $maxMessages && $groupIndex < count($groups)) {
+            $groupSize = count($groups[$groupIndex]);
+
+            if ($currentTotalMessages - $groupSize >= $truncateTo) {
+                // Remove this group
+                $currentTotalMessages -= $groupSize;
+                $groupIndex++;
             } else {
-                array_unshift($truncated, $message);
-                $i--;
+                // Cannot remove this group without falling below truncateTo
+                break;
             }
         }
 
-        return $truncated;
+        // Now assemble the remaining messages from the remaining groups
+        $remainingGroups = array_slice($groups, $groupIndex);
+        $truncatedMessages = [];
+
+        foreach ($remainingGroups as $group) {
+            $truncatedMessages = array_merge($truncatedMessages, $group);
+        }
+
+        return $truncatedMessages;
     }
 
+    /**
+     * Returns the truncated part of the original messages.
+     *
+     * @param array $originalMessages The original array of messages.
+     * @param array $truncatedMessages The truncated array of messages.
+     * @return array The truncated part of the messages.
+     */
+    public static function getTruncatedPart(array $originalMessages, array $truncatedMessages): array
+    {
+        $originalCount = count($originalMessages);
+        $truncatedCount = count($truncatedMessages);
 
+        // Calculate the number of messages truncated
+        $truncatedSize = $originalCount - $truncatedCount;
 
-
-
-
-
+        // Return the truncated part from the start of the original array
+        return array_slice($originalMessages, 0, $truncatedSize);
+    }
 
     /**
      * Tries to correct invalid JSON data in cases when GPT uses PHP constants in function calls
