@@ -8,6 +8,60 @@ abstract class Util
 {
 
     /**
+     * Serializes an array of messages into a formatted string.
+     *
+     * Filters messages to include only those with roles 'user' or 'assistant' and non-empty content.
+     * The output format is "Role: Content" for each message, separated by two newlines.
+     *
+     * @param array $messages The array of messages to serialize. Each message should be an associative array
+     *                        with 'role' (string) and 'content' (string) keys.
+     * @return string The serialized string of messages in the format "Role: Content", with entries separated by two newlines.
+     */
+    public static function serializeMessages(array $messages)
+    {
+        $filteredMessages = array_filter($messages, function ($message) {
+            return in_array($message['role'], ['user', 'assistant'], true) && !empty(trim($message['content']));
+        });
+
+        return implode("\n\n", array_map(function ($message) {
+            $role = ucfirst($message['role']);
+            return sprintf("%s: %s", $role, $message['content']);
+        }, $filteredMessages));
+    }
+
+
+    /**
+     * Unserializes a formatted string into an array of messages.
+     *
+     * The input string should be in the format "Role: Content" for each message, with entries separated by two or more newlines.
+     * Extracts the 'role' and 'content' for each message and converts the role to lowercase.
+     *
+     * @param string $string The serialized string of messages to unserialize.
+     * @return array The unserialized array of messages. Each message is an associative array with 'role' (string) and 'content' (string) keys.
+     */
+    public static function unserializeMessages(string $string)
+    {
+        $messages = [];
+
+        $entries = preg_split("/\n\n+/", trim($string));
+
+        foreach ($entries as $entry) {
+            if (preg_match('/^([A-Za-z]+):\s*(.*)$/s', $entry, $matches)) {
+                $role = strtolower($matches[1]); // Convert role back to lowercase
+                $content = $matches[2];
+
+                $messages[] = [
+                    'role' => $role,
+                    'content' => $content,
+                ];
+            }
+        }
+
+        return $messages;
+    }
+
+
+    /**
      * Truncates conversation messages while preserving logical message structure.
      *
      * Groups messages as follows:
