@@ -10,6 +10,7 @@ use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IMessages;
+use Convo\Gpt\Util;
 
 class MessagesLimiterElement extends AbstractWorkflowContainerComponent implements IConversationElement, IMessages
 {
@@ -152,22 +153,14 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             'content' => $this->evaluateString($this->_properties['system_message'])
         ]];
 
-        $temp = [];
-        foreach ($conversation as $message) {
-            if (isset($message['name'])) {
-                $temp[] = ucfirst($message['role']) . ' - ' . $message['name'] . '(): ' . $message['content'];
-            } else {
-                $temp[] = ucfirst($message['role']) . ': ' . $message['content'];
-            }
-        }
-
         $messages[] =   [
             'role' => 'user',
-            'content' => implode("\n\n", $temp)
+            'content' => Util::serializeMessages($conversation)
         ];
 
         $api_key    =   $this->evaluateString($this->_properties['api_key']);
         $base_url   =   $this->evaluateString($this->_properties['base_url'] ?? null);
+
         $api        =   $this->_gptApiFactory->getApi($api_key, $base_url);
 
         $http_response   =   $api->chatCompletion($this->_buildApiOptions($messages));
