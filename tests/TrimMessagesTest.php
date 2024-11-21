@@ -183,6 +183,31 @@ class TrimMessagesTest extends TestCase
                 'maxMessages' => 7,
                 'truncateTo' => 5,
             ],
+
+            // Test Case 9: Regular converstion
+            [
+                'messages' => [
+                    ['role' => 'assistant', 'content' => 'How can I help?'],
+                    ['role' => 'user', 'content' => 'How are you?'],
+                    ['role' => 'assistant', 'content' => 'I am fine, thank you.'],
+                    ['role' => 'user', 'content' => 'My name is Tihomir'],
+                    ['role' => 'assistant', 'content' => 'Thats great name'],
+                    ['role' => 'user', 'content' => 'Thanks'],
+                    ['role' => 'assistant', 'content' => 'You ar welcome'],
+                    ['role' => 'user', 'content' => 'I live in Croatia'],
+                    ['role' => 'assistant', 'content' => 'Great country.'],
+                    ['role' => 'user', 'content' => 'Yes.'],
+                ],
+                'expected' => [
+                    ['role' => 'user', 'content' => 'Thanks'],
+                    ['role' => 'assistant', 'content' => 'You ar welcome'],
+                    ['role' => 'user', 'content' => 'I live in Croatia'],
+                    ['role' => 'assistant', 'content' => 'Great country.'],
+                    ['role' => 'user', 'content' => 'Yes.'],
+                ],
+                'maxMessages' => 9,
+                'truncateTo' => 5,
+            ],
         ];
     }
 

@@ -69,7 +69,6 @@ abstract class Util
         return $messages;
     }
 
-
     /**
      * Truncates conversation messages while preserving logical message structure.
      *
@@ -77,8 +76,7 @@ abstract class Util
      * - A 'user' message followed by an 'assistant' message (max size 2)
      * - A 'tool_calls' message followed by all subsequent 'tool' messages
      *
-     * When reducing, it removes groups from the start until reaching the desired size.
-     * If a group is too large to remove without going below 'truncateTo', it stops.
+     * When reducing, it removes groups from the start until it cannot remove any more without going below 'truncateTo'.
      *
      * @param array $messages Array of messages to potentially truncate.
      * @param int $maxMessages Maximum allowed length of the array.
@@ -127,21 +125,16 @@ abstract class Util
             $groups[] = $group;
         }
 
-        // Now, reduce groups from the start until total messages <= maxMessages and >= truncateTo
+        // Now, remove groups from the start while we can remove them without violating truncateTo
         $currentTotalMessages = $totalMessages;
         $groupIndex = 0;
 
-        while ($currentTotalMessages > $maxMessages && $groupIndex < count($groups)) {
-            $groupSize = count($groups[$groupIndex]);
-
-            if ($currentTotalMessages - $groupSize >= $truncateTo) {
-                // Remove this group
-                $currentTotalMessages -= $groupSize;
-                $groupIndex++;
-            } else {
-                // Cannot remove this group without falling below truncateTo
-                break;
-            }
+        while (
+            $groupIndex < count($groups) &&
+            $currentTotalMessages - count($groups[$groupIndex]) >= $truncateTo
+        ) {
+            $currentTotalMessages -= count($groups[$groupIndex]);
+            $groupIndex++;
         }
 
         // Now assemble the remaining messages from the remaining groups
@@ -154,6 +147,8 @@ abstract class Util
 
         return $truncatedMessages;
     }
+
+
 
     /**
      * Returns the truncated part of the original messages.
