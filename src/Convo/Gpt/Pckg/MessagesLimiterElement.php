@@ -24,8 +24,6 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
 
     private $_messages = [];
 
-    private $_includeFunctions;
-
 
     /**
      * @var IConversationElement[]
@@ -44,8 +42,6 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
                 $this->addChild($element);
             }
         }
-
-        $this->_includeFunctions = $properties['include_functions'] ?? '';
     }
 
     public function registerMessage($message)
@@ -90,39 +86,9 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
             return $messages;
         }
 
-        $include = boolval($this->evaluateString($this->_includeFunctions));
-
         // TRUNCATE
-        $new_messages = [];
-        $truncated = [];
-        $count_to_trim = $count - $to;
-
-        $this->_logger->debug('Count to trim [' . $count_to_trim . ']');
-
-        for ($i = 0; $i < $count; $i++) {
-            $message = $messages[$i];
-
-            if ($i < $count_to_trim) {
-                if ($include) {
-                    if (isset($message['function_call'])) {
-                        continue;
-                    }
-                } else {
-                    if ($message['role'] === 'function' || isset($message['function_call'])) {
-                        continue;
-                    }
-                }
-
-                $truncated[] = $message;
-            } else {
-                $new_messages[] = $message;
-            }
-        }
-
-        $new_messages = array_merge(
-            $this->_removeEndingUserMessages($truncated),
-            $new_messages
-        );
+        $new_messages = Util::truncate($messages, $max, $to);
+        $truncated = Util::getTruncatedPart($messages, $new_messages);
 
         $this->_logger->debug('Truncated messages [' . print_r($truncated, true) . ']');
 
@@ -131,19 +97,6 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
         $new_messages = array_merge([['role' => 'system', 'content' => $summarized]], $new_messages);
 
         return $new_messages;
-    }
-
-    private function _removeEndingUserMessages(&$truncated)
-    {
-        if (count($truncated)) {
-            if ($truncated[count($truncated) - 1]['role'] === 'user') {
-                return array_merge(
-                    [array_pop($truncated)],
-                    $this->_removeEndingUserMessages($truncated)
-                );
-            }
-        }
-        return [];
     }
 
     private function _sumarize($conversation)
