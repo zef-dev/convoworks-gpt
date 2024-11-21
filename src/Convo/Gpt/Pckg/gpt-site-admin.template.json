@@ -1,7 +1,7 @@
 {
     "template_id": "gpt-site-admin",
     "name": "GPT Site Admin",
-    "description": "his GPT-powered bot assists in managing WordPress sites by performing tasks such as updating posts, modifying taxonomy, and uploading images. Utilizing PHP and WordPress functions, it efficiently accesses and modifies site data as necessary.",
+    "description": "This GPT-powered bot assists in managing WordPress sites by performing tasks such as updating posts, modifying taxonomy, and uploading images. Utilizing PHP and WordPress functions, it efficiently accesses and modifies site data as necessary.",
     "service": {
         "convo_service_version": 40,
         "packages": [
@@ -321,7 +321,21 @@
                                                     }
                                                 }
                                             ],
-                                            "_component_id": "xshgptwh-9nmy-7ii3-9a8z-ieyv6vylftjv"
+                                            "_component_id": "xshgptwh-9nmy-7ii3-9a8z-ieyv6vylftjv",
+                                            "truncated_flow": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "session",
+                                                        "parameters": "service",
+                                                        "properties": {
+                                                            "messages": "${status.messages}"
+                                                        },
+                                                        "_component_id": "fgwycrzl-taxx-ac70-hqvc-uqalw5rhdiax"
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 ],

@@ -1,7 +1,7 @@
 {
     "template_id": "gpt-example-chat",
     "name": "GPT Example Chat",
-    "description": "Simple chat starter template that utilizes the moderation API component, provides summaries for long conversations, and includes function definitions",
+    "description": "Simple chat starter template that utilizes the moderation API component, provides summaries for long conversations, and includes function definitions.",
     "service": {
         "convo_service_version": 40,
         "packages": [
@@ -133,6 +133,14 @@
                             "properties": {
                                 "name": "Chat App",
                                 "ok": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "fragment_id": "Inc_Check_API_Key",
+                                            "_component_id": "f5jdrwya-alre-yrcy-s5hj-x0wntjqhjpbs"
+                                        }
+                                    },
                                     {
                                         "class": "\\Convo\\Gpt\\Pckg\\ModerationApiElement",
                                         "namespace": "convo-gpt",
@@ -350,7 +358,21 @@
                                                 "temperature": "${GPT_DEFAULT_TEMPERATURE}",
                                                 "max_tokens": "${GPT_DEFAULT_MAX_TOKENS}"
                                             },
-                                            "system_message": "Considering all the prior conversation including the previous summaries, please generate a concise summary capturing the key points and significant themes up until now. Please ensure the summary contains all necessary information to understand the context of the current conversation."
+                                            "system_message": "Considering all the prior conversation including the previous summaries, please generate a concise summary capturing the key points and significant themes up until now. Please ensure the summary contains all necessary information to understand the context of the current conversation.",
+                                            "truncated_flow": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "session",
+                                                        "parameters": "service",
+                                                        "properties": {
+                                                            "messages": "${status.messages}"
+                                                        },
+                                                        "_component_id": "ez5pacy9-bufd-uexa-wpi1-fkne3oq5nyzj"
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 ],
