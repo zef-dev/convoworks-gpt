@@ -10,17 +10,25 @@ abstract class Util
     /**
      * Serializes an array of messages into a formatted string.
      *
-     * Filters messages to include only those with roles 'user' or 'assistant' and non-empty content.
+     * Filters messages to include only those with roles 'user' or 'assistant' and non-empty content by default.
+     * If $includeSystem is true, 'system' messages are also included.
      * The output format is "Role: Content" for each message, separated by two newlines.
      *
      * @param array $messages The array of messages to serialize. Each message should be an associative array
      *                        with 'role' (string) and 'content' (string) keys.
+     * @param bool $includeSystem Whether to include 'system' messages in the output. Default is false.
      * @return string The serialized string of messages in the format "Role: Content", with entries separated by two newlines.
      */
-    public static function serializeMessages(array $messages)
+    public static function serializeMessages(array $messages, bool $includeSystem = false)
     {
-        $filteredMessages = array_filter($messages, function ($message) {
-            return in_array($message['role'], ['user', 'assistant'], true) && !empty(trim($message['content']));
+        // Include 'user' and 'assistant' messages, and optionally 'system' messages
+        $validRoles = ['user', 'assistant'];
+        if ($includeSystem) {
+            $validRoles[] = 'system';
+        }
+
+        $filteredMessages = array_filter($messages, function ($message) use ($validRoles) {
+            return in_array($message['role'], $validRoles, true) && !empty(trim($message['content']));
         });
 
         return implode("\n\n", array_map(function ($message) {
@@ -28,6 +36,7 @@ abstract class Util
             return sprintf("%s: %s", $role, $message['content']);
         }, $filteredMessages));
     }
+
 
 
     /**

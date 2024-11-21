@@ -108,7 +108,7 @@ class MessagesLimiterElement extends AbstractWorkflowContainerComponent implemen
 
         $messages[] =   [
             'role' => 'user',
-            'content' => Util::serializeMessages($conversation)
+            'content' => Util::serializeMessages($conversation, true)
         ];
 
         $api_key    =   $this->evaluateString($this->_properties['api_key']);
