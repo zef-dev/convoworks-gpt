@@ -743,6 +743,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'Chat completion API options for summarization.',
                         'valueType' => 'array'
                     ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result variable',
+                        'description' => 'The variable that stores the result of the truncation operation.',
+                        'valueType' => 'string'
+                    ],
                     'message_provider' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -753,6 +761,18 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultOpen' => true,
                         'name' => 'Messages',
                         'description' => 'Provides the conversation messages that need to be summarized.',
+                        'valueType' => 'class'
+                    ],
+                    'truncated_flow' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Truncated Flow',
+                        'description' => 'The flow to execute if the conversation is truncated.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [
@@ -806,6 +826,14 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'description' => 'The number of messages to retain after trimming.',
                         'valueType' => 'string'
                     ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result variable',
+                        'description' => 'The variable that stores the result of the truncation operation.',
+                        'valueType' => 'string'
+                    ],
                     'message_provider' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => [
@@ -815,7 +843,19 @@ class GptPackageDefinition extends AbstractPackageDefinition
                         'defaultValue' => [],
                         'defaultOpen' => true,
                         'name' => 'Messages',
-                        'description' => 'Provides the conversation messages to be trimmed.',
+                        'description' => 'Provides the conversation messages that need to be summarized.',
+                        'valueType' => 'class'
+                    ],
+                    'truncated_flow' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Truncated Flow',
+                        'description' => 'The flow to execute if the conversation is truncated.',
                         'valueType' => 'class'
                     ],
                     '_preview_angular' => [

@@ -25,6 +25,18 @@
         Chat completion API options that are used for summarization. These options dictate the behavior of the GPT-3 model, such as which version of the model to use, the desired temperature setting, and the token limit.
     </p>
 
+
+    <h3>Result Variable Name</h3>
+    <p>
+        The name of the variable available in the truncated flow. The variable contains two fields:
+        <code>messages</code>, an array containing the current messages, and <code>truncated</code>, an array containing the truncated messages.
+    </p>
+
+    <h3>Truncated Flow</h3>
+    <p>
+        The flow that is executed when the conversation is truncated.
+    </p>
+
     <h3>Messages</h3>
     <p>
         Provides the conversation messages which are being summarized. This is a service component allowing interfaces with the Convo system to retrieve the messages.
