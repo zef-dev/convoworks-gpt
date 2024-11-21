@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Convo\Gpt\Pckg;
 
@@ -11,29 +13,32 @@ class ConversationMessagesElement extends AbstractWorkflowContainerComponent imp
 {
 
     private $_messages;
-    
-    public function __construct( $properties)
+
+    public function __construct($properties)
     {
-        parent::__construct( $properties);
-        
+        parent::__construct($properties);
+
         $this->_messages      =   $properties['messages'];
     }
-    
-    public function read( IConvoRequest $request, IConvoResponse $response)
+
+    public function read(IConvoRequest $request, IConvoResponse $response)
     {
         /** @var \Convo\Gpt\IMessages $container */
-        $container = $this->findAncestor( '\Convo\Gpt\IMessages');
-        
-        $messages = $this->evaluateString( $this->_messages);
-        
-        foreach ( $messages as $message) {
-            $container->registerMessage( $message);
+        $container = $this->findAncestor('\Convo\Gpt\IMessages');
+
+        $messages = $this->evaluateString($this->_messages);
+
+        if (is_array($messages)) {
+            $this->_logger->debug('Got loaded messages [' . count($messages) . ']');
+            foreach ($messages as $message) {
+                $container->registerMessage($message);
+            }
         }
     }
 
     // UTIL
     public function __toString()
     {
-        return parent::__toString().'['.$this->_messages.']';
+        return parent::__toString() . '[' . $this->_messages . ']';
     }
 }
