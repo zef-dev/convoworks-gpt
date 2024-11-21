@@ -1,6 +1,11 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.11.0 Truncate messages
+
+* Fixed truncate messages functions to preserve message grouping
+* Message limiter elements now have truncated flow
+
 ### 0.10.0 Catchup with OpenAI API changes - tools
 
 * GPT API components now support base url parameter, enabling using other AI providers
