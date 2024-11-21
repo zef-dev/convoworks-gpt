@@ -235,17 +235,17 @@ Limits the size of messages by summarizing the oldest ones.
 
 **Parameters:**
 
-- **`System message`** - The main system prompt.
-- **`Max messages to keep`** - The maximum message count before older messages get summarized.
-- **`Truncate to this number of messages`** - The message count to retain after truncation.
-- **`API key`** - Your OpenAI API key.
-- **`Base URL`** - The base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: `https://api.openai.com/v1`.
-- **`API options`** - Options for summarizing the conversation.
-- **`Messages`** - Provides the conversation messages.
-- **`Result variable`** - The variable that stores the result of the truncation operation. This variable contains:
+- `System message` - The main system prompt.
+- `Max messages to keep` - The maximum message count before older messages get summarized.
+- `Truncate to this number of messages` - The message count to retain after truncation.
+- `API key` - Your OpenAI API key.
+- `Base URL` - The base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: `https://api.openai.com/v1`.
+- `API options` - Options for summarizing the conversation.
+- `Messages` - Provides the conversation messages.
+- `Result variable` - The variable that stores the result of the truncation operation. This variable contains:
   - `messages`: The current set of retained messages.
   - `truncated`: The array of truncated messages.
-- **`Truncated Flow`** - The flow to execute if the conversation is truncated.
+- `Truncated Flow` - The flow to execute if the conversation is truncated.
 
 
 ### Simple Message Limiter
@@ -254,13 +254,13 @@ Limits the size of messages by trimming the array to a defined size.
 
 **Parameters:**
 
-- **`Max messages to keep`** - The maximum number of messages allowed before the conversation is trimmed.
-- **`Truncate message count`** - The number of messages to retain after trimming.
-- **`Messages`** - Provides the initial conversation messages array.
-- **`Result variable`** - The variable that stores the result of the truncation operation. This variable contains:
+- `Max messages to keep` - The maximum number of messages allowed before the conversation is trimmed.
+- `Truncate message count` - The number of messages to retain after trimming.
+- `Messages` - Provides the initial conversation messages array.
+- `Result variable` - The variable that stores the result of the truncation operation. This variable contains:
   - `messages`: The current set of retained messages.
   - `truncated`: The array of truncated messages.
-- **`Truncated Flow`** - The flow to execute if the conversation is truncated.
+- `Truncated Flow` - The flow to execute if the conversation is truncated.
 
 
 ### Chat Function
