@@ -67,19 +67,18 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
 
         // TRUNCATE
         $all_messages = $this->getMessages();
+        $this->_logger->debug('Checking messages count [' . count($all_messages) . ']');
         $messages = $this->_truncate(
             $all_messages,
             $this->evaluateString($this->_properties['max_count']),
             $this->evaluateString($this->_properties['truncate_to'])
         );
 
-        $this->_logger->debug('Got messages after truncation [' . print_r($messages, true) . ']');
-
         $truncated = Util::getTruncatedPart($all_messages, $messages);
 
         // TRUNCATED FLOW
         if (count($truncated)) {
-            $this->_logger->debug('Executing truncated flow');
+            $this->_logger->debug('Got messages after truncation [' . print_r($messages, true) . ']. Executing truncated flow');
             $params         =  $this->getService()->getComponentParams(IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
             $var_name       = $this->evaluateString($this->_properties['result_var']) ?? null;
             if ($var_name) {
@@ -92,6 +91,8 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
             foreach ($this->_truncatedFlow as $elem) {
                 $elem->read($request, $response);
             }
+        } else {
+            $this->_logger->debug('No need tp truncate  messages count [' . count($messages) . ']');
         }
 
         // PASS MESSAGES TO THE UPPER LAYER
@@ -105,6 +106,7 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
 
     protected function _truncate($messages, $max, $to)
     {
+        $this->_logger->debug('Going to check for truncation messages [' . count($messages) . '] against max: ' . $max . ' to: ' . $to);
         return Util::truncate($messages, $max, $to);
     }
 

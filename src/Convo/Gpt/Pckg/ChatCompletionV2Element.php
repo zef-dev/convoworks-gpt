@@ -178,7 +178,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
     private function _readNewMessageFlow(IConvoRequest $request, IConvoResponse $response, $message, $httpResponse = null)
     {
-        $this->_logger->debug('Handling new message [' . print_r($message, true) . '][' . print_r($httpResponse, true) . ']');
+        $this->_logger->debug('Handling new message role:[' . $message['role'] ?? '' . ']');
 
         $this->_newMessages[] = $message;
 
@@ -252,7 +252,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         if (count($this->getFunctions())) {
             $options['tools'] = [];
             foreach ($this->getFunctions() as $function) {
-                $this->_logger->debug('Registering function [' . json_encode($function->getDefinition(), JSON_PRETTY_PRINT) . ']');
+                // $this->_logger->debug('Registering function [' . json_encode($function->getDefinition(), JSON_PRETTY_PRINT) . ']');
                 $options['tools'][] = [
                     'type' => 'function',
                     'function' => $function->getDefinition(),
