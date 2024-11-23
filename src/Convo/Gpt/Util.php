@@ -85,68 +85,59 @@ abstract class Util
      */
     public static function truncate(array $messages, int $maxMessages, int $truncateTo): array
     {
-        $totalMessages = count($messages);
-
-        // If the number of messages is within the allowed max, return them as-is
-        if ($totalMessages <= $maxMessages) {
-            return $messages;
-        }
-
-        // Group messages
+        // Initialize variables
         $groups = [];
-        $i = 0;
-        $count = count($messages);
+        $currentGroup = [];
+        $previousRole = null;
 
-        while ($i < $count) {
-            $group = [];
+        // Group messages based on conversation turns
+        foreach ($messages as $message) {
+            $role = $message['role'];
 
-            if ($messages[$i]['role'] === 'user') {
-                $group[] = $messages[$i];
-                $i++;
-
-                if ($i < $count && $messages[$i]['role'] === 'assistant') {
-                    $group[] = $messages[$i];
-                    $i++;
-                }
-            } elseif ($messages[$i]['role'] === 'tool_calls') {
-                $group[] = $messages[$i];
-                $i++;
-
-                while ($i < $count && $messages[$i]['role'] === 'tool') {
-                    $group[] = $messages[$i];
-                    $i++;
-                }
+            if (empty($currentGroup)) {
+                $currentGroup[] = $message;
             } else {
-                // Any other role, group it individually
-                $group[] = $messages[$i];
-                $i++;
+                if ($role === 'user' && $previousRole !== 'user') {
+                    // Start a new group
+                    $groups[] = $currentGroup;
+                    $currentGroup = [$message];
+                } else {
+                    // Add to current group
+                    $currentGroup[] = $message;
+                }
             }
-
-            $groups[] = $group;
+            $previousRole = $role;
         }
 
-        // Now, remove groups from the start while we can remove them without violating truncateTo
-        $currentTotalMessages = $totalMessages;
-        $groupIndex = 0;
-
-        while (
-            $groupIndex < count($groups) &&
-            $currentTotalMessages - count($groups[$groupIndex]) >= $truncateTo
-        ) {
-            $currentTotalMessages -= count($groups[$groupIndex]);
-            $groupIndex++;
+        if (!empty($currentGroup)) {
+            $groups[] = $currentGroup;
         }
 
-        // Now assemble the remaining messages from the remaining groups
-        $remainingGroups = array_slice($groups, $groupIndex);
+        // Calculate total messages
+        $totalMessages = array_sum(array_map('count', $groups));
+
+        // Truncate groups from the beginning while keeping constraints
+        $startIndex = 0;
+        while (($totalMessages > $maxMessages || $totalMessages > $truncateTo) && $startIndex < count($groups)) {
+            $groupSize = count($groups[$startIndex]);
+            if (($totalMessages - $groupSize) >= $truncateTo) {
+                $totalMessages -= $groupSize;
+                $startIndex++;
+            } else {
+                break;
+            }
+        }
+
+        // Merge the remaining groups
         $truncatedMessages = [];
-
-        foreach ($remainingGroups as $group) {
-            $truncatedMessages = array_merge($truncatedMessages, $group);
+        for ($i = $startIndex; $i < count($groups); $i++) {
+            $truncatedMessages = array_merge($truncatedMessages, $groups[$i]);
         }
 
         return $truncatedMessages;
     }
+
+
 
 
 
