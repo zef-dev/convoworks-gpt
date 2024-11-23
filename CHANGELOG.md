@@ -1,6 +1,10 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.11.1 Truncate messages
+
+* Fixed the truncate messages function - grouping
+
 ### 0.11.0 Truncate messages
 
 * Fixed truncate messages functions to preserve message grouping
