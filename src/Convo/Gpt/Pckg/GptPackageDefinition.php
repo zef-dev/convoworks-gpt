@@ -890,7 +890,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
-                            ' <br>{{component.properties.content}}' .
+                            '<div class="text-long" title="{{component.properties.content}}">{{component.properties.content}}</div>' .
                             '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
@@ -1019,13 +1019,12 @@ class GptPackageDefinition extends AbstractPackageDefinition
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' =>
-                        '<div class="code" title="{{component.properties.description}}"><span class="statement">CHAT FUNCTION</span> ' .
+                        '<div class="code"><span class="statement">CHAT FUNCTION</span> ' .
                             '<b>{{component.properties.name}}(' .
                             '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">' .
                             '{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>' .
                             '<span ng-if="isString(component.properties.parameters)">{{ component.properties.parameters }}</span>' .
-                            ') => {{component.properties.result_data}}</b>
-                        </div>'
+                            ') => {{component.properties.result_data}}</b><div class="text" title="{{component.properties.description}}">{{component.properties.description}}</div></div>'
                     ],
                     '_workflow' => 'read',
                     '_descend' => 'true',
