@@ -28,7 +28,7 @@ abstract class Util
         }
 
         $filteredMessages = array_filter($messages, function ($message) use ($validRoles) {
-            return in_array($message['role'], $validRoles, true) && !empty(trim($message['content']));
+            return in_array($message['role'], $validRoles, true) && !empty(trim($message['content'] ?? ''));
         });
 
         return implode("\n\n", array_map(function ($message) {
