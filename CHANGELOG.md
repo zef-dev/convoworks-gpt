@@ -1,6 +1,13 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.11.2 Preview fixes
+
+* Fixed not displayed help for the Conversation Messages Element.
+* Long System GPT messages are now trimmed (12 lines) when displayed in editor.
+* The Chat Function Element now has description displayed in editor.  
+* Fixed message serialization when message content is null (tool call).
+
 ### 0.11.1 Truncate messages
 
 * Fixed the truncate messages function - grouping
