@@ -7,11 +7,10 @@ namespace Convo\Gpt\Pckg;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
-use Convo\Core\Params\IServiceParamsScope;
-use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
+use Convo\Core\Workflow\AbstractScopedFunction;
 use Convo\Gpt\IChatFunction;
 
-class ChatFunctionElement extends AbstractWorkflowContainerComponent implements IChatFunction, IConversationElement
+class ChatFunctionElement extends AbstractScopedFunction implements IChatFunction, IConversationElement
 {
 
     private $_name;
@@ -70,7 +69,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
         $data = array_merge($this->_getDefaults(), $data);
         $this->_logger->info('Got data with defaults [' . print_r($data, true) . ']');
 
-        $params        =    $this->getService()->getComponentParams(IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
+        $params        =    $this->getFunctionParams();
         $data_var      =    $this->evaluateString($this->_requestData);
         $params->setServiceParam($data_var, $data);
 
@@ -80,7 +79,7 @@ class ChatFunctionElement extends AbstractWorkflowContainerComponent implements 
             $elem->read($request, $response);
         }
 
-        $params     =   $this->getService()->getServiceParams(IServiceParamsScope::SCOPE_TYPE_REQUEST);
+        // $params     =   $this->getService()->getServiceParams(IServiceParamsScope::SCOPE_TYPE_REQUEST);
         $result     =   $this->evaluateString($this->_resultData);
         if (is_callable($result)) {
             $this->_logger->info('Executing callable result');
