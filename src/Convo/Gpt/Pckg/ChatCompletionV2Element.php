@@ -216,8 +216,8 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                         $this->_logger->debug('Got processed JSON [' . $function_data . ']');
                         $this->_registerExecution($function_name, $function_data);
                         $function   =   $this->_findFunction($function_name);
-                        if ($function instanceof \Convo\Core\Workflow\IFunctionScope) {
-                            /** @var \Convo\Core\Workflow\IFunctionScope $function */
+                        if ($function instanceof \Convo\Core\Workflow\IScopedFunction) {
+                            /** @var \Convo\Core\Workflow\IScopedFunction $function */
                             $id = $function->initParams();
                             $result     =   $function->execute($request, $response, $function_data);
                             $function->restoreParams($id);
