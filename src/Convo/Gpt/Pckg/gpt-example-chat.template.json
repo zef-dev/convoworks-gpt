@@ -693,7 +693,7 @@
                                         "namespace": "convo-core",
                                         "properties": {
                                             "scope_type": "request",
-                                            "parameters": "service",
+                                            "parameters": "function",
                                             "properties": {
                                                 "function_result": "${ strval( rand( data.min, data.max))}"
                                             },

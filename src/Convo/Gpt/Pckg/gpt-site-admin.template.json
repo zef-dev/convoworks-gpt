@@ -567,7 +567,7 @@
                                         "namespace": "convo-core",
                                         "properties": {
                                             "scope_type": "request",
-                                            "parameters": "service",
+                                            "parameters": "function",
                                             "properties": {
                                                 "function_data": "${[]}",
                                                 "function_data[\"function_result\"]": "${wp_call_user_func_array( data.callback, data.args)}"
@@ -580,9 +580,9 @@
                                         "namespace": "convo-core",
                                         "properties": {
                                             "scope_type": "request",
-                                            "parameters": "service",
+                                            "parameters": "function",
                                             "properties": {
-                                                "function_result": "${json_encode( function_data)}"
+                                                "function_result": "${function_data}"
                                             },
                                             "_component_id": "ali8cfjc-mkwg-dch2-4ir5-4x3ntzmgj4bz"
                                         }
