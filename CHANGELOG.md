@@ -1,6 +1,10 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.12.0 Preview fixes
+
+* Added function scope support to the Chat Function element
+
 ### 0.11.2 Preview fixes
 
 * Fixed not displayed help for the Conversation Messages Element.
