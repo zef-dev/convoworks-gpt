@@ -1,6 +1,12 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.12.1 - 2025-02-23 - Chat Functions Handling  
+
+* Improved chat function execution with better error handling—now catches `Throwable`.  
+* Used scoped functions as the base for all chat functions, enabling local function scope.  
+
+
 ### 0.12.0 Preview fixes
 
 * Added function scope support to the Chat Function element
