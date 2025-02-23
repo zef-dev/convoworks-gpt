@@ -219,6 +219,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                         if ($function instanceof \Convo\Core\Workflow\IScopedFunction) {
                             /** @var \Convo\Core\Workflow\IScopedFunction $function */
                             $id = $function->initParams();
+                            /** @var IChatFunction $function */
                             $result     =   $function->execute($request, $response, $function_data);
                             $function->restoreParams($id);
                         } else {
