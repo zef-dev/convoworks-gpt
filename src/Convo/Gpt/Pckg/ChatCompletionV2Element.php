@@ -224,7 +224,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                         } else {
                             $result     =   $function->execute($request, $response, $function_data);
                         }
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         $this->_logger->warning($e);
                         $result = json_encode(['error' => $e->getMessage()]);
                     }
