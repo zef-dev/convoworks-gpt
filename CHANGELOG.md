@@ -1,6 +1,11 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.12.2 - 2025-03-27 - Deep Research template
+
+* Added new service template - Deep Research Assistant.
+
+
 ### 0.12.1 - 2025-02-23 - Chat Functions Handling  
 
 * Improved chat function execution with better error handling—now catches `Throwable`.  
