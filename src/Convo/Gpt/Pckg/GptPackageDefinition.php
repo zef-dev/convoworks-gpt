@@ -27,6 +27,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
 
         $this->registerTemplate(__DIR__ . '/gpt-example-chat.template.json');
         $this->registerTemplate(__DIR__ . '/gpt-site-admin.template.json');
+        $this->registerTemplate(__DIR__ . '/deep-research-assistant.template.json');
     }
 
     public function getFunctions()
