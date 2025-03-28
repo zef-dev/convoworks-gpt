@@ -51,6 +51,10 @@ The GPT Site Admin template is designed as a robust AI assistant to help manage 
 
 For more details, check out [The GPT Site Admin: A New Era of AI Integration with WordPress](https://convoworks.com/the-gpt-site-assistant-a-new-era-of-ai-integration-with-wordpress/).
 
+### Deep Research Assistant
+
+The Deep Research Assistant template empowers you to conduct iterative, in-depth research by leveraging GPT-powered recursive web searches, analysis, and report generation. It offers a no-code, visual workflow to automate the entire research process and seamlessly generate structured Markdown reports. For more details, check out [A No-Code Experiment: Bringing Deep Research to WordPress](https://convoworks.com/a-no-code-experiment-bringing-deep-research-to-wordpress/).
+
 
 ## Functions
 
