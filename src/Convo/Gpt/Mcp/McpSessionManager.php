@@ -15,14 +15,15 @@ class McpSessionManager
     private $_logger;
 
     /**
-     * @var McpSessionStore
+     * @var McpFilesystemSessionStore
      */
     private $_sessionStore;
 
 
-    public function __construct($logger)
+    public function __construct($logger, $sessionStore)
     {
-        $this->_logger   =    $logger;
+        $this->_logger          =   $logger;
+        $this->_sessionStore    =   $sessionStore;
     }
 
 

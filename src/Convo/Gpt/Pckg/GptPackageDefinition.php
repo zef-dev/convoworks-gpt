@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Convo\Gpt\Pckg;
 
+use Convo\Core\ComponentNotFoundException;
 use Convo\Core\Factory\AbstractPackageDefinition;
 use Convo\Gpt\GptApiFactory;
 use Convo\Core\Expression\ExpressionFunction;
+use Convo\Gpt\Mcp\McpServerPlatform;
+use Psr\Log\LoggerInterface;
 
 class GptPackageDefinition extends AbstractPackageDefinition
 {
@@ -17,11 +20,18 @@ class GptPackageDefinition extends AbstractPackageDefinition
      */
     private $_gptApiFactory;
 
+    /**
+     * @var McpServerPlatform
+     */
+    private $_mcpPlatform;
+
     public function __construct(
-        \Psr\Log\LoggerInterface $logger,
-        $gptApiFactory
+        LoggerInterface $logger,
+        $gptApiFactory,
+        $mcpPlatform
     ) {
-        $this->_gptApiFactory           =   $gptApiFactory;
+        $this->_gptApiFactory  =   $gptApiFactory;
+        $this->_mcpPlatform    =   $mcpPlatform;
 
         parent::__construct($logger, self::NAMESPACE, __DIR__);
 
@@ -1690,5 +1700,40 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 ]
             ),
         ];
+    }
+
+
+    public function getPlatform($platformId)
+    {
+        if (strpos($platformId, '.') === false) {
+            $search = self::NAMESPACE . '.' . $platformId;
+        } else {
+            $search = $platformId;
+        }
+
+        $this->_logger->info('Searching for platform [' . $platformId . '][' . $search . ']');
+        $this->_logger->debug('Comparing to voice [' . $this->_mcpPlatform->getPlatformId() . ']');
+
+        if ($search === $this->_mcpPlatform->getPlatformId()) {
+            return $this->_mcpPlatform;
+        }
+
+        throw new ComponentNotFoundException('Could not locate platform [' . $platformId . '][' . $search . ']');
+    }
+
+    public function getRow()
+    {
+        $data = parent::getRow();
+        $data['platforms'] = [
+            McpServerPlatform::PLATFORM_ID => [
+                'name' => 'MCP Server',
+                'description' => 'MCP server for WordPress',
+                // 'icon_url' => CONVO_TWILIO_URL . '/assets/twilio-logo.png',
+                // 'config_url' => CONVO_BASE_URL . '/wp-admin/admin.php?page=convoworks-twilio-settings&service_id={serviceId}',
+                //                 'enabled' => true,
+            ],
+        ];
+
+        return $data;
     }
 }

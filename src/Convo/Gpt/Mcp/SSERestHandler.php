@@ -46,11 +46,6 @@ class SSERestHandler implements RequestHandlerInterface
     private $_convoServiceDataProvider;
 
     /**
-     * @var \Convo\Core\Factory\IPlatformRequestFactory
-     */
-    private $_platformRequestFactory;
-
-    /**
      * @var \Convo\Core\EventDispatcher\EventDispatcher
      */
     private $_eventDispatcher;
@@ -66,16 +61,16 @@ class SSERestHandler implements RequestHandlerInterface
         $serviceFactory,
         $serviceParamsFactory,
         $serviceDataProvider,
-        $platformRequestFactory,
-        $eventDispatcher
+        $eventDispatcher,
+        $mcpSessionManager
     ) {
         $this->_logger                        =    $logger;
         $this->_httpFactory                    =    $httpFactory;
         $this->_convoServiceFactory         =    $serviceFactory;
         $this->_convoServiceParamsFactory    =    $serviceParamsFactory;
         $this->_convoServiceDataProvider    =     $serviceDataProvider;
-        $this->_platformRequestFactory       =     $platformRequestFactory;
         $this->_eventDispatcher             =   $eventDispatcher;
+        $this->_mcpSessionManager             =   $mcpSessionManager;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

@@ -8,7 +8,7 @@ use Convo\Core\DataItemNotFoundException;
 use Convo\Core\Util\StrUtil;
 use Psr\Log\LoggerInterface;
 
-class McpSessionStore
+class McpFilesystemSessionStore
 {
     const BASE_PATH = 'c:/tmp/mcp/';
 
