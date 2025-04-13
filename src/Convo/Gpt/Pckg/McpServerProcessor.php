@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Convo\Gpt\Pckg;
 
+use Convo\Core\ComponentNotFoundException;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\IRequestFilterResult;
@@ -17,14 +18,17 @@ use Convo\Gpt\Mcp\McpServerCommandRequest;
 class McpServerProcessor extends AbstractWorkflowContainerComponent
 implements IConversationProcessor, IChatFunctionContainer
 {
+    /**
+     * @var IChatFunction[]
+     */
     private $_functions = [];
 
+    private $_name;
+    private $_version;
 
     /**
      * @var IConversationElement[]
      */
-    private $_name;
-    private $_version;
     private $_tools;
 
     /**
@@ -99,30 +103,26 @@ implements IConversationProcessor, IChatFunctionContainer
             return;
         }
 
+        foreach ($this->_tools as $elem) {
+            $elem->read($request, $response);
+        }
+
+        $tools = [];
+
+        foreach ($this->_functions as $func) {
+            $definition = $func->getDefinition();
+            $tools[] = $this->_convertToolDefinitionToMcp($definition);
+        }
+
+        $this->_logger->debug('Got tools [' . print_r($tools, true) . ']');
+
         // TOOLS
         if ($method === 'tools/list') {
             $message = [
                 'jsonrpc' => '2.0',
                 'id' => $id,
                 'result' => [
-                    'tools' => [
-                        [
-                            'name' => 'say_hello',
-                            'description' => 'Say hello to someone',
-                            'inputSchema' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'name' => [
-                                        'type' => 'string',
-                                        'description' => 'Name of the person'
-                                    ]
-                                ],
-                                'required' => ['name'],
-                                'additionalProperties' => false,
-                                '$schema' => 'http://json-schema.org/draft-07/schema#'
-                            ]
-                        ]
-                    ]
+                    'tools' => $tools
                 ]
             ];
 
@@ -157,6 +157,54 @@ implements IConversationProcessor, IChatFunctionContainer
             $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
             return;
         }
+    }
+
+    private function _convertToolDefinitionToMcp($def)
+    {
+        $name = $def['name'];
+        // $def = $toolDef['definition'];
+
+        // Default description if not present
+        $description = $def['description'] ?? 'No description provided.';
+
+        // Transform parameters
+        $inputSchema = $def['parameters'] ?? [];
+
+        // Add missing schema fields if needed
+        if (!isset($inputSchema['type'])) {
+            $inputSchema['type'] = 'object';
+        }
+        if (!isset($inputSchema['required'])) {
+            $inputSchema['required'] = [];
+        }
+        if (!isset($inputSchema['additionalProperties'])) {
+            $inputSchema['additionalProperties'] = false;
+        }
+
+        // Add $schema to comply with MCP spec
+        $inputSchema['$schema'] = 'http://json-schema.org/draft-07/schema#';
+
+        return [
+            'name' => $name,
+            'description' => $description,
+            'inputSchema' => $inputSchema
+        ];
+    }
+
+
+    /**
+     * @param string $functionName
+     * @throws ComponentNotFoundException
+     * @return \Convo\Gpt\IChatFunction
+     */
+    private function _findFunction($functionName)
+    {
+        foreach ($this->_functions as $function) {
+            if ($function->accepts($functionName)) {
+                return $function;
+            }
+        }
+        throw new ComponentNotFoundException('Function [' . $functionName . '] not found');
     }
 
     public function filter(IConvoRequest $request)
