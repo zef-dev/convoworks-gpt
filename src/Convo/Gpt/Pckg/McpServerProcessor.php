@@ -11,10 +11,14 @@ use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Core\Workflow\IConversationProcessor;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\DefaultFilterResult;
+use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\Mcp\McpServerCommandRequest;
 
-class McpServerProcessor extends AbstractWorkflowContainerComponent implements IConversationProcessor
+class McpServerProcessor extends AbstractWorkflowContainerComponent
+implements IConversationProcessor, IChatFunctionContainer
 {
+    private $_functions = [];
+
 
     /**
      * @var IConversationElement[]
@@ -41,6 +45,16 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
         }
     }
 
+    public function registerFunction($function)
+    {
+        $this->_functions[] = $function;
+    }
+
+    public function getFunctions(): array
+    {
+        return $this->_functions;
+    }
+
     public function process(IConvoRequest $request, IConvoResponse $response, IRequestFilterResult $result)
     {
         if (!is_a($request, '\Convo\Gpt\Mcp\McpServerCommandRequest')) {
@@ -62,6 +76,7 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
 
         $id = $request->getId();
 
+        // INTIALIZE
         if ($method === 'initialize') {
             $message = [
                 "jsonrpc" => "2.0",
@@ -81,7 +96,11 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
             ];
 
             $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
-        } else  if ($method === 'tools/list') {
+            return;
+        }
+
+        // TOOLS
+        if ($method === 'tools/list') {
             $message = [
                 'jsonrpc' => '2.0',
                 'id' => $id,
@@ -108,13 +127,36 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
             ];
 
             $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+            return;
         }
 
-        // $this->_logger->debug('Processing OK');
-        // foreach ($this->_tools as $elem) {
-        //     $elem->read($request, $response);
-        // }
+        // RESOURCES
+        if ($method === 'resources/list') {
+            $message = [
+                'jsonrpc' => '2.0',
+                'id' => $id,
+                'result' => [
+                    'resources' => []
+                ]
+            ];
 
+            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+            return;
+        }
+
+        // TEAMPLATES
+        if ($method === 'resources/templates/list') {
+            $message = [
+                'jsonrpc' => '2.0',
+                'id' => $id,
+                'result' => [
+                    'templates' => []
+                ]
+            ];
+
+            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+            return;
+        }
     }
 
     public function filter(IConvoRequest $request)
