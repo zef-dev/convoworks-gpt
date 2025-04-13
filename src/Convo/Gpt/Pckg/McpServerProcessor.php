@@ -60,13 +60,41 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
                 "result" => [
                     "protocolVersion" => "2024-11-05",
                     "capabilities" => [
-                        // "tools" => [
-                        //     "listChanged" => true
-                        // ]
+                        "tools" => [
+                            "listChanged" => true
+                        ]
                     ],
                     "serverInfo" => [
                         "name" => $this->evaluateString($this->_name),
                         "version" => $this->evaluateString($this->_version),
+                    ]
+                ]
+            ];
+
+            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+        } else  if ($method === 'tools/list') {
+            $message = [
+                'jsonrpc' => '2.0',
+                // 'method' => 'tools/list',
+                'id' => $id,
+                'result' => [
+                    'tools' => [
+                        [
+                            'name' => 'say_hello',
+                            'description' => 'Say hello to someone',
+                            'inputSchema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => [
+                                        'type' => 'string',
+                                        'description' => 'Name of the person'
+                                    ]
+                                ],
+                                'required' => ['name'],
+                                'additionalProperties' => false,
+                                '$schema' => 'http://json-schema.org/draft-07/schema#'
+                            ]
+                        ]
                     ]
                 ]
             ];
