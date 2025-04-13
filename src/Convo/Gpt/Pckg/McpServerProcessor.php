@@ -48,10 +48,19 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
             return;
         }
 
-        $data = $request->getPlatformData();
-        $id = $request->getId();
+        /** @var McpServerCommandRequest $request */
+
         $method = $request->getMethod();
-        $this->_logger->debug('Command: ' . $method . ' - ' . $id);
+        $this->_logger->debug('Command: ' . $method . ' - ' . $request->getSessionId());
+
+        if (stripos($method, 'notifications') !== false) {
+            $data = $request->getPlatformData();
+            $requestId = $data['params']['requestId'] ?? null;
+            $this->_logger->info('Got notification [' . $request->getServiceId() . '][' . $method . '] for [' . $requestId . ']');
+            return;
+        }
+
+        $id = $request->getId();
 
         if ($method === 'initialize') {
             $message = [
@@ -75,7 +84,6 @@ class McpServerProcessor extends AbstractWorkflowContainerComponent implements I
         } else  if ($method === 'tools/list') {
             $message = [
                 'jsonrpc' => '2.0',
-                // 'method' => 'tools/list',
                 'id' => $id,
                 'result' => [
                     'tools' => [

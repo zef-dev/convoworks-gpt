@@ -91,20 +91,7 @@ class SSERestHandler implements RequestHandlerInterface
             return $this->_handleMcpCommandRequest($request, $variant, $serviceId);
         }
 
-        if ($info->post() && $route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}/notifications/{notification}')) {
-            $variant = $route->get('variant');
-            $serviceId = $route->get('serviceId');
-            $notification = $route->get('notification');
-            return $this->_handleMcpNotificationRequest($request, $variant, $serviceId, $notification);
-        }
-
         throw new NotFoundException('Could not map [' . $info . ']');
-    }
-
-    private function _handleMcpNotificationRequest(ServerRequestInterface $request, $variant, $serviceId, $notification)
-    {
-        $this->_logger->info('Got notification [' . $variant . '][' . $serviceId . '][' . $notification . ']');
-        return $this->_httpFactory->buildResponse('Accepted', 202, ['Content-Type' => 'text/plain']);
     }
 
     private function _handleSSERequest(ServerRequestInterface $request, $variant, $serviceId)
@@ -131,7 +118,14 @@ class SSERestHandler implements RequestHandlerInterface
 
         $session_id = $this->_mcpSessionManager->startSession();
 
-        $url = '/service-run/external/convo-gpt/mcp-server/' . $variant . '/' . $serviceId . '/sse/message?sessionId=' . $session_id;
+        // /wp-astro/wp-json/
+        // $url = '/convo/v1/public/service-run/external/convo-gpt/mcp-server/' . $variant . '/' . $serviceId . '/sse/message?sessionId=' . $session_id;
+
+        $url = add_query_arg(
+            'sessionId',
+            $session_id,
+            rest_url("convo/v1/public/service-run/external/convo-gpt/mcp-server/$variant/$serviceId/message")
+        );
 
         $this->_mcpSessionManager->send($session_id, 'endpoint', $url);
 
