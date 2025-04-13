@@ -58,7 +58,7 @@ class McpSessionManager
         header("X-Mcp-Session-Id: $session_id");
         flush();
 
-        echo ": connected\r\n\r\n";
+        echo ": connected\n\n";
         flush();
         $this->_logger->info("New session started: $session_id");
         // usleep(100000);
@@ -77,16 +77,18 @@ class McpSessionManager
     public function listen($sessionId): void
     {
         $SLEEP = 1;
-        $PING_INTERVAL = 5; // seconds
+        $PING_INTERVAL = 10; // seconds
         $lastPing = time();
 
         while (!connection_aborted()) {
 
             // Send message if available
+            $empty = true;
             if ($message = $this->_sessionStore->useMessage($sessionId)) {
                 $data = is_string($message['data']) ? $message['data'] : json_encode($message['data']);
                 $this->send($sessionId, $message['event'], $data);
                 $this->_logger->info("Message sent [$sessionId]: " . json_encode($message));
+                $empty = false;
             }
 
             // Send ping if needed
@@ -96,7 +98,9 @@ class McpSessionManager
                 $lastPing = time();
             }
 
-            sleep($SLEEP);
+            if ($empty) {
+                sleep($SLEEP);
+            }
         }
 
         $this->_logger->info("Disconnected .. session [$sessionId]");
