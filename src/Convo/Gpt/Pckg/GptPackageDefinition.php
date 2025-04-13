@@ -1728,7 +1728,7 @@ class GptPackageDefinition extends AbstractPackageDefinition
             McpServerPlatform::PLATFORM_ID => [
                 'name' => 'MCP Server',
                 'description' => 'MCP server for WordPress',
-                // 'icon_url' => CONVO_TWILIO_URL . '/assets/twilio-logo.png',
+                'icon_url' => CONVO_GPT_URL . '/assets/mcp-logo-wide.png',
                 // 'config_url' => CONVO_BASE_URL . '/wp-admin/admin.php?page=convoworks-twilio-settings&service_id={serviceId}',
                 //                 'enabled' => true,
             ],
