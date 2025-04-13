@@ -28,6 +28,16 @@ class McpServerCommandRequest implements ISpecialRoleRequest
         $this->_role        =   $role;
     }
 
+    public function getId()
+    {
+        return $this->_data['id'] ?? null;
+    }
+
+    public function getMethod()
+    {
+        return $this->_data['method'] ?? null;
+    }
+
     public function getSpecialRole()
     {
         return $this->_role;

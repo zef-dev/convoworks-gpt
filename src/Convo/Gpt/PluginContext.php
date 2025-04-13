@@ -122,7 +122,8 @@ class PluginContext
                     return new GptPackageDefinition(
                         $logger,
                         $api_factory,
-                        $mcp_platform
+                        $mcp_platform,
+                        $mcp_manager
                     );
                 }
             );

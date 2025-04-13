@@ -22,6 +22,11 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
     private $_gptApiFactory;
 
     /**
+     * @var McpSessionManager
+     */
+    private $_mcpSessionManager;
+
+    /**
      * @var McpServerPlatform
      */
     private $_mcpPlatform;
@@ -29,10 +34,12 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
     public function __construct(
         LoggerInterface $logger,
         $gptApiFactory,
-        $mcpPlatform
+        $mcpPlatform,
+        $mcpSessionManager
     ) {
         $this->_gptApiFactory  =   $gptApiFactory;
         $this->_mcpPlatform    =   $mcpPlatform;
+        $this->_mcpSessionManager    =   $mcpSessionManager;
 
         parent::__construct($logger, self::NAMESPACE, __DIR__);
 
@@ -1698,6 +1705,66 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'type' => 'file',
                         'filename' => 'validation-error-element.html'
                     ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\McpServerProcessor',
+                'MCP Processor',
+                'Handles MCP calls',
+                [
+                    'name' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'WP MCP Server',
+                        'name' => 'Name',
+                        'description' => 'Name of the server',
+                        'valueType' => 'string'
+                    ],
+                    'version' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '1.0',
+                        'name' => 'Version',
+                        'description' => '',
+                        'valueType' => 'string'
+                    ],
+                    'tools' => array(
+                        'editor_type' => 'service_components',
+                        'editor_properties' => array(
+                            'allow_interfaces' => array('\Convo\Core\Workflow\IConversationElement'),
+                            'multiple' => true
+                        ),
+                        'defaultValue' => [],
+                        'defaultOpen' => false,
+                        'name' => 'Tools',
+                        'description' => 'Tools registration flow',
+                        'valueType' => 'class',
+                    ),
+                    '_factory' => new class($this->_mcpSessionManager) implements \Convo\Core\Factory\IComponentFactory
+                    {
+                        private $_mcpSessionManager;
+
+                        public function __construct($mcpSessionManager)
+                        {
+                            $this->_mcpSessionManager       =   $mcpSessionManager;
+                        }
+                        public function createComponent($properties, $service)
+                        {
+                            return new McpServerProcessor($properties, $this->_mcpSessionManager);
+                        }
+                    },
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">MCP Server {{component.properties.name}}</span>' .
+                            ' {{component.properties.hook}}' .
+                            '</div>'
+                    ],
+                    '_workflow' => 'process',
+                    // '_help' =>  [
+                    //     'type' => 'file',
+                    //     'filename' => 'mcp-processor.html'
+                    // ],
                 ]
             ),
         ];

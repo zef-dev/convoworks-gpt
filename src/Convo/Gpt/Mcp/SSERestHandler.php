@@ -199,11 +199,11 @@ class SSERestHandler implements RequestHandlerInterface
 
         $this->_logger->info('Got response [' . $text_response . ']');
 
-        $data = $text_response->getPlatformResponse();
+        // $data = $text_response->getPlatformResponse();
 
-        $this->_logger->debug('Got MCP response [' . strval($data) . ']');
+        // $this->_logger->debug('Got MCP response [' . strval($data) . ']');
 
-        return $this->_httpFactory->buildResponse(strval($data), IHttpFactory::HTTP_STATUS_200, ['Content-Type' => 'text/plain']);
+        return $this->_httpFactory->buildResponse('Accepted', 202, ['Content-Type' => 'text/plain']);
     }
 
     // UTIL
