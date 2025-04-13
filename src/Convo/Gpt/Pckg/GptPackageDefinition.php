@@ -1716,7 +1716,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     'name' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => 'WP MCP Server',
+                        'defaultValue' => 'Convoworks MPC',
                         'name' => 'Name',
                         'description' => 'Name of the server',
                         'valueType' => 'string'
