@@ -90,7 +90,8 @@ class SseResponse implements IConvoResponse
 
     public function getPlatformResponse()
     {
-        throw new \RuntimeException('Not implemented');
+        return [];
+        // throw new \RuntimeException('Not implemented');
     }
 
 

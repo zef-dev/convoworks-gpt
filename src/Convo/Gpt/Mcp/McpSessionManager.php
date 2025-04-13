@@ -45,8 +45,23 @@ class McpSessionManager
     // creates new session
     public function startSession(): string
     {
-        // $session_id     =   StrUtil::uuidV4();
+        set_time_limit(0);
+        ignore_user_abort(true);
+        ob_implicit_flush(1);
+        while (ob_get_level()) ob_end_clean();
+
         $session_id     =   $this->_sessionStore->new();
+
+        header('Content-Type: text/event-stream; charset=utf-8');
+        header('Cache-Control: no-cache');
+        header("Mcp-Session-Id: $session_id");
+        header("X-Mcp-Session-Id: $session_id");
+        flush();
+
+        echo ": connected\r\n\r\n";
+        flush();
+        $this->_logger->info("New session started: $session_id");
+        // usleep(100000);
         return $session_id;
     }
 
@@ -54,25 +69,38 @@ class McpSessionManager
     public function send($sessionId, $event, $data): void
     {
         echo "event: $event\n";
-        echo "data: " . json_encode($data) . "\n\n";
+        echo "data: " . $data . "\n\n";
         flush();
     }
 
     // listen for events
     public function listen($sessionId): void
     {
+        $SLEEP = 1;
+        $PING_INTERVAL = 5; // seconds
+        $lastPing = time();
+
         while (!connection_aborted()) {
 
+            // Send message if available
             if ($message = $this->_sessionStore->useMessage($sessionId)) {
-                $this->send($sessionId, $message['event'], $message['data']);
-                $this->_logger->info("Message sent: " . json_encode($message));
+                $data = is_string($message['data']) ? $message['data'] : json_encode($message['data']);
+                $this->send($sessionId, $message['event'], $data);
+                $this->_logger->info("Message sent [$sessionId]: " . json_encode($message));
             }
 
-            sleep(1);
+            // Send ping if needed
+            if ((time() - $lastPing) >= $PING_INTERVAL) {
+                $this->send($sessionId, 'ping', '{}');
+                $this->_logger->debug("Ping sent [$sessionId]");
+                $lastPing = time();
+            }
+
+            sleep($SLEEP);
         }
+
+        $this->_logger->info("Disconnected .. session [$sessionId]");
     }
-
-
 
 
     // UTIL

@@ -79,13 +79,13 @@ class SSERestHandler implements RequestHandlerInterface
 
         $this->_logger->debug('Got info [' . $info . ']');
 
-        if ($info->get() && $route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}/sse')) {
+        if ($info->get() && $route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}')) {
             $variant = $route->get('variant');
             $serviceId = $route->get('serviceId');
             return $this->_handleSSERequest($request, $variant, $serviceId);
         }
 
-        if ($info->post() && $route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}/sse/message')) {
+        if ($info->post() && $route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}/message')) {
             $variant = $route->get('variant');
             $serviceId = $route->get('serviceId');
             return $this->_handleMcpCommandRequest($request, $variant, $serviceId);
@@ -124,9 +124,10 @@ class SSERestHandler implements RequestHandlerInterface
 
         try {
             $this->_mcpSessionManager->listen($session_id);
-        } catch (\Exception $e) {
-            $this->_logger->info('Stream closed [' . $e->getMessage() . ']');
+            // } catch (\Exception $e) {
+            //     $this->_logger->info('Stream closed [' . $e->getMessage() . ']');
         } finally {
+            $this->_logger->info('Stream closed. Exiting ...');
             exit(0);
         }
     }
