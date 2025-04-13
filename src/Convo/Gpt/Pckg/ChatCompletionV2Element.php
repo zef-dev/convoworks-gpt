@@ -203,6 +203,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $function_name   =   $tool_call['function']['name'] ?? null;
                 $function_data   =   $tool_call['function']['arguments'] ?? null;
 
+                $function_data = json_decode($function_data, true);
+                $error = json_last_error();
+                if ($error !== JSON_ERROR_NONE) {
+                    throw new \Exception('JSON parsing error: ' . json_last_error_msg());
+                }
+
                 if ($function_name) {
                     $this->_logger->info('Going to execute tool function [' . $tool_id . '][' . $function_name . ']');
 
