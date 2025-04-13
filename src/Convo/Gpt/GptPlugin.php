@@ -4,21 +4,29 @@ declare(strict_types=1);
 
 namespace Convo\Gpt;
 
-use Convo\Gpt\Pckg\GptPackageDefinition;
 use Convo\Core\Factory\IPackageDescriptor;
-use Convo\Gpt\Mcp\McpServerPlatform;
-use Convo\Gpt\Mcp\McpSessionManager;
-use Convo\Gpt\Mcp\McpFilesystemSessionStore;
-use Convo\Gpt\Mcp\SSERestHandler;
+use Convo\Core\Factory\PackageProviderFactory;
+use Convo\Gpt\Admin\SettingsProcessor;
+use Convo\Gpt\Admin\SettingsView;
+use Psr\Container\ContainerInterface;
 
 class GptPlugin
 {
+
     /**
-     * @var IPackageDescriptor
+     * @var PluginContext
      */
-    private $_package;
+    private $_pluginContext;
 
     public function __construct() {}
+
+    public function getPluginContext()
+    {
+        if (!isset($this->_pluginContext)) {
+            throw new \Exception('Not properly iinitilaized');
+        }
+        return $this->_pluginContext;
+    }
 
     public function register()
     {
@@ -38,54 +46,46 @@ class GptPlugin
             return;
         }
 
+        add_action('admin_init', [$this, 'adminInit']);
+
+        add_action('admin_menu', function () {
+            $context = $this->getPluginContext();
+            $settings_view  =   new SettingsView(
+                $context->getLogger(),
+                $context->getSettingsViewModel(),
+                $context->getMcpConvoworksManager()
+            );
+            $settings_view->register();
+        }, 20);
+        $this->_pluginContext   =   new PluginContext();
+        $this->_pluginContext->init();
+
         add_action('register_convoworks_package', [$this, 'gptPackageRegister'], 10, 2);
     }
 
+    public function adminInit()
+    {
+        $context    =   $this->getPluginContext();
+        $logger     =   $context->getLogger();
+
+        $logger->debug('Admin init ...');
+
+        if (!empty($_POST) && isset($_REQUEST['action'])) {
+            $logger->debug('Checking should process ...');
+            $processor = new SettingsProcessor($logger, $context->getSettingsViewModel(), $context->getMcpConvoworksManager());
+            if ($processor->accepts()) {
+                $processor->run();
+            }
+        }
+    }
+
     /**
-     * @param \Convo\Core\Factory\PackageProviderFactory $packageProviderFactory
-     * @param \Psr\Container\ContainerInterface $container
+     * @param PackageProviderFactory $packageProviderFactory
+     * @param ContainerInterface $container
      */
     public function gptPackageRegister($packageProviderFactory, $container)
     {
-        $packageProviderFactory->registerPackage($this->getGptPackage($container));
-    }
-
-    public function getGptPackage($container)
-    {
-        if (!isset($this->_package)) {
-            $this->_package = new \Convo\Core\Factory\FunctionPackageDescriptor(
-                '\Convo\Gpt\Pckg\GptPackageDefinition',
-                function () use ($container) {
-                    $logger = $container->get('logger');
-                    $api_factory = new GptApiFactory($logger, $container->get('httpFactory'));
-                    $mcp_store = new McpFilesystemSessionStore($logger);
-                    $mcp_manager = new McpSessionManager($logger, $mcp_store);
-                    $handler = new SSERestHandler(
-                        $logger,
-                        $container->get('httpFactory'),
-                        $container->get('convoServiceFactory'),
-                        $container->get('convoServiceParamsFactory'),
-                        $container->get('convoServiceDataProvider'),
-                        $container->get('eventDispatcher'),
-                        $mcp_manager
-                    );
-                    $mcp_platform = new McpServerPlatform(
-                        $logger,
-                        $container->get('convoServiceDataProvider'),
-                        $container->get('serviceReleaseManager'),
-                        $handler
-                    );
-                    $logger->debug('Registering package [' . GptPackageDefinition::NAMESPACE . ']');
-                    return new GptPackageDefinition(
-                        $logger,
-                        $api_factory,
-                        $mcp_platform
-                    );
-                }
-            );
-        }
-
-        return $this->_package;
+        $packageProviderFactory->registerPackage($this->getPluginContext()->getMcpServerPackage());
     }
 
     // UTIL

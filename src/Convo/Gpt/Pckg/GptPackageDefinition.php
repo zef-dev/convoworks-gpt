@@ -8,10 +8,11 @@ use Convo\Core\ComponentNotFoundException;
 use Convo\Core\Factory\AbstractPackageDefinition;
 use Convo\Gpt\GptApiFactory;
 use Convo\Core\Expression\ExpressionFunction;
+use Convo\Core\Factory\IPlatformProvider;
 use Convo\Gpt\Mcp\McpServerPlatform;
 use Psr\Log\LoggerInterface;
 
-class GptPackageDefinition extends AbstractPackageDefinition
+class GptPackageDefinition extends AbstractPackageDefinition implements IPlatformProvider
 {
     const NAMESPACE    =    'convo-gpt';
 
@@ -1729,8 +1730,8 @@ class GptPackageDefinition extends AbstractPackageDefinition
                 'name' => 'MCP Server',
                 'description' => 'MCP server for WordPress',
                 'icon_url' => CONVO_GPT_URL . '/assets/mcp-logo-wide.png',
-                // 'config_url' => CONVO_BASE_URL . '/wp-admin/admin.php?page=convoworks-twilio-settings&service_id={serviceId}',
-                //                 'enabled' => true,
+                'config_url' => admin_url('/admin.php?page=convo-gpt.mcp-server.settings&service_id={serviceId}'),
+                'enabled' => true,
             ],
         ];
 
