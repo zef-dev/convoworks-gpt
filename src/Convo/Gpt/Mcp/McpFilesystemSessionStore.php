@@ -76,6 +76,8 @@ class McpFilesystemSessionStore
 
         // Write data to file
         file_put_contents($filepath, $jsonData);
+
+        $this->_logger->debug('Wrote notification to file: ' . $jsonData);
     }
 
 
