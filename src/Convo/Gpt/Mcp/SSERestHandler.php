@@ -91,7 +91,20 @@ class SSERestHandler implements RequestHandlerInterface
             return $this->_handleMcpCommandRequest($request, $variant, $serviceId);
         }
 
+        if ($info->post() && $route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}/notifications/{notification}')) {
+            $variant = $route->get('variant');
+            $serviceId = $route->get('serviceId');
+            $notification = $route->get('notification');
+            return $this->_handleMcpNotificationRequest($request, $variant, $serviceId, $notification);
+        }
+
         throw new NotFoundException('Could not map [' . $info . ']');
+    }
+
+    private function _handleMcpNotificationRequest(ServerRequestInterface $request, $variant, $serviceId, $notification)
+    {
+        $this->_logger->info('Got notification [' . $variant . '][' . $serviceId . '][' . $notification . ']');
+        return $this->_httpFactory->buildResponse('Accepted', 202, ['Content-Type' => 'text/plain']);
     }
 
     private function _handleSSERequest(ServerRequestInterface $request, $variant, $serviceId)
@@ -190,7 +203,7 @@ class SSERestHandler implements RequestHandlerInterface
 
         $this->_logger->debug('Got MCP response [' . strval($data) . ']');
 
-        return $this->_httpFactory->buildResponse(strval($data), IHttpFactory::HTTP_STATUS_200, ['Content-Type' => 'text/xml']);
+        return $this->_httpFactory->buildResponse(strval($data), IHttpFactory::HTTP_STATUS_200, ['Content-Type' => 'text/plain']);
     }
 
     // UTIL
