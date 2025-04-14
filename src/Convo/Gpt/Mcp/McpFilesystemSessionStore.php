@@ -17,10 +17,12 @@ class McpFilesystemSessionStore
      */
     private $_logger;
 
+    private $_basePath;
 
-    public function __construct($logger)
+    public function __construct($logger, $basePath)
     {
         $this->_logger = $logger;
+        $this->_basePath = $basePath;
     }
 
     // SSE

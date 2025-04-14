@@ -101,7 +101,7 @@ class PluginContext
                 function () use ($container) {
                     $logger = $container->get('logger');
                     $api_factory = new GptApiFactory($logger, $container->get('httpFactory'));
-                    $mcp_store = new McpFilesystemSessionStore($logger);
+                    $mcp_store = new McpFilesystemSessionStore($logger, CONVO_GPT_MPC_SESSION_STORAGE_PATH);
                     $mcp_manager = new McpSessionManager($logger, $mcp_store);
                     $handler = new SSERestHandler(
                         $logger,

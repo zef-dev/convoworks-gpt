@@ -14,18 +14,23 @@
  * Text Domain: convoworks-gpt
  */
 
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
     die;
 }
 
-define( 'CONVO_GPT_VERSION', '0.12.2' );
-define( 'CONVO_GPT_DIR', __DIR__);
-define( 'CONVO_GPT_URL' , plugin_dir_url( __FILE__));
-define( 'CONVO_GPT_PATH' , __FILE__);
+define('CONVO_GPT_VERSION', '0.12.2');
+define('CONVO_GPT_DIR', __DIR__);
+define('CONVO_GPT_URL', plugin_dir_url(__FILE__));
+define('CONVO_GPT_PATH', __FILE__);
 
-require_once __DIR__.'/vendor/autoload.php';
+if (!defined('CONVO_GPT_MPC_SESSION_STORAGE_PATH')) {
+    define('CONVO_GPT_MPC_SESSION_STORAGE_PATH', 'c:/tmp/mcp/');
+}
 
-function run_convoworks_gpt_plugin() {
+require_once __DIR__ . '/vendor/autoload.php';
+
+function run_convoworks_gpt_plugin()
+{
     $plugin = new \Convo\Gpt\GptPlugin();
     $plugin->register();
 }
@@ -45,7 +50,7 @@ function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
 
     if (is_a($response, 'WP_Error')) {
         /** @var WP_Error $response */
-        error_log('Error updating plugin [Convoworks GPT]: '.implode("\n", $response->get_error_messages()));
+        error_log('Error updating plugin [Convoworks GPT]: ' . implode("\n", $response->get_error_messages()));
         return $update;
     }
 
@@ -64,5 +69,3 @@ function convoworks_gpt_check_for_updates($update, $plugin_data, $plugin_file)
     }
 }
 add_filter('update_plugins_raw.githubusercontent.com', 'convoworks_gpt_check_for_updates', 10, 3);
-
-
