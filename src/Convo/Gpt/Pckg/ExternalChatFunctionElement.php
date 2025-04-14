@@ -89,7 +89,7 @@ class ExternalChatFunctionElement extends AbstractWorkflowContainerComponent imp
             public function execute(IConvoRequest $request, IConvoResponse $response, $data)
             {
 
-                $data       =   json_decode($data, true);
+                // $data       =   json_decode($data, true);
                 $data       =   array_merge($this->_functionData['defaults'], $data);
                 $result     =   $this->_functionData['execute']($data);
 
