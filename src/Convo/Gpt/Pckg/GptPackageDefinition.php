@@ -1767,6 +1767,99 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     // ],
                 ]
             ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\WpRestProxyFunction',
+                'WP REST Proxy Function',
+                'MCP Chat function that proxies arguments to the internal WordPress REST API.',
+                [
+                    'name' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Function Name',
+                        'description' => 'Unique function name',
+                        'valueType' => 'string'
+                    ],
+                    'description' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Description',
+                        'description' => 'Function description',
+                        'valueType' => 'string'
+                    ],
+                    'required' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Required',
+                        'description' => 'Array of required fields',
+                        'valueType' => 'string'
+                    ],
+                    'defaults' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Default Values',
+                        'description' => 'Associative array containing fields and their default values',
+                        'valueType' => 'string'
+                    ],
+                    'method' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'GET',
+                        'name' => 'HTTP Method',
+                        'description' => 'HTTP method used for the REST call.',
+                        'valueType' => 'string'
+                    ],
+                    'endpoint' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'REST Endpoint',
+                        'description' => 'Relative WordPress REST API endpoint (e.g. posts, users/123).',
+                        'valueType' => 'string'
+                    ],
+                    'pagination' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => [],
+                        'defaultValue' => false,
+                        'name' => 'Enable Pagination',
+                        'description' => 'Enables cursor-based pagination support.',
+                        'valueType' => 'boolean'
+                    ],
+                    'parameters' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => [
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'name' => 'Function Parameters',
+                        'description' => 'Function parameter definitions',
+                        'valueType' => 'array'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' =>
+                        '<div class="code"><span class="statement">WP REST PROXY</span> ' .
+                            '<b>{{component.properties.name}}(' .
+                            '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">' .
+                            '{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>' .
+                            '<span ng-if="isString(component.properties.parameters)">{{ component.properties.parameters }}</span>' .
+                            ') => {{component.properties.result_data}}</b>' .
+                            '<div class="text" title="{{component.properties.description}}">{{component.properties.method}} {{component.properties.endpoint}}</div></div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    // '_help' => [
+                    //     'type' => 'file',
+                    //     'filename' => 'wp-rest-proxy-function.html'
+                    // ]
+                ]
+            )
+
         ];
     }
 
