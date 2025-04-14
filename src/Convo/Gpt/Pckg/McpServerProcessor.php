@@ -67,160 +67,122 @@ implements IConversationProcessor, IChatFunctionContainer
         }
 
         /** @var McpServerCommandRequest $request */
-
         $method = $request->getMethod();
-        $data = $request->getPlatformData();
-        $this->_logger->debug('Command: ' . $method . ' - ' . $request->getSessionId());
 
         if (stripos($method, 'notifications') !== false) {
-            $requestId = $data['params']['requestId'] ?? null;
-            $this->_logger->info('Got notification [' . $request->getServiceId() . '][' . $method . '] for [' . $requestId . ']');
+            $this->_handleNotification($method, $request);
             return;
         }
 
+        // Dispatch map
+        $handlers = [
+            'initialize' => '_handleInitialize',
+            'tools/list' => '_handleToolsList',
+            'tools/call' => '_handleToolsCall',
+            'resources/list' => '_handleResourcesList',
+            'resources/templates/list' => '_handleResourceTemplatesList'
+        ];
+
+        if (isset($handlers[$method])) {
+            $this->{$handlers[$method]}($request, $response);
+        } else {
+            $this->_logger->warning("Unknown MCP method: $method");
+        }
+    }
+
+    private function _handleInitialize(McpServerCommandRequest $request, IConvoResponse $response)
+    {
         $id = $request->getId();
-
-        // INTIALIZE
-        if ($method === 'initialize') {
-            $message = [
-                "jsonrpc" => "2.0",
-                "id" => $id,
-                "result" => [
-                    "protocolVersion" => "2024-11-05",
-                    "capabilities" => [
-                        "tools" => [
-                            "listChanged" => true
-                        ]
-                    ],
-                    "serverInfo" => [
-                        "name" => $this->evaluateString($this->_name),
-                        "version" => $this->evaluateString($this->_version),
-                    ]
+        $message = [
+            "jsonrpc" => "2.0",
+            "id" => $id,
+            "result" => [
+                "protocolVersion" => "2024-11-05",
+                "capabilities" => [
+                    "tools" => ["listChanged" => true]
+                ],
+                "serverInfo" => [
+                    "name" => $this->evaluateString($this->_name),
+                    "version" => $this->evaluateString($this->_version),
                 ]
-            ];
+            ]
+        ];
+        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+    }
 
-            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
-            return;
-        }
-
+    private function _handleToolsList(McpServerCommandRequest $request, IConvoResponse $response)
+    {
         foreach ($this->_tools as $elem) {
             $elem->read($request, $response);
         }
 
-        $tools = [];
+        $tools = array_map([$this, '_convertToolDefinitionToMcp'], array_map(function ($func) {
+            return $func->getDefinition();
+        }, $this->_functions));
 
-        foreach ($this->_functions as $func) {
-            $definition = $func->getDefinition();
-            $tools[] = $this->_convertToolDefinitionToMcp($definition);
-        }
-
-        // $this->_logger->debug('Got tools [' . print_r($tools, true) . ']');
-
-        // TOOLS
-        if ($method === 'tools/list') {
-            $message = [
-                'jsonrpc' => '2.0',
-                'id' => $id,
-                'result' => [
-                    'tools' => $tools
-                ]
-            ];
-
-            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
-            return;
-        }
-
-        if ($method === 'tools/call') {
-            // $name = $data['params']['arguments']['name'] ?? 'friend';
-            // $sseMessage = [
-            //     "jsonrpc" => "2.0",
-            //     "id" => $id,
-            //     "result" => [
-            //         "content" => [
-            //             ["type" => "text", "text" => "Hello, $name!"]
-            //         ],
-            //         "isError" => false
-            //     ]
-            // ];
-
-
-
-
-            try {
-
-                $is_error = false;
-                // if (strpos($function_data, '"callback": "defined"') === false && strpos($function_data, '"callback": "constant"') === false) {
-                //     $this->_logger->debug('Going to preprocess JSON [' . $function_data . ']');
-                //     $function_data = Util::processJsonWithConstants($function_data);
-                // }
-
-                // $this->_logger->debug('Got processed JSON [' . $data['params'] . ']');
-                // $this->_registerExecution($function_name, $function_data);
-                $function_data = $data['params']['arguments'];
-                $function_name = $data['params']['name'];
-
-                $function = $this->_findFunction($function_name);
-
-                if ($function instanceof \Convo\Core\Workflow\IScopedFunction) {
-                    /** @var \Convo\Core\Workflow\IScopedFunction $function */
-                    $pid = $function->initParams();
-                    /** @var IChatFunction $function */
-                    $function_result     =   $function->execute($request, $response, $function_data);
-                    $function->restoreParams($pid);
-                } else {
-                    $function_result     =   $function->execute($request, $response, $function_data);
-                }
-            } catch (\Throwable $e) {
-                $this->_logger->warning($e);
-                $function_result = json_encode(['error' => $e->getMessage()]);
-                $is_error = true;
-            }
-
-            $this->_logger->debug('Got function result [' . print_r($function_result, true) . ']');
-
-            $message = [
-                'jsonrpc' => '2.0',
-                'id' => $id,
-                'result' => [
-                    "content" => [
-                        ['type' => 'text', 'text' => $function_result]
-                    ],
-                    "isError" => $is_error
-                ]
-            ];
-
-            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
-            return;
-        }
-
-        // RESOURCES
-        if ($method === 'resources/list') {
-            $message = [
-                'jsonrpc' => '2.0',
-                'id' => $id,
-                'result' => [
-                    'resources' => []
-                ]
-            ];
-
-            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
-            return;
-        }
-
-        // TEAMPLATES
-        if ($method === 'resources/templates/list') {
-            $message = [
-                'jsonrpc' => '2.0',
-                'id' => $id,
-                'result' => [
-                    'templates' => []
-                ]
-            ];
-
-            $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
-            return;
-        }
+        $message = [
+            'jsonrpc' => '2.0',
+            'id' => $request->getId(),
+            'result' => ['tools' => $tools]
+        ];
+        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
     }
+
+    private function _handleToolsCall(McpServerCommandRequest $request, IConvoResponse $response)
+    {
+        $id = $request->getId();
+        $data = $request->getPlatformData();
+        $is_error = false;
+
+        try {
+            $function_data = $data['params']['arguments'];
+            $function_name = $data['params']['name'];
+            $function = $this->_findFunction($function_name);
+
+            $function_result = $function instanceof \Convo\Core\Workflow\IScopedFunction
+                ? ($function->restoreParams($pid = $function->initParams()) ?? $function->execute($request, $response, $function_data))
+                : $function->execute($request, $response, $function_data);
+        } catch (\Throwable $e) {
+            $this->_logger->warning($e);
+            $function_result = json_encode(['error' => $e->getMessage()]);
+            $is_error = true;
+        }
+
+        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', [
+            'jsonrpc' => '2.0',
+            'id' => $id,
+            'result' => [
+                "content" => [['type' => 'text', 'text' => $function_result]],
+                "isError" => $is_error
+            ]
+        ]);
+    }
+
+    private function _handleResourcesList(McpServerCommandRequest $request, IConvoResponse $response)
+    {
+        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', [
+            'jsonrpc' => '2.0',
+            'id' => $request->getId(),
+            'result' => ['resources' => []]
+        ]);
+    }
+
+    private function _handleResourceTemplatesList(McpServerCommandRequest $request, IConvoResponse $response)
+    {
+        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', [
+            'jsonrpc' => '2.0',
+            'id' => $request->getId(),
+            'result' => ['templates' => []]
+        ]);
+    }
+
+    private function _handleNotification($method, McpServerCommandRequest $request)
+    {
+        $data = $request->getPlatformData();
+        $requestId = $data['params']['requestId'] ?? null;
+        $this->_logger->info('Got notification [' . $request->getServiceId() . '][' . $method . '] for [' . $requestId . ']');
+    }
+
 
     private function _convertToolDefinitionToMcp($def)
     {
