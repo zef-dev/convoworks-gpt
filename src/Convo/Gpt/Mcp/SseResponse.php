@@ -31,7 +31,7 @@ class SseResponse implements IConvoResponse
 
     public function sendEvent($event, $data): void
     {
-        $this->_mcpSessionManager->accept($this->_sessionId, $event, json_encode($data));
+        $this->_mcpSessionManager->enqueueEvent($this->_sessionId, $event, json_encode($data));
     }
 
 

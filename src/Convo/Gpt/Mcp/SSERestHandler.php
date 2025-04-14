@@ -127,7 +127,7 @@ class SSERestHandler implements RequestHandlerInterface
             rest_url("convo/v1/public/service-run/external/convo-gpt/mcp-server/$variant/$serviceId/message")
         );
 
-        $this->_mcpSessionManager->send($session_id, 'endpoint', $url);
+        $this->_mcpSessionManager->streamEvent($session_id, 'endpoint', $url);
 
         try {
             $this->_mcpSessionManager->listen($session_id);

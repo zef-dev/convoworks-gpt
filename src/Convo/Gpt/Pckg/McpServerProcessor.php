@@ -107,7 +107,7 @@ implements IConversationProcessor, IChatFunctionContainer
                 ]
             ]
         ];
-        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
     }
 
     private function _handleToolsList(McpServerCommandRequest $request, IConvoResponse $response)
@@ -125,11 +125,15 @@ implements IConversationProcessor, IChatFunctionContainer
             'id' => $request->getId(),
             'result' => ['tools' => $tools]
         ];
-        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', $message);
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
     }
 
     private function _handleToolsCall(McpServerCommandRequest $request, IConvoResponse $response)
     {
+        foreach ($this->_tools as $elem) {
+            $elem->read($request, $response);
+        }
+
         $id = $request->getId();
         $data = $request->getPlatformData();
         $is_error = false;
@@ -148,7 +152,7 @@ implements IConversationProcessor, IChatFunctionContainer
             $is_error = true;
         }
 
-        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', [
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', [
             'jsonrpc' => '2.0',
             'id' => $id,
             'result' => [
@@ -160,7 +164,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handleResourcesList(McpServerCommandRequest $request, IConvoResponse $response)
     {
-        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', [
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', [
             'jsonrpc' => '2.0',
             'id' => $request->getId(),
             'result' => ['resources' => []]
@@ -169,7 +173,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handleResourceTemplatesList(McpServerCommandRequest $request, IConvoResponse $response)
     {
-        $this->_mcpSessionManager->accept($request->getSessionId(), 'message', [
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', [
             'jsonrpc' => '2.0',
             'id' => $request->getId(),
             'result' => ['templates' => []]

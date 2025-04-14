@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Convo\Gpt\Mcp;
 
-use Convo\Core\Util\StrUtil;
 use Psr\Log\LoggerInterface;
 
 class McpSessionManager
@@ -15,7 +14,7 @@ class McpSessionManager
     private $_logger;
 
     /**
-     * @var McpFilesystemSessionStore
+     * @var IMcpSessionStoreInterface
      */
     private $_sessionStore;
 
@@ -31,13 +30,13 @@ class McpSessionManager
     // check if valid session
     public function checkSession($sessionId): void
     {
-        $this->_sessionStore->check($sessionId);
+        $this->_sessionStore->verifySessionExists($sessionId);
     }
 
     // queues the notification
-    public function accept($sessionId, $event, $data): void
+    public function enqueueEvent($sessionId, $event, $data): void
     {
-        $this->_sessionStore->write($sessionId, ['event' => $event, 'data' => $data]);
+        $this->_sessionStore->queueEvent($sessionId, ['event' => $event, 'data' => $data]);
     }
 
 
@@ -50,7 +49,7 @@ class McpSessionManager
         ob_implicit_flush(1);
         while (ob_get_level()) ob_end_clean();
 
-        $session_id     =   $this->_sessionStore->new();
+        $session_id     =   $this->_sessionStore->createSession();
 
         header('Content-Type: text/event-stream; charset=utf-8');
         header('Cache-Control: no-cache');
@@ -66,7 +65,7 @@ class McpSessionManager
     }
 
     // actually send event
-    public function send($sessionId, $event, $data): void
+    public function streamEvent($sessionId, $event, $data): void
     {
         echo "event: $event\n";
         echo "data: " . $data . "\n\n";
@@ -84,16 +83,16 @@ class McpSessionManager
 
             // Send message if available
             $empty = true;
-            if ($message = $this->_sessionStore->useMessage($sessionId)) {
+            if ($message = $this->_sessionStore->nextEvent($sessionId)) {
                 $data = is_string($message['data']) ? $message['data'] : json_encode($message['data']);
-                $this->send($sessionId, $message['event'], $data);
+                $this->streamEvent($sessionId, $message['event'], $data);
                 $this->_logger->info("Message sent [$sessionId]: " . json_encode($message));
                 $empty = false;
             }
 
             // Send ping if needed
             if ((time() - $lastPing) >= $PING_INTERVAL) {
-                $this->send($sessionId, 'ping', '{}');
+                $this->streamEvent($sessionId, 'ping', '{}');
                 $this->_logger->debug("Ping sent [$sessionId]");
                 $lastPing = time();
             }

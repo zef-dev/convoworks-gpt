@@ -8,10 +8,8 @@ use Convo\Core\DataItemNotFoundException;
 use Convo\Core\Util\StrUtil;
 use Psr\Log\LoggerInterface;
 
-class McpFilesystemSessionStore
+class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 {
-    const BASE_PATH = 'c:/tmp/mcp/';
-
     /**
      * @var LoggerInterface
      */
@@ -27,10 +25,10 @@ class McpFilesystemSessionStore
 
     // SSE
     // create new session
-    public function new()
+    public function createSession(): string
     {
         $session_id = StrUtil::uuidV4();
-        $path = self::BASE_PATH . $session_id;
+        $path = $this->_basePath . $session_id;
         if (false === mkdir($path, 0777, true)) {
             throw new \RuntimeException('Failed to create session directory: ' . $path);
         }
@@ -39,9 +37,9 @@ class McpFilesystemSessionStore
     }
 
     // read next message (deletes it)
-    public function useMessage($sessionId)
+    public function nextEvent($sessionId): ?array
     {
-        $path = self::BASE_PATH . $sessionId;
+        $path = $this->_basePath . $sessionId;
         $files = glob($path . '/*.json');
         if (empty($files)) {
             return null; // or throw an exception if preferred
@@ -54,18 +52,18 @@ class McpFilesystemSessionStore
 
     // COMMANDS
     // returns session or throws not found exception
-    public function check($sessionId)
+    public function verifySessionExists($sessionId): void
     {
-        $path = self::BASE_PATH . $sessionId;
+        $path = $this->_basePath . $sessionId;
         if (!is_dir($path)) {
             throw new DataItemNotFoundException('Session folder [' . $path . '] not found');
         }
     }
 
     // queues the notification
-    public function write($sessionId, $data)
+    public function queueEvent($sessionId, $data): void
     {
-        $path = self::BASE_PATH . $sessionId;
+        $path = $this->_basePath . $sessionId;
 
         // Prepare filename using microtime to ensure uniqueness
         $filename = sprintf('%s.json', microtime(true));
