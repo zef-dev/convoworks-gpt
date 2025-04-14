@@ -7,6 +7,7 @@ namespace Convo\Gpt;
 use Convo\Core\Factory\PackageProviderFactory;
 use Convo\Gpt\Admin\SettingsProcessor;
 use Convo\Gpt\Admin\SettingsView;
+use Convo\Gpt\Tools\PagesRestFunctions;
 use Convo\Gpt\Tools\PostRestFunctions;
 use Psr\Container\ContainerInterface;
 
@@ -64,6 +65,9 @@ class GptPlugin
 
         $posts = new PostRestFunctions();
         $posts->register();
+
+        $pages = new PagesRestFunctions();
+        $pages->register();
     }
 
 

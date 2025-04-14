@@ -12,12 +12,12 @@ class PostRestFunctions extends AbstractRestFunctions
     public function register()
     {
         add_filter('convo_mcp_register_wp_posts', function ($functions, IServiceWorkflowComponent $elem) {
-            $functions = array_merge($functions, $this->_buildPostsFunctions());
+            $functions = array_merge($functions, $this->_buildFunctions());
             return $functions;
         }, 10, 2);
     }
 
-    private function _buildPostsFunctions()
+    private function _buildFunctions()
     {
         return [
             [
