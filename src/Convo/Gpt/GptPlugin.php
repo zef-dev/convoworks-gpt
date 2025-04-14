@@ -6,6 +6,7 @@ namespace Convo\Gpt;
 
 use Convo\Core\Factory\IPackageDescriptor;
 use Convo\Core\Factory\PackageProviderFactory;
+use Convo\Core\Workflow\IServiceWorkflowComponent;
 use Convo\Gpt\Admin\SettingsProcessor;
 use Convo\Gpt\Admin\SettingsView;
 use Psr\Container\ContainerInterface;
@@ -61,7 +62,86 @@ class GptPlugin
         $this->_pluginContext->init();
 
         add_action('register_convoworks_package', [$this, 'gptPackageRegister'], 10, 2);
+
+        add_filter('convo_mcp_register_wp_posts', function ($functions, IServiceWorkflowComponent $elem) {
+            $functions[] = $this->_buildPostsFunctions();
+            return $functions;
+        }, 10, 2);
     }
+
+
+    private function _buildPostsFunctions()
+    {
+        $function = [];
+
+        $function['name'] = 'create_post';
+        $function['description'] = 'Creates a new WordPress post using the REST API.';
+
+        $function['parameters'] = [
+            'title' => [
+                'type' => 'string',
+                'description' => 'Post title'
+            ],
+            'content' => [
+                'type' => 'string',
+                'description' => 'Post content'
+            ],
+            'status' => [
+                'type' => 'string',
+                'enum' => ['publish', 'future', 'draft', 'pending', 'private'],
+                'description' => 'Post status'
+            ],
+            'excerpt' => [
+                'type' => 'string',
+                'description' => 'Post excerpt'
+            ],
+            'author' => [
+                'type' => 'number',
+                'description' => 'Author ID'
+            ],
+            'categories' => [
+                'type' => 'array',
+                'items' => ['type' => 'number'],
+                'description' => 'Array of category IDs'
+            ],
+            'tags' => [
+                'type' => 'array',
+                'items' => ['type' => 'number'],
+                'description' => 'Array of tag IDs'
+            ],
+            'featured_media' => [
+                'type' => 'number',
+                'description' => 'Featured image ID'
+            ],
+            'format' => [
+                'type' => 'string',
+                'enum' => ['standard', 'aside', 'chat', 'gallery', 'link', 'image', 'quote', 'status', 'video', 'audio'],
+                'description' => 'Post format'
+            ],
+            'slug' => [
+                'type' => 'string',
+                'description' => 'Post slug'
+            ]
+        ];
+
+        $function['defaults'] = [
+            'status' => 'draft'
+        ];
+
+        $function['required'] = ['title', 'content'];
+
+        $function['execute'] = function ($data) {
+            $data = array_merge(['status' => 'draft'], $data);
+            $request = new \WP_REST_Request('POST', '/wp/v2/posts');
+            $request->set_body_params($data);
+            $response = rest_do_request($request);
+            $result = $response->get_data();
+            return is_string($result) ? $result : json_encode($result);
+        };
+
+        return $function;
+    }
+
 
     public function adminInit()
     {

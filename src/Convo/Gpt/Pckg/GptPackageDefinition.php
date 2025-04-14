@@ -1756,8 +1756,8 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     },
                     '_preview_angular' => [
                         'type' => 'html',
-                        'template' => '<div class="code"><span class="statement">MCP Server {{component.properties.name}}</span>' .
-                            ' {{component.properties.hook}}' .
+                        'template' => '<div class="code"><span class="statement">MCP Server</span>' .
+                            ' <b>{{component.properties.name}}</b>' .
                             '</div>'
                     ],
                     '_workflow' => 'process',
@@ -1845,10 +1845,12 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         '<div class="code"><span class="statement">WP REST PROXY</span> ' .
                             '<b>{{component.properties.name}}(' .
                             '<span ng-if="!isString(component.properties.parameters)" ng-repeat="(key, val) in component.properties.parameters track by key">' .
-                            '{{$index ? ", " : ""}}{{ component.properties.request_data }}.{{ key }}</span>' .
+                            '{{$index ? ", " : ""}}{{ key }}</span>' .
                             '<span ng-if="isString(component.properties.parameters)">{{ component.properties.parameters }}</span>' .
-                            ') => {{component.properties.result_data}}</b>' .
-                            '<div class="text" title="{{component.properties.description}}">{{component.properties.method}} {{component.properties.endpoint}}</div></div>'
+                            ')</b>' .
+                            '<div class="text">{{component.properties.method}} {{component.properties.endpoint}}</div>' .
+                            '<div class="text">{{component.properties.description}}</div>' .
+                            '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
