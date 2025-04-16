@@ -2,6 +2,7 @@
 
 namespace Convo\Gpt\Pckg;
 
+use Convo\Core\Params\SimpleParams;
 use Convo\Core\Workflow\AbstractWorkflowComponent;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\IConvoRequest;
@@ -172,7 +173,10 @@ class WpRestProxyFunction extends AbstractWorkflowComponent implements IChatFunc
 
     public function restoreParams($executionId) {}
 
-    public function getFunctionParams() {}
+    public function getFunctionParams()
+    {
+        return new SimpleParams();
+    }
 
 
     // UTIL
