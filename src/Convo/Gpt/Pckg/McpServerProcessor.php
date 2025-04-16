@@ -101,6 +101,30 @@ implements IConversationProcessor, IChatFunctionContainer
     {
         $this->_mcpSessionManager->activateSession($request->getSessionId());
 
+        $data = $request->getPlatformData();
+        $params = $data['params'];
+        $req_version = $params['protocolVersion'] ?? null;
+
+        if ($req_version !== '2024-11-05') {
+            $this->_logger->warning('Unsupported protocol version: ' . $req_version);
+
+            $error = [
+                "jsonrpc" => "2.0",
+                "id" => $request->getId(),
+                "error" => [
+                    "code" => -32602,
+                    "message" => "Unsupported protocol version",
+                    "data" => [
+                        "supported" => ["2024-11-05"],
+                        "requested" => $req_version
+                    ]
+                ]
+            ];
+
+            $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $error);
+            return;
+        }
+
         $id = $request->getId();
         $message = [
             "jsonrpc" => "2.0",
