@@ -8,6 +8,9 @@ use Convo\Core\DataItemNotFoundException;
 
 interface IMcpSessionStoreInterface
 {
+    const SESSION_STATUS_NEW = 'NEW';
+    const SESSION_STATUS_INITIALISED = 'INITIALISED';
+
     /**
      * Creates a new session and returns the session ID.
      *
@@ -15,14 +18,21 @@ interface IMcpSessionStoreInterface
      */
     public function createSession(): string;
 
+
     /**
-     * Throws DataItemNotFoundException if the session is not valid or does not exist.
+     * Initializes NEW session to INITIALISED.
+     *
+     */
+    public function initialiseSession($sessionId): void;
+
+    /**
+     * Throws DataItemNotFoundException if the session does not exist.
      *
      * @param string $sessionId
-     * @return void
+     * @return array session data
      * @throws DataItemNotFoundException
      */
-    public function verifySessionExists(string $sessionId): void;
+    public function getSession(string $sessionId): array;
 
     /**
      * Persists an event/message for the session.

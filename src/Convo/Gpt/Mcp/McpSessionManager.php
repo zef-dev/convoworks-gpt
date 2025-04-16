@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Convo\Gpt\Mcp;
 
+use Convo\Core\DataItemNotFoundException;
 use Psr\Log\LoggerInterface;
 
 class McpSessionManager
@@ -28,9 +29,17 @@ class McpSessionManager
 
     // MESSAGE
     // check if valid session
-    public function checkSession($sessionId): void
+    public function getActiveSession($sessionId): array
     {
-        $this->_sessionStore->verifySessionExists($sessionId);
+        $TIMEOUT = 60 * 30; // 30 minutes
+        $session = $this->_sessionStore->getSession($sessionId);
+        if ($session['status'] !== IMcpSessionStoreInterface::SESSION_STATUS_INITIALISED) {
+            throw new DataItemNotFoundException('No active session not found: ' . $sessionId);
+        }
+        if ($session['last_active'] < time() - $TIMEOUT) {
+            throw new DataItemNotFoundException('Session expired: ' . $sessionId);
+        }
+        return $session;
     }
 
     // queues the notification
@@ -38,6 +47,7 @@ class McpSessionManager
     {
         $this->_sessionStore->queueEvent($sessionId, ['event' => $event, 'data' => $data]);
     }
+
 
 
     // SSE
@@ -62,6 +72,18 @@ class McpSessionManager
         $this->_logger->info("New session started: $session_id");
         // usleep(100000);
         return $session_id;
+    }
+
+    public function activateSession($sessionId): array
+    {
+        $session = $this->_sessionStore->getSession($sessionId);
+        if ($session['status'] !== IMcpSessionStoreInterface::SESSION_STATUS_NEW) {
+            throw new DataItemNotFoundException('No NEW session found: ' . $sessionId);
+        }
+
+        $this->_sessionStore->initialiseSession($sessionId);
+
+        return $session;
     }
 
     // actually send event

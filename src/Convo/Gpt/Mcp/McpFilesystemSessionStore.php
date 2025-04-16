@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 {
+
     /**
      * @var LoggerInterface
      */
@@ -33,6 +34,15 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
             throw new \RuntimeException('Failed to create session directory: ' . $path);
         }
         $this->_logger->debug('Created new session directory: ' . $path);
+
+        $session = [
+            'session_id' => $session_id,
+            'status' => IMcpSessionStoreInterface::SESSION_STATUS_NEW,
+            'created_at' => time(),
+            'last_active' => time(),
+        ];
+        $this->_saveSession($session);
+
         return $session_id;
     }
 
@@ -51,13 +61,18 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
     }
 
     // COMMANDS
-    // returns session or throws not found exception
-    public function verifySessionExists($sessionId): void
+    public function initialiseSession($sessionId): void
     {
-        $path = $this->_basePath . $sessionId;
-        if (!is_dir($path)) {
-            throw new DataItemNotFoundException('Session folder [' . $path . '] not found');
+        $session = $this->getSession($sessionId);
+
+        if ($session['status'] !== IMcpSessionStoreInterface::SESSION_STATUS_NEW) {
+            throw new DataItemNotFoundException('No NEW session found: ' . $sessionId);
         }
+
+        $session['status'] = IMcpSessionStoreInterface::SESSION_STATUS_INITIALISED;
+        $session['last_active'] = time();
+
+        $this->_saveSession($session);
     }
 
     // queues the notification
@@ -77,9 +92,40 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         // Write data to file
         file_put_contents($filepath, $jsonData);
 
+        $session = $this->getSession($sessionId);
+        $session['last_active'] = time();
+        $this->_saveSession($session);
+
         $this->_logger->debug('Wrote notification to file: ' . $jsonData);
     }
 
+    // PERSISTENCE
+    public function getSession($sessionId): array
+    {
+        $path = $this->_basePath . $sessionId . '.json';
+        if (!is_file($path)) {
+            throw new DataItemNotFoundException('Session file [' . $path . '] not found');
+        }
+
+        $session = json_decode(file_get_contents($path), true);
+        if (empty($session)) {
+            throw new \RuntimeException('Failed to decode session file: ' . $path);
+        }
+
+        $this->_logger->debug('Loaded session: ' . json_encode($session));
+
+        return $session;
+    }
+
+    private function _saveSession($session)
+    {
+        $path = $this->_basePath . $session['session_id'] . '.json';
+        // JSON serialize the data
+        $jsonData = json_encode($session, JSON_PRETTY_PRINT);
+
+        // Write data to file
+        file_put_contents($path, $jsonData);
+    }
 
 
     // UTIL

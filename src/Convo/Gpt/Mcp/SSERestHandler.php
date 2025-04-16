@@ -160,12 +160,6 @@ class SSERestHandler implements RequestHandlerInterface
 
         $this->_logger->debug('Got session id [' . $session_id . '], request data [' . print_r($data, true) . ']');
 
-        try {
-            $this->_mcpSessionManager->checkSession($session_id);
-        } catch (\Exception $e) {
-            throw new NotFoundException('Session not found [' . $session_id . '] for service [' . $serviceId . ']', 0, $e);
-        }
-
         $request_id     =   StrUtil::uuidV4();
         $params = $request->getQueryParams();
         $sessionId = $params['sessionId'] ?? null;

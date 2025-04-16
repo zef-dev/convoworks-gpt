@@ -14,6 +14,7 @@ use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\DefaultFilterResult;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\Mcp\McpServerCommandRequest;
+use Convo\Gpt\Mcp\McpSessionManager;
 
 class McpServerProcessor extends AbstractWorkflowContainerComponent
 implements IConversationProcessor, IChatFunctionContainer
@@ -68,6 +69,8 @@ implements IConversationProcessor, IChatFunctionContainer
 
         /** @var McpServerCommandRequest $request */
         $method = $request->getMethod();
+        $session_id = $request->getSessionId();
+        // $service_id = $request->getServiceId();
 
         if (stripos($method, 'notifications') !== false) {
             $this->_handleNotification($method, $request);
@@ -84,6 +87,10 @@ implements IConversationProcessor, IChatFunctionContainer
         ];
 
         if (isset($handlers[$method])) {
+            if ($method !== 'initialize') {
+                $this->_mcpSessionManager->getActiveSession($session_id);
+            }
+
             $this->{$handlers[$method]}($request, $response);
         } else {
             $this->_logger->warning("Unknown MCP method: $method");
@@ -92,6 +99,8 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handleInitialize(McpServerCommandRequest $request, IConvoResponse $response)
     {
+        $this->_mcpSessionManager->activateSession($request->getSessionId());
+
         $id = $request->getId();
         $message = [
             "jsonrpc" => "2.0",
@@ -107,6 +116,7 @@ implements IConversationProcessor, IChatFunctionContainer
                 ]
             ]
         ];
+
         $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
     }
 
