@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Convo\Gpt\Pckg;
 
 use Convo\Core\ComponentNotFoundException;
+use Convo\Core\DataItemNotFoundException;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\IRequestFilterResult;
@@ -19,6 +20,8 @@ use Convo\Gpt\Mcp\McpSessionManager;
 class McpServerProcessor extends AbstractWorkflowContainerComponent
 implements IConversationProcessor, IChatFunctionContainer
 {
+    private $_prompts = [];
+
     /**
      * @var IChatFunction[]
      */
@@ -48,6 +51,11 @@ implements IConversationProcessor, IChatFunctionContainer
         foreach ($this->_tools as $elem) {
             $this->addChild($elem);
         }
+    }
+
+    public function registerPrompt($prompt)
+    {
+        $this->_prompts[] = $prompt;
     }
 
     public function registerFunction($function)
@@ -82,6 +90,8 @@ implements IConversationProcessor, IChatFunctionContainer
             'initialize' => '_handleInitialize',
             'tools/list' => '_handleToolsList',
             'tools/call' => '_handleToolsCall',
+            'prompts/list' => '_handlePromptsList',
+            'prompts/get' => '_handlePromptsGet',
             'resources/list' => '_handleResourcesList',
             'resources/templates/list' => '_handleResourceTemplatesList'
         ];
@@ -132,7 +142,8 @@ implements IConversationProcessor, IChatFunctionContainer
             "result" => [
                 "protocolVersion" => "2024-11-05",
                 "capabilities" => [
-                    "tools" => ["listChanged" => true]
+                    "tools"   => ["listChanged" => true],
+                    "prompts" => ["listChanged" => true]
                 ],
                 "serverInfo" => [
                     "name" => $this->evaluateString($this->_name),
@@ -143,6 +154,89 @@ implements IConversationProcessor, IChatFunctionContainer
 
         $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
     }
+
+    private function _handlePromptsList(McpServerCommandRequest $req, IConvoResponse $res)
+    {
+        // TODO: support pagination if you ever need it
+        $prompts = array_map(function ($p) {
+            return [
+                'name'        => $p['name'],
+                'description' => $p['description'] ?? '',
+                'arguments'   => $p['arguments'] ?? []
+            ];
+        }, $this->_prompts);
+
+        $msg = [
+            'jsonrpc' => '2.0',
+            'id'      => $req->getId(),
+            'result'  => ['prompts' => $prompts]
+        ];
+        $this->_mcpSessionManager->enqueueEvent($req->getSessionId(), 'message', $msg);
+    }
+
+    private function _handlePromptsGet(McpServerCommandRequest $req, IConvoResponse $res)
+    {
+        $id     = $req->getId();
+        $params = $req->getPlatformData()['params'] ?? [];
+        $name   = $params['name'] ?? null;
+        $args   = $params['arguments'] ?? [];
+
+        try {
+            $prompt = $this->_findPrompt($name);
+        } catch (DataItemNotFoundException $e) {
+            $this->_logger->warning($e);
+            return $this->_throwRpcError($id, -32602, $e->getMessage(), $req);
+        }
+
+
+        // --- 1. simple required‑field check -------------------------------
+        foreach ($prompt['arguments'] as $argDef) {
+            if (($argDef['required'] ?? false) && !isset($args[$argDef['name']])) {
+                return $this->_throwRpcError(
+                    $id,
+                    -32602,
+                    "Missing required argument '{$argDef['name']}'",
+                    $req
+                );
+            }
+        }
+
+        // --- 2. substitute placeholders -----------------------------------
+        $text = $this->evaluateString($prompt['template'], $args);
+
+        // --- 3. package as messages array ---------------------------------
+        $result = [
+            'description' => $prompt['description'] ?? '',
+            'messages'    => [[
+                'role'    => 'user',
+                'content' => ['type' => 'text', 'text' => $text]
+            ]]
+        ];
+
+        $msg = ['jsonrpc' => '2.0', 'id' => $id, 'result' => $result];
+        $this->_mcpSessionManager->enqueueEvent($req->getSessionId(), 'message', $msg);
+    }
+
+    private function _findPrompt($name)
+    {
+        foreach ($this->_prompts as $prompt) {
+            if ($prompt['name'] === $name) {
+                return $prompt;
+            }
+        }
+        throw new DataItemNotFoundException("Prompt '{$name}' not found");
+    }
+
+    private function _throwRpcError($id, $code, $message, $req)
+    {
+        $err = [
+            'jsonrpc' => '2.0',
+            'id'      => $id,
+            'error'   => ['code' => $code, 'message' => $message]
+        ];
+        $this->_mcpSessionManager->enqueueEvent($req->getSessionId(), 'message', $err);
+    }
+
 
     private function _handleToolsList(McpServerCommandRequest $request, IConvoResponse $response)
     {

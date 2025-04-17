@@ -1860,6 +1860,66 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     //     'filename' => 'wp-rest-proxy-function.html'
                     // ]
                 ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SimpleMcpPromptTemplate',
+                'Simple MCP Prompt Template',
+                'Defines prompts for usage.',
+                [
+                    'name' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Prompt Name',
+                        'description' => 'Unique prompt name',
+                        'valueType' => 'string'
+                    ],
+                    'description' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => '',
+                        'name' => 'Description',
+                        'description' => 'Prompt description',
+                        'valueType' => 'string'
+                    ],
+                    'arguments' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${[]}',
+                        'name' => 'Prompt Argunments',
+                        'description' => 'Array of supported arguments definitions for the template (e.g. name, age, postId)',
+                        'valueType' => 'array'
+                    ],
+                    'prompt' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => ['large' => true],
+                        'defaultValue' => '',
+                        'name' => 'Prompt',
+                        'description' => 'Prompt itself. You can access parametrs in it.',
+                        'valueType' => 'string'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' =>
+                        '<div class="code"><span class="statement">MCP PROMPT</span> ' .
+                            '<b>{{component.properties.name}}(' .
+                            '<span ng-if="!isString(component.properties.arguments)" ng-repeat="(key, val) in component.properties.arguments track by key">' .
+                            '{{$index ? ", " : ""}}{{ key }}</span>' .
+                            '<span ng-if="isString(component.properties.arguments)">{{ component.properties.arguments }}</span>' .
+                            ')</b>' .
+                            '<div class="text">{{component.properties.description}}</div>' .
+                            '<div class="text-long" title="{{component.properties.prompt}}">{{component.properties.prompt}}</div>' .
+                            '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    // '_help' => [
+                    //     'type' => 'file',
+                    //     'filename' => 'wp-rest-proxy-function.html'
+                    // ]
+                ]
             )
 
         ];
