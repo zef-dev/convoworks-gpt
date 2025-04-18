@@ -155,8 +155,12 @@ implements IConversationProcessor, IChatFunctionContainer
         $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
     }
 
-    private function _handlePromptsList(McpServerCommandRequest $req, IConvoResponse $res)
+    private function _handlePromptsList(McpServerCommandRequest $request, IConvoResponse $response)
     {
+        foreach ($this->_tools as $elem) {
+            $elem->read($request, $response);
+        }
+
         // TODO: support pagination if you ever need it
         $prompts = array_map(function ($p) {
             return [
@@ -168,24 +172,28 @@ implements IConversationProcessor, IChatFunctionContainer
 
         $msg = [
             'jsonrpc' => '2.0',
-            'id'      => $req->getId(),
+            'id'      => $request->getId(),
             'result'  => ['prompts' => $prompts]
         ];
-        $this->_mcpSessionManager->enqueueEvent($req->getSessionId(), 'message', $msg);
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $msg);
     }
 
-    private function _handlePromptsGet(McpServerCommandRequest $req, IConvoResponse $res)
+    private function _handlePromptsGet(McpServerCommandRequest $request, IConvoResponse $response)
     {
-        $id     = $req->getId();
-        $params = $req->getPlatformData()['params'] ?? [];
+        $id     = $request->getId();
+        $params = $request->getPlatformData()['params'] ?? [];
         $name   = $params['name'] ?? null;
         $args   = $params['arguments'] ?? [];
+
+        foreach ($this->_tools as $elem) {
+            $elem->read($request, $response);
+        }
 
         try {
             $prompt = $this->_findPrompt($name);
         } catch (DataItemNotFoundException $e) {
             $this->_logger->warning($e);
-            return $this->_throwRpcError($id, -32602, $e->getMessage(), $req);
+            return $this->_throwRpcError($id, -32602, $e->getMessage(), $request);
         }
 
 
@@ -196,7 +204,7 @@ implements IConversationProcessor, IChatFunctionContainer
                     $id,
                     -32602,
                     "Missing required argument '{$argDef['name']}'",
-                    $req
+                    $request
                 );
             }
         }
@@ -214,7 +222,7 @@ implements IConversationProcessor, IChatFunctionContainer
         ];
 
         $msg = ['jsonrpc' => '2.0', 'id' => $id, 'result' => $result];
-        $this->_mcpSessionManager->enqueueEvent($req->getSessionId(), 'message', $msg);
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $msg);
     }
 
     private function _findPrompt($name)
