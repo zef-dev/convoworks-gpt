@@ -46,6 +46,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
         $this->registerTemplate(__DIR__ . '/gpt-example-chat.template.json');
         $this->registerTemplate(__DIR__ . '/gpt-site-admin.template.json');
         $this->registerTemplate(__DIR__ . '/deep-research-assistant.template.json');
+        $this->registerTemplate(__DIR__ . '/mcp-server-example.template.json');
     }
 
     public function getFunctions()
