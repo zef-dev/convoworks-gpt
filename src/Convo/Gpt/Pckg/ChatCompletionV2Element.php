@@ -203,7 +203,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                 $function_name   =   $tool_call['function']['name'] ?? null;
                 $function_data   =   $tool_call['function']['arguments'] ?? null;
 
-                $function_data = json_decode($function_data, true);
+                // $function_data = json_decode($function_data, true);
                 $error = json_last_error();
                 if ($error !== JSON_ERROR_NONE) {
                     throw new \Exception('JSON parsing error: ' . json_last_error_msg());
@@ -222,6 +222,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                         $this->_logger->debug('Got processed JSON [' . $function_data . ']');
                         $this->_registerExecution($function_name, $function_data);
                         $function   =   $this->_findFunction($function_name);
+                        $function_data = json_decode($function_data, true);
                         if ($function instanceof \Convo\Core\Workflow\IScopedFunction) {
                             /** @var \Convo\Core\Workflow\IScopedFunction $function */
                             $id = $function->initParams();
