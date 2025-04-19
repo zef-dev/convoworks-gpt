@@ -397,7 +397,7 @@
                                 "parameters": "service",
                                 "scope_type": "request",
                                 "properties": {
-                                    "ACTIVE_REST_APIS": "${[\"convo_mcp_register_wp_posts\", \"convo_mcp_register_wp_pages\"]}",
+                                    "ACTIVE_REST_APIS": "${[\"convo_mcp_register_wp_comments\", \"convo_mcp_register_wp_media\", \"convo_mcp_register_wp_pages\", \"convo_mcp_register_wp_plugins\", \"convo_mcp_register_wp_posts\", \"convo_mcp_register_wp_settings\", \"convo_mcp_register_wp_taxonomies\", \"convo_mcp_register_wp_users\"]}",
                                     "chat_functions": "${[]}"
                                 },
                                 "_component_id": "p6xgzcno-09ko-f9yr-midu-ixdwxe1czuo2"
