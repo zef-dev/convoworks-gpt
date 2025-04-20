@@ -27,6 +27,19 @@ if (!defined('CONVO_GPT_MPC_SESSION_STORAGE_PATH')) {
     define('CONVO_GPT_MPC_SESSION_STORAGE_PATH', 'c:/tmp/mcp/');
 }
 
+if (!defined('CONVO_GPT_MPC_SESSION_TIMEOUT')) {
+    define('CONVO_GPT_MPC_SESSION_TIMEOUT', 60 * 30);
+}
+
+if (!defined('CONVO_GPT_MPC_LISTEN_SLEEP')) {
+    define('CONVO_GPT_MPC_LISTEN_SLEEP', 1);
+}
+
+if (!defined('CONVO_GPT_MPC_PING_INTERVAL')) {
+    define('CONVO_GPT_MPC_PING_INTERVAL', 10);
+}
+
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 function run_convoworks_gpt_plugin()

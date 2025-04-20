@@ -31,12 +31,11 @@ class McpSessionManager
     // check if valid session
     public function getActiveSession($sessionId): array
     {
-        $TIMEOUT = 60 * 30; // 30 minutes
         $session = $this->_sessionStore->getSession($sessionId);
         if ($session['status'] !== IMcpSessionStoreInterface::SESSION_STATUS_INITIALISED) {
             throw new DataItemNotFoundException('No active session not found: ' . $sessionId);
         }
-        if ($session['last_active'] < time() - $TIMEOUT) {
+        if ($session['last_active'] < time() - CONVO_GPT_MPC_SESSION_TIMEOUT) {
             throw new DataItemNotFoundException('Session expired: ' . $sessionId);
         }
         return $session;
@@ -97,8 +96,6 @@ class McpSessionManager
     // listen for events
     public function listen($sessionId): void
     {
-        $SLEEP = 1;
-        $PING_INTERVAL = 10; // seconds
         $lastPing = time();
 
         while (!connection_aborted()) {
@@ -113,14 +110,14 @@ class McpSessionManager
             }
 
             // Send ping if needed
-            if ((time() - $lastPing) >= $PING_INTERVAL) {
+            if (CONVO_GPT_MPC_PING_INTERVAL && (time() - $lastPing) >= CONVO_GPT_MPC_PING_INTERVAL) {
                 $this->streamEvent($sessionId, 'ping', '{}');
                 $this->_logger->debug("Ping sent [$sessionId]");
                 $lastPing = time();
             }
 
             if ($empty) {
-                sleep($SLEEP);
+                sleep(CONVO_GPT_MPC_LISTEN_SLEEP);
             }
         }
 
