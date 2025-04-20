@@ -1712,36 +1712,36 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\McpServerProcessor',
                 'MCP Processor',
-                'Handles MCP calls',
+                'Accepts MCP requests and delegates them to its child components.',
                 [
                     'name' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => 'Convoworks MPC',
-                        'name' => 'Name',
-                        'description' => 'Name of the server',
-                        'valueType' => 'string'
+                        'defaultValue'      => 'Convoworks MCP',
+                        'name'             => 'Server Name',
+                        'description'      => 'Displayed in initialize→serverInfo.name.',
+                        'valueType'        => 'string'
                     ],
                     'version' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '1.0',
-                        'name' => 'Version',
-                        'description' => '',
-                        'valueType' => 'string'
+                        'defaultValue'      => '1.0',
+                        'name'             => 'Server Version',
+                        'description'      => 'Displayed in initialize→serverInfo.version.',
+                        'valueType'        => 'string'
                     ],
-                    'tools' => array(
-                        'editor_type' => 'service_components',
-                        'editor_properties' => array(
-                            'allow_interfaces' => array('\Convo\Core\Workflow\IConversationElement'),
-                            'multiple' => true
-                        ),
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Tools',
-                        'description' => 'Tools registration flow',
-                        'valueType' => 'class',
-                    ),
+                    'tools' => [
+                        'editor_type'       => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\\Convo\\Core\\Workflow\\IConversationElement'],
+                            'multiple'        => true
+                        ],
+                        'defaultValue'      => [],
+                        'defaultOpen'       => false,
+                        'name'             => 'Tools',
+                        'description'      => 'Drop conversation elements here that should be exposed as MCP tools/prompts.',
+                        'valueType'        => 'class',
+                    ],
                     '_factory' => new class($this->_mcpSessionManager) implements \Convo\Core\Factory\IComponentFactory
                     {
                         private $_mcpSessionManager;
@@ -1772,73 +1772,71 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\WpRestProxyFunction',
                 'WP REST Proxy Function',
-                'MCP Chat function that proxies arguments to the internal WordPress REST API.',
+                'Exposes a chat function that forwards its arguments to the internal WordPress REST API ( /wp/v2 ).',
                 [
                     'name' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Function Name',
-                        'description' => 'Unique function name',
-                        'valueType' => 'string'
+                        'defaultValue'      => '',
+                        'name'             => 'Function Name',
+                        'description'      => 'Unique function identifier.',
+                        'valueType'        => 'string',
                     ],
                     'description' => [
-                        'editor_type' => 'desc',
+                        'editor_type'       => 'desc',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Description',
-                        'description' => 'Function description',
-                        'valueType' => 'string'
+                        'defaultValue'      => '',
+                        'name'             => 'Description',
+                        'description'      => 'Brief summary of what the function does.',
+                        'valueType'        => 'string',
                     ],
                     'required' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Required',
-                        'description' => 'Array of required fields',
-                        'valueType' => 'string'
+                        'defaultValue'      => '${[]}',
+                        'name'             => 'Required Parameters',
+                        'description'       => 'Expression‑language array of required parameter names, e.g. ${["postId", "status"]}',
+                        'valueType'        => 'array',
                     ],
                     'defaults' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Default Values',
-                        'description' => 'Associative array containing fields and their default values',
-                        'valueType' => 'string'
+                        'defaultValue'      => '${[]}',
+                        'name'             => 'Default Values',
+                        'description'       => 'Expression‑language object of default values, e.g. ${{"per_page":10,"status":"publish"}}',
+                        'valueType'        => 'object',
                     ],
                     'method' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => 'GET',
-                        'name' => 'HTTP Method',
-                        'description' => 'HTTP method used for the REST call.',
-                        'valueType' => 'string'
+                        'defaultValue'      => 'GET',
+                        'name'             => 'HTTP Method',
+                        'description'      => 'HTTP verb used for the REST call (GET, POST, PUT, PATCH, DELETE).',
+                        'valueType'        => 'string',
                     ],
                     'endpoint' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'REST Endpoint',
-                        'description' => 'Relative WordPress REST API endpoint (e.g. posts, users/123).',
-                        'valueType' => 'string'
+                        'defaultValue'      => '',
+                        'name'             => 'REST Endpoint',
+                        'description'      => 'Endpoint relative to /wp/v2 (e.g. "posts", "users/123"). Do not prefix with a slash.',
+                        'valueType'        => 'string',
                     ],
                     'pagination' => [
-                        'editor_type' => 'boolean',
+                        'editor_type'       => 'boolean',
                         'editor_properties' => [],
-                        'defaultValue' => false,
-                        'name' => 'Enable Pagination',
-                        'description' => 'Enables cursor-based pagination support.',
-                        'valueType' => 'boolean'
+                        'defaultValue'      => false,
+                        'name'             => 'Enable Pagination',
+                        'description'      => 'If true, wraps the REST response and returns a nextCursor value when additional pages are available.',
+                        'valueType'        => 'boolean',
                     ],
                     'parameters' => [
-                        'editor_type' => 'params',
-                        'editor_properties' => [
-                            'multiple' => true
-                        ],
-                        'defaultValue' => [],
-                        'name' => 'Function Parameters',
-                        'description' => 'Function parameter definitions',
-                        'valueType' => 'array'
+                        'editor_type'       => 'params',
+                        'editor_properties' => ['multiple' => true],
+                        'defaultValue'      => [],
+                        'name'             => 'Function Parameters',
+                        'description'      => 'JSON Schema property definitions describing each parameter.',
+                        'valueType'        => 'array',
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
@@ -1866,39 +1864,39 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                 $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SimpleMcpPromptTemplate',
                 'Simple MCP Prompt Template',
-                'Defines prompts for usage.',
+                'Defines a reusable MCP prompt template that can be referenced elsewhere in your pipeline.',
                 [
                     'name' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Prompt Name',
-                        'description' => 'Unique prompt name',
-                        'valueType' => 'string'
+                        'defaultValue'      => '',
+                        'name'              => 'Prompt Name',
+                        'description'       => 'Unique identifier for this prompt template.',
+                        'valueType'         => 'string',
                     ],
                     'description' => [
-                        'editor_type' => 'desc',
+                        'editor_type'       => 'desc',
                         'editor_properties' => [],
-                        'defaultValue' => '',
-                        'name' => 'Description',
-                        'description' => 'Prompt description',
-                        'valueType' => 'string'
+                        'defaultValue'      => '',
+                        'name'              => 'Description',
+                        'description'       => 'Human‑readable explanation of what this prompt does.',
+                        'valueType'         => 'string',
                     ],
                     'arguments' => [
-                        'editor_type' => 'text',
+                        'editor_type'       => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${[]}',
-                        'name' => 'Prompt Argunments',
-                        'description' => 'Array of supported arguments definitions for the template (e.g. name, age, postId)',
-                        'valueType' => 'array'
+                        'defaultValue'      => '${[]}',
+                        'name'              => 'Prompt Arguments',
+                        'description'       => 'Expression‑language array of argument definition. e.g. ${[{"name":"postId","description":"WP post ID","required":true}]}',
+                        'valueType'         => 'array',
                     ],
                     'prompt' => [
-                        'editor_type' => 'desc',
+                        'editor_type'       => 'desc',
                         'editor_properties' => ['large' => true],
-                        'defaultValue' => '',
-                        'name' => 'Prompt',
-                        'description' => 'Prompt itself. You can access parametrs in it.',
-                        'valueType' => 'string'
+                        'defaultValue'      => '',
+                        'name'              => 'Prompt',
+                        'description'       => 'Prompt text itself. Use ${paramName} placeholders to reference arguments.',
+                        'valueType'         => 'string',
                     ],
                     '_preview_angular' => [
                         'type' => 'html',
@@ -1922,7 +1920,6 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     // ]
                 ]
             )
-
         ];
     }
 
