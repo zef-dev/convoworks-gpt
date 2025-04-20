@@ -55,6 +55,14 @@ For more details, check out [The GPT Site Admin: A New Era of AI Integration wit
 
 The Deep Research Assistant template empowers you to conduct iterative, in-depth research by leveraging GPT-powered recursive web searches, analysis, and report generation. It offers a no-code, visual workflow to automate the entire research process and seamlessly generate structured Markdown reports. For more details, check out [A No-Code Experiment: Bringing Deep Research to WordPress](https://convoworks.com/a-no-code-experiment-bringing-deep-research-to-wordpress/).
 
+### MCP Server Example
+
+A demo service showing how to set up an MCP server with Convoworks WP. It illustrates:
+
+- Using the **MCP Server** block (`McpServerProcessor`) to accept MCP requests and delegate to child components.  
+- Registering chat functions and PHP calls via fragments.  
+- Defining a **Simple MCP Prompt Template** for generating SEO descriptions.  
+- Exposing WordPress endpoints through the **WP REST Proxy Function** with paging support.
 
 ## Functions
 
@@ -297,6 +305,66 @@ This function definition can be used with Completion API-based elements. Unlike 
 * `Required` - A list of mandatory fields required for this function.
 * `Callable` - A variable that holds the callable (e.g., function). When the function is executed, a single parameter (associative array) is passed, containing all defined parameters.
 
+
+### Simple MCP Prompt Template
+
+Defines a reusable prompt template you can invoke anywhere in your MCP pipeline.
+
+**Parameters:**
+- **Prompt Name**  
+  Unique identifier for this template. Can be plain text or an expression wrapped in ``${…}``.
+- **Description**  
+  Short, human‑readable summary of what the prompt does. Displayed in the component preview.
+- **Prompt Arguments**  
+  Expression‑language array of argument definitions wrapped in ``${…}``.  
+  Each item must include:
+  - `name` (string)  
+  - `description` (string)  
+  - `required` (boolean, optional)  
+  **Example:**  
+  ``${[{"name":"postId","description":"WP post ID","required":true}]}``
+- **Prompt**  
+  The template text itself. Reference arguments using ``${argumentName}``. Supports multi‑line content and any valid expression constructs.
+
+---
+
+### WP REST Proxy Function
+
+Exposes a WordPress REST API call under `/wp/v2/…` as a chat‑invokable function, with parameter mapping and optional cursor‑based pagination.
+
+**Parameters:**
+- **Function Name**  
+  The name by which this function is called from chat messages.
+- **Description**  
+  Brief explanation shown in function selectors (e.g. “List posts with filters and paging”).
+- **Required Parameters**  
+  Expression‑language array of parameter keys that must be present, wrapped in ``${…}``.  
+  **Example:** ``${["postId"]}``
+- **Default Values**  
+  Expression‑language object of default parameter values, wrapped in ``${…}``.  
+  **Example:** ``${{"per_page":10,"status":"publish"}}``
+- **HTTP Method**  
+  HTTP verb to use (GET, POST, PUT, DELETE, etc.). Defaults to GET.
+- **REST Endpoint**  
+  Path under `/wp/v2/`, for example `posts` or `users/123`.
+- **Enable Pagination**  
+  When checked, responses include a `results` array and `nextCursor` for paging.
+- **Function Parameters**  
+  Define metadata for each parameter (type, description, enum, etc.) via a sub‑flow to generate JSON‑Schema for UI hints and validation.
+
+---
+
+### MCP Processor
+
+Serves as the bridge between the MCP protocol and your Convoworks components. It wires up initialization, handles notifications, and automatically registers any child prompts, tools, or resources.
+
+**Parameters:**
+- **Name**  
+  Label returned during protocol initialization. Helps identify this server instance.
+- **Version**  
+  Protocol version string exposed to clients. Use semantic versioning when updating.
+- **Tools**  
+  Drop in child components that implement prompts, resources, or chat functions. Each child is auto‑registered and exposed over MCP.
 
 
 ---
