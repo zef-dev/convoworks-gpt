@@ -24,24 +24,24 @@ define('CONVO_GPT_URL', plugin_dir_url(__FILE__));
 define('CONVO_GPT_PATH', __FILE__);
 
 // Filesystem path where MCP session files are stored (currently FS‑based, moving to DB in a future release)
-if (!defined('CONVO_GPT_MPC_SESSION_STORAGE_PATH')) {
+if (!defined('CONVO_GPT_MCP_SESSION_STORAGE_PATH')) {
     $upload_dir = wp_upload_dir();
-    define('CONVO_GPT_MPC_SESSION_STORAGE_PATH', trailingslashit($upload_dir['basedir']) . 'convo-gpt-mcp/');
+    define('CONVO_GPT_MCP_SESSION_STORAGE_PATH', trailingslashit($upload_dir['basedir']) . 'convo-gpt-mcp/');
 }
 
 // Session timeout in seconds (how long an inactive session stays alive)
-if (!defined('CONVO_GPT_MPC_SESSION_TIMEOUT')) {
-    define('CONVO_GPT_MPC_SESSION_TIMEOUT', 60 * 30);
+if (!defined('CONVO_GPT_MCP_SESSION_TIMEOUT')) {
+    define('CONVO_GPT_MCP_SESSION_TIMEOUT', 60 * 30);
 }
 
 // Background poll interval (microseconds) for checking new messages
-if (!defined('CONVO_GPT_MPC_LISTEN_USLEEP')) {
-    define('CONVO_GPT_MPC_LISTEN_USLEEP', 300000);
+if (!defined('CONVO_GPT_MCP_LISTEN_USLEEP')) {
+    define('CONVO_GPT_MCP_LISTEN_USLEEP', 300000);
 }
 
 // Ping interval in seconds for background processes (0 to disable)
-if (!defined('CONVO_GPT_MPC_PING_INTERVAL')) {
-    define('CONVO_GPT_MPC_PING_INTERVAL', 30);
+if (!defined('CONVO_GPT_MCP_PING_INTERVAL')) {
+    define('CONVO_GPT_MCP_PING_INTERVAL', 10);
 }
 
 

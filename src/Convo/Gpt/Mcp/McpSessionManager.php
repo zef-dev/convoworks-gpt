@@ -35,7 +35,7 @@ class McpSessionManager
         if ($session['status'] !== IMcpSessionStoreInterface::SESSION_STATUS_INITIALISED) {
             throw new DataItemNotFoundException('No active session not found: ' . $sessionId);
         }
-        if ($session['last_active'] < time() - CONVO_GPT_MPC_SESSION_TIMEOUT) {
+        if ($session['last_active'] < time() - CONVO_GPT_MCP_SESSION_TIMEOUT) {
             throw new DataItemNotFoundException('Session expired: ' . $sessionId);
         }
         return $session;
@@ -110,14 +110,14 @@ class McpSessionManager
             }
 
             // Send ping if needed
-            if (CONVO_GPT_MPC_PING_INTERVAL && (time() - $lastPing) >= CONVO_GPT_MPC_PING_INTERVAL) {
+            if (CONVO_GPT_MCP_PING_INTERVAL && (time() - $lastPing) >= CONVO_GPT_MCP_PING_INTERVAL) {
                 $this->streamEvent($sessionId, 'ping', '{}');
                 $this->_logger->debug("Ping sent [$sessionId]");
                 $lastPing = time();
             }
 
             if ($empty) {
-                usleep(CONVO_GPT_MPC_LISTEN_USLEEP);
+                usleep(CONVO_GPT_MCP_LISTEN_USLEEP);
             }
         }
 

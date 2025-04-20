@@ -106,31 +106,6 @@ class WpRestProxyFunction extends AbstractWorkflowComponent implements IChatFunc
     }
 
 
-    // /**
-    //  * @param IConvoRequest $request
-    //  * @param IConvoResponse $response
-    //  * @param string $data
-    //  * @return string
-    //  */
-    // public function execute(IConvoRequest $request, IConvoResponse $response, $data)
-    // {
-    //     // data contains arguments for function
-    //     $this->_logger->debug('Got data decoded [' . $this->getName() . '] - [' . print_r($data, true) . ']');
-    //     $data = array_merge($this->_getDefaults(), $data);
-    //     $this->_logger->info('Got data with defaults [' . $this->getName() . '] - [' . print_r($data, true) . ']');
-
-    //     // use method and endpoitn to perform internal rest request
-    //     $method  = $this->evaluateString($this->_method);
-    //     $endpoint = ltrim($this->evaluateString($this->_endpoint), '/');
-    //     $result     =   null;
-
-    //     // return result
-    //     if (is_string($result)) {
-    //         return $result;
-    //     }
-    //     return json_encode($result);
-    // }
-
     private function _getDefaults()
     {
         $defaults = $this->evaluateString($this->_defaults);
