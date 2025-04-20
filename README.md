@@ -64,6 +64,40 @@ A demo service showing how to set up an MCP server with Convoworks WP. It illust
 - Defining a **Simple MCP Prompt Template** for generating SEO descriptions.  
 - Exposing WordPress endpoints through the **WP REST Proxy Function** with paging support.
 
+## Working with MCP Server
+
+1. **Enable the MCP Server platform**  
+   After creating your service from the **MCP Server Example** template, open the **Configuration** view and toggle on **MCP Server**—no further setup is needed.
+
+2. **Copy the base MCP URL**  
+   In the service editor’s **Releases** view (under **Development**), click **LINK** next to `convo-gpt.mcp-server` to copy your MCP server’s base URL to the clipboard.
+
+3. **Connect with an SSE‑enabled client**  
+   Any MCP client that speaks Server‑Sent Events (SSE) can use this URL directly—just paste it into the “server URL” field (for example, cLine for VS Code).
+
+---
+
+### Optional: Proxy for stdio‑only clients
+
+If your client only supports stdio (like Claude Desktop), you can bridge it via `mcp-proxy`:
+
+1. **Install the proxy**  
+   ```bash
+   npm install -g mcp-proxy
+   ```
+
+2. **Configure your client**  
+   In your `claude_desktop_config.json`, add (use endpoint url provided in the Releases view):
+   ```jsonc
+   "convoworks-proxy": {
+     "command": "mcp-proxy",
+     "args": [
+       "http://localhost/wordpress/wp-json/convo/v1/public/service-run/external/convo-gpt/mcp-server/a/mcp-prototype"
+     ]
+   }
+   ```
+   This wraps the SSE endpoint over stdio so Claude Desktop can communicate with your MCP server.
+
 ## Functions
 
 Convoworks GPT WordPress Plugin provides predefined functions that can be utilized within workflows to extend the capabilities and provide more dynamic interactions.
