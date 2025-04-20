@@ -1762,10 +1762,10 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                             '</div>'
                     ],
                     '_workflow' => 'process',
-                    // '_help' =>  [
-                    //     'type' => 'file',
-                    //     'filename' => 'mcp-processor.html'
-                    // ],
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'mcp-processor.html'
+                    ],
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
@@ -1854,10 +1854,10 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-                    // '_help' => [
-                    //     'type' => 'file',
-                    //     'filename' => 'wp-rest-proxy-function.html'
-                    // ]
+                    '_help' => [
+                        'type' => 'file',
+                        'filename' => 'wp-rest-proxy-function.html'
+                    ]
                 ]
             ),
             new \Convo\Core\Factory\ComponentDefinition(
@@ -1914,10 +1914,10 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
                     '_workflow' => 'read',
                     '_descend' => 'true',
-                    // '_help' => [
-                    //     'type' => 'file',
-                    //     'filename' => 'wp-rest-proxy-function.html'
-                    // ]
+                    '_help' => [
+                        'type' => 'file',
+                        'filename' => 'simple-mcp-prompt-template.html'
+                    ]
                 ]
             )
         ];
