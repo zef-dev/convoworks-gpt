@@ -32,12 +32,13 @@ if (!defined('CONVO_GPT_MPC_SESSION_TIMEOUT')) {
     define('CONVO_GPT_MPC_SESSION_TIMEOUT', 60 * 30);
 }
 
-if (!defined('CONVO_GPT_MPC_LISTEN_SLEEP')) {
-    define('CONVO_GPT_MPC_LISTEN_SLEEP', 1);
+// microseconds
+if (!defined('CONVO_GPT_MPC_LISTEN_USLEEP')) {
+    define('CONVO_GPT_MPC_LISTEN_USLEEP', 300000);
 }
 
 if (!defined('CONVO_GPT_MPC_PING_INTERVAL')) {
-    define('CONVO_GPT_MPC_PING_INTERVAL', 10);
+    define('CONVO_GPT_MPC_PING_INTERVAL', 30);
 }
 
 

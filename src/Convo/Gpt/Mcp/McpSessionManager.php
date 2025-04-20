@@ -117,7 +117,7 @@ class McpSessionManager
             }
 
             if ($empty) {
-                sleep(CONVO_GPT_MPC_LISTEN_SLEEP);
+                usleep(CONVO_GPT_MPC_LISTEN_USLEEP);
             }
         }
 
