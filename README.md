@@ -101,6 +101,28 @@ If your client only supports stdio (like Claude Desktop), you can bridge it via 
    ```
    This wraps the SSE endpoint over stdio so Claude Desktop can communicate with your MCP server.
 
+### Configuration Constants
+
+You can override these in your `wp-config.php` **before** the plugin loads—just add your own `define()` calls:
+
+```php
+// Filesystem path where MCP session files are stored (currently FS‑based, moving to DB in a future release)
+define( 'CONVO_GPT_MCP_SESSION_STORAGE_PATH', '/custom/path/to/mcp-sessions/' );
+
+// Session timeout in seconds (how long an inactive session stays alive)
+define( 'CONVO_GPT_MCP_SESSION_TIMEOUT', 60 * 30 ); // default: 1,800 (30 minutes)
+
+// Background poll interval (microseconds) for checking new messages
+define( 'CONVO_GPT_MCP_LISTEN_USLEEP', 300_000 );   // default: 300,000 µs (0.3 s)
+
+// Ping interval in seconds for background processes (0 to disable)
+define( 'CONVO_GPT_MCP_PING_INTERVAL', 30 );       // default: 30 s
+```
+
+- **Session storage** is currently implemented on the filesystem under `CONVO_GPT_MCP_SESSION_STORAGE_PATH`.  
+- In an upcoming release, sessions will be stored in the database instead of files.
+
+
 ## Functions
 
 Convoworks GPT WordPress Plugin provides predefined functions that can be utilized within workflows to extend the capabilities and provide more dynamic interactions.
