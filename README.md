@@ -57,12 +57,15 @@ The Deep Research Assistant template empowers you to conduct iterative, in-depth
 
 ### MCP Server Example
 
-A demo service showing how to set up an MCP server with Convoworks WP. It illustrates:
+A demo service showing how to set up an MCP server with Convoworks WP. It includes:
 
-- Using the **MCP Server** block (`McpServerProcessor`) to accept MCP requests and delegate to child components.  
-- Registering chat functions and PHP calls via fragments.  
-- Defining a **Simple MCP Prompt Template** for generating SEO descriptions.  
-- Exposing WordPress endpoints through the **WP REST Proxy Function** with paging support.
+- **MCP Server** processor: accepts MCP protocol calls and routes them to its child fragments.  
+- **Example 1 – No‑Code Functions** fragment: implement chat/PHP functions entirely without writing code.  
+- **Example 2 – WP REST Proxy** fragment: expose a single WordPress REST API endpoint (e.g., list posts) via the WP REST Proxy Function.  
+- **Example 3 – External Functions** fragment: dynamically register full REST‑API endpoints (definitions live in PHP, pulled in via filters).  
+- **Prompt Template**: define and register reusable prompt templates.
+
+Each demo lives in its own fragment, so you can swap them in or out using **Include Fragment** elements.
 
 ## Working with MCP Server
 
