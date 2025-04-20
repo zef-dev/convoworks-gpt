@@ -87,6 +87,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
         // Dispatch map
         $handlers = [
+            'ping' => '_handlePing',
             'initialize' => '_handleInitialize',
             'tools/list' => '_handleToolsList',
             'tools/call' => '_handleToolsCall',
@@ -105,6 +106,17 @@ implements IConversationProcessor, IChatFunctionContainer
         } else {
             $this->_logger->warning("Unknown MCP method: $method");
         }
+    }
+
+    private function _handlePing(McpServerCommandRequest $request, IConvoResponse $response)
+    {
+        $message = [
+            "jsonrpc" => "2.0",
+            "id" => $request->getId(),
+            "result" => new \stdClass()
+        ];
+
+        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
     }
 
     private function _handleInitialize(McpServerCommandRequest $request, IConvoResponse $response)
