@@ -24,7 +24,8 @@ define('CONVO_GPT_URL', plugin_dir_url(__FILE__));
 define('CONVO_GPT_PATH', __FILE__);
 
 if (!defined('CONVO_GPT_MPC_SESSION_STORAGE_PATH')) {
-    define('CONVO_GPT_MPC_SESSION_STORAGE_PATH', 'c:/tmp/mcp/');
+    $upload_dir = wp_upload_dir();
+    define('CONVO_GPT_MPC_SESSION_STORAGE_PATH', trailingslashit($upload_dir['basedir']) . 'convo-gpt-mcp/');
 }
 
 if (!defined('CONVO_GPT_MPC_SESSION_TIMEOUT')) {

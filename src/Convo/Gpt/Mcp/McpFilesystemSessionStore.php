@@ -30,7 +30,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
     {
         $session_id = StrUtil::uuidV4();
         $path = $this->_basePath . $session_id;
-        if (false === mkdir($path, 0777, true)) {
+        if (false === wp_mkdir_p($path)) {
             throw new \RuntimeException('Failed to create session directory: ' . $path);
         }
         $this->_logger->debug('Created new session directory: ' . $path);
