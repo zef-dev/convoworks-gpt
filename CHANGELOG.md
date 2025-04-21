@@ -1,6 +1,15 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.13.0 - 2025-04-21 - MCP Server Support
+
+* Added MCP Server platform.  
+* Added **MCP Server Example** service template.  
+* Added MCP Processor for routing MCP requests.  
+* Added WP REST Proxy Function for forwarding REST API calls.  
+* Added Simple MCP Prompt Template.
+
+
 ### 0.12.2 - 2025-03-27 - Deep Research template
 
 * Added new service template - Deep Research Assistant.
