@@ -38,38 +38,6 @@ npm run build
 * Use the shortcode to display it on the front end: `[convo_chat service_id="gpt-example-chat" title="Example Chat"]`
 
 
-## Service Templates
-
-### GPT Example Chat
-
-This template provides a simple and interactive chat experience. It includes a basic system prompt and, additionally, loads up to 10 pages into the chat context using retrieval-augmented generation (RAG). This approach makes it a ready-to-use chatbot for small business websites with a few pages, helping users find information that might otherwise be hard to locate.
-
-The template also includes a simple GPT function example that can generate a random number.
-
-This template is a solid base for building your next public-facing chat. For more details, check out [A Dead Simple RAG Setup for WordPress: AI Chatbots for Small Websites](https://convoworks.com/a-dead-simple-rag-setup-for-wordpress-ai-chatbots-for-small-websites/).
-
-### GPT Site Admin
-
-The GPT Site Admin template is designed as a robust AI assistant to help manage your system. In addition to basic instructions, this bot has access to PHP's `call_user_func()` function, enabling it to fetch and manipulate posts, create files, and more.
-
-For more details, check out [The GPT Site Admin: A New Era of AI Integration with WordPress](https://convoworks.com/the-gpt-site-assistant-a-new-era-of-ai-integration-with-wordpress/).
-
-### Deep Research Assistant
-
-The Deep Research Assistant template empowers you to conduct iterative, in-depth research by leveraging GPT-powered recursive web searches, analysis, and report generation. It offers a no-code, visual workflow to automate the entire research process and seamlessly generate structured Markdown reports. For more details, check out [A No-Code Experiment: Bringing Deep Research to WordPress](https://convoworks.com/a-no-code-experiment-bringing-deep-research-to-wordpress/).
-
-### MCP Server Example
-
-A demo service showing how to set up an MCP server with Convoworks WP. It includes:
-
-- **MCP Server** processor: accepts MCP protocol calls and routes them to its child fragments.  
-- **Example 1 – No‑Code Functions** fragment: implement chat/PHP functions entirely without writing code.  
-- **Example 2 – WP REST Proxy** fragment: expose a single WordPress REST API endpoint (e.g., list posts) via the WP REST Proxy Function.  
-- **Example 3 – External Functions** fragment: dynamically register full REST‑API endpoints (definitions live in PHP, pulled in via filters).  
-- **Prompt Template**: define and register reusable prompt templates.
-
-Each demo lives in its own fragment, so you can swap them in or out using **Include Fragment** elements.
-
 ## Working with MCP Server
 
 1. **Enable the MCP Server platform**  
@@ -133,6 +101,39 @@ define( 'CONVO_GPT_MCP_PING_INTERVAL', 30 );       // default: 30 s
 - **Session storage** is currently implemented on the filesystem under `CONVO_GPT_MCP_SESSION_STORAGE_PATH`.  
 - In an upcoming release, sessions will be stored in the database instead of files.
 
+
+
+## Service Templates
+
+### GPT Example Chat
+
+This template provides a simple and interactive chat experience. It includes a basic system prompt and, additionally, loads up to 10 pages into the chat context using retrieval-augmented generation (RAG). This approach makes it a ready-to-use chatbot for small business websites with a few pages, helping users find information that might otherwise be hard to locate.
+
+The template also includes a simple GPT function example that can generate a random number.
+
+This template is a solid base for building your next public-facing chat. For more details, check out [A Dead Simple RAG Setup for WordPress: AI Chatbots for Small Websites](https://convoworks.com/a-dead-simple-rag-setup-for-wordpress-ai-chatbots-for-small-websites/).
+
+### GPT Site Admin
+
+The GPT Site Admin template is designed as a robust AI assistant to help manage your system. In addition to basic instructions, this bot has access to PHP's `call_user_func()` function, enabling it to fetch and manipulate posts, create files, and more.
+
+For more details, check out [The GPT Site Admin: A New Era of AI Integration with WordPress](https://convoworks.com/the-gpt-site-assistant-a-new-era-of-ai-integration-with-wordpress/).
+
+### Deep Research Assistant
+
+The Deep Research Assistant template empowers you to conduct iterative, in-depth research by leveraging GPT-powered recursive web searches, analysis, and report generation. It offers a no-code, visual workflow to automate the entire research process and seamlessly generate structured Markdown reports. For more details, check out [A No-Code Experiment: Bringing Deep Research to WordPress](https://convoworks.com/a-no-code-experiment-bringing-deep-research-to-wordpress/).
+
+### MCP Server Example
+
+A demo service showing how to set up an MCP server with Convoworks WP. It includes:
+
+- **MCP Server** processor: accepts MCP protocol calls and routes them to its child fragments.  
+- **Example 1 – No‑Code Functions** fragment: implement chat/PHP functions entirely without writing code.  
+- **Example 2 – WP REST Proxy** fragment: expose a single WordPress REST API endpoint (e.g., list posts) via the WP REST Proxy Function.  
+- **Example 3 – External Functions** fragment: dynamically register full REST‑API endpoints (definitions live in PHP, pulled in via filters).  
+- **Prompt Template**: define and register reusable prompt templates.
+
+Each demo lives in its own fragment, so you can swap them in or out using **Include Fragment** elements.
 
 ## Functions
 
