@@ -130,30 +130,6 @@ define( 'CONVO_GPT_MCP_PING_INTERVAL', 30 );       // default: 30 s
 
 Convoworks GPT WordPress Plugin provides predefined functions that can be utilized within workflows to extend the capabilities and provide more dynamic interactions.
 
-### `tokenize_string`
-
-**Description:**  
-The `tokenize_string` function processes an input string by removing all HTML tags, converting it to lowercase, stripping punctuation, and then tokenizing it by spaces. The resulting tokens are further refined by removing common stop words, producing a meaningful representation suitable for use with the embeddings API.
-
-**Parameters:**  
-* `$text` - The input string to be tokenized.
-* `$stopWords` (optional) - An array of words to be considered as stop words and removed from the tokenized output. If not provided, a default list of common English stop words will be used.
-
-**Usage:**  
-To tokenize a raw string:  
-```
-${tokenize_string(your_raw_text)}
-```
-
-To tokenize a raw string with custom stop words:  
-```
-${tokenize_string(your_raw_text, ["custom", "stop", "words"])}
-```
-
-**Default Stop Words:**  
-The default stop words list includes common English words like "a", "about", "above", and so forth. These words are typically removed to produce a cleaner, more meaningful representation of the input.
-
-
 ### `serialize_gpt_messages`
 
 This function serializes messages into human readable string.
