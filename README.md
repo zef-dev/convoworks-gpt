@@ -81,6 +81,14 @@ Each demo lives in its own fragment, so you can swap them in or out using **Incl
 3. **Connect with an SSE‑enabled client**  
    Any MCP client that speaks Server‑Sent Events (SSE) can use this URL directly—just paste it into the “server URL” field (for example, cLine for VS Code).
 
+### WordPress REST API as MCP Tools
+
+Convoworks GPT exposes the full WP REST API as MCP tools—definitions are built‑in and activated via separate filters for each endpoint group. See **Example 3 – External Functions** in the MCP Server Example for a live demo.
+
+**Available Filters:**  
+`convo_mcp_register_wp_posts`, `convo_mcp_register_wp_pages`, `convo_mcp_register_wp_comments`, `convo_mcp_register_wp_users`,  
+`convo_mcp_register_wp_media`, `convo_mcp_register_wp_plugins`, `convo_mcp_register_wp_taxonomies`, `convo_mcp_register_wp_settings`
+
 ---
 
 ### Optional: Proxy for stdio‑only clients
