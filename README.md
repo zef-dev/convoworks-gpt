@@ -131,7 +131,7 @@ A demo service with several switchable examples demonstrating no‑code function
 Two service‑level variables let you control auth and which REST APIs are active:
 
 **MCP_AUTH_USER_ID** (default: `0`) sets the WordPress user ID under which proxy calls run.  
-**MCP_ACTIVE_REST_APIS** (default: `["convo_mcp_register_wp_posts","convo_mcp_register_wp_settings"]`) is the list of filter names that enable specific REST‑API tools; only filters included here will be registered.
+**MCP_ACTIVE_REST_APIS** (default: `["convo_mcp_register_wp_posts"]`) is the list of filter names that enable specific REST‑API tools; only filters included here will be registered.
 
 ## Functions
 

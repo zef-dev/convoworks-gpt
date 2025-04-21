@@ -12,7 +12,7 @@
         "contexts": [],
         "variables": {
             "MCP_AUTH_USER_ID": "${0}",
-            "MCP_ACTIVE_REST_APIS": "${[\"convo_mcp_register_wp_posts\", \"convo_mcp_register_wp_settings\"]}"
+            "MCP_ACTIVE_REST_APIS": "${[\"convo_mcp_register_wp_posts\"]}"
         },
         "preview_variables": [],
         "entities": [],
