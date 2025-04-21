@@ -7,8 +7,14 @@ namespace Convo\Gpt;
 use Convo\Core\Factory\PackageProviderFactory;
 use Convo\Gpt\Admin\SettingsProcessor;
 use Convo\Gpt\Admin\SettingsView;
+use Convo\Gpt\Tools\CommentRestFunctions;
+use Convo\Gpt\Tools\MediaRestFunctions;
 use Convo\Gpt\Tools\PagesRestFunctions;
+use Convo\Gpt\Tools\PluginRestFunctions;
 use Convo\Gpt\Tools\PostRestFunctions;
+use Convo\Gpt\Tools\SettingsRestFunctions;
+use Convo\Gpt\Tools\TaxonomyRestFunctions;
+use Convo\Gpt\Tools\UserRestFunctions;
 use Psr\Container\ContainerInterface;
 
 class GptPlugin
@@ -68,6 +74,24 @@ class GptPlugin
 
         $pages = new PagesRestFunctions();
         $pages->register();
+
+        $comments = new CommentRestFunctions();
+        $comments->register();
+
+        $users = new UserRestFunctions();
+        $users->register();
+
+        $media = new MediaRestFunctions();
+        $media->register();
+
+        $plugins = new PluginRestFunctions();
+        $plugins->register();
+
+        $taxonomies = new TaxonomyRestFunctions();
+        $taxonomies->register();
+
+        $settings = new SettingsRestFunctions();
+        $settings->register();
     }
 
 
