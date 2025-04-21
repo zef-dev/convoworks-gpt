@@ -54,8 +54,7 @@ npm run build
 Convoworks GPT exposes the full WP REST API as MCP tools—definitions are built‑in and activated via separate filters for each endpoint group. See **Example 3 – External Functions** in the MCP Server Example for a live demo.
 
 **Available Filters:**  
-`convo_mcp_register_wp_posts`, `convo_mcp_register_wp_pages`, `convo_mcp_register_wp_comments`, `convo_mcp_register_wp_users`,  
-`convo_mcp_register_wp_media`, `convo_mcp_register_wp_plugins`, `convo_mcp_register_wp_taxonomies`, `convo_mcp_register_wp_settings`
+`convo_mcp_register_wp_posts`, `convo_mcp_register_wp_pages`, `convo_mcp_register_wp_comments`, `convo_mcp_register_wp_users`, `convo_mcp_register_wp_media`, `convo_mcp_register_wp_plugins`, `convo_mcp_register_wp_taxonomies`, `convo_mcp_register_wp_settings`
 
 ---
 
@@ -125,15 +124,14 @@ The Deep Research Assistant template empowers you to conduct iterative, in-depth
 
 ### MCP Server Example
 
-A demo service showing how to set up an MCP server with Convoworks WP. It includes:
+A demo service with several switchable examples demonstrating no‑code functions, WP REST Proxy calls, external REST‑API functions via filters, and reusable prompt templates.
 
-- **MCP Server** processor: accepts MCP protocol calls and routes them to its child fragments.  
-- **Example 1 – No‑Code Functions** fragment: implement chat/PHP functions entirely without writing code.  
-- **Example 2 – WP REST Proxy** fragment: expose a single WordPress REST API endpoint (e.g., list posts) via the WP REST Proxy Function.  
-- **Example 3 – External Functions** fragment: dynamically register full REST‑API endpoints (definitions live in PHP, pulled in via filters).  
-- **Prompt Template**: define and register reusable prompt templates.
+#### Service Configuration Variables
 
-Each demo lives in its own fragment, so you can swap them in or out using **Include Fragment** elements.
+Two service‑level variables let you control auth and which REST APIs are active:
+
+**MCP_AUTH_USER_ID** (default: `0`) sets the WordPress user ID under which proxy calls run.  
+**MCP_ACTIVE_REST_APIS** (default: `["convo_mcp_register_wp_posts","convo_mcp_register_wp_settings"]`) is the list of filter names that enable specific REST‑API tools; only filters included here will be registered.
 
 ## Functions
 
