@@ -1,0 +1,68 @@
+{
+    "template_id": "mcp-server-project",
+    "name": "MCP Server Project",
+    "description": "Blank, MCP server starter template.",
+    "service": {
+        "convo_service_version": 40,
+        "packages": [
+            "convo-core",
+            "convo-gpt"
+        ],
+        "contexts": [],
+        "variables": [],
+        "preview_variables": [],
+        "entities": [],
+        "intents": [],
+        "blocks": [
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\SpecialRoleProcessorBlock",
+                "namespace": "convo-core",
+                "properties": {
+                    "block_id": "MCP_Server",
+                    "name": "MCP Server",
+                    "role": "mcp-server",
+                    "processors": [
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\McpServerProcessor",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "WP MCP Server",
+                                "version": "1.0",
+                                "tools": [],
+                                "_component_id": "6p0uigl8-lbqp-8if5-diuw-xwwvijqgfbtf"
+                            }
+                        }
+                    ],
+                    "failback": [],
+                    "_component_id": "b9th0mg2-ymeo-hhkt-orif-ozjcafiqs2a0"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
+                "namespace": "convo-core",
+                "properties": {
+                    "role": "error_handler",
+                    "block_id": "Error_handler",
+                    "name": "Error handler",
+                    "pre_dispatch": [],
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "log_message": "${error.getMessage()}",
+                                "_component_id": "pqamtg9p-fdnj-tvdq-1ckm-3ynp5zznvg2n"
+                            }
+                        }
+                    ],
+                    "processors": [],
+                    "fallback": [],
+                    "_component_id": "701jr3fq-gior-sdop-w9or-cdgglgnvp1k8"
+                }
+            }
+        ],
+        "fragments": [],
+        "properties": [],
+        "configurations": []
+    }
+}
