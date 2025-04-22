@@ -7,43 +7,36 @@ namespace Convo\Gpt\Admin;
 
 class SettingsProcessor
 {
-    const ACTION_ENABLE   =   'convo_mcp_enable';
-    const ACTION_UPDATE   =   'convo_mcp_update';
+    const ACTION_ENABLE    = 'convo_mcp_enable';
+    const ACTION_UPDATE    = 'convo_mcp_update';
+    const ACTION_DISABLE   = 'convo_mcp_disable';  // ← fixed typo here
 
-
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var \Psr\Log\LoggerInterface */
     private $_logger;
 
-    /**
-     * @var SettingsViewModel
-     */
+    /** @var SettingsViewModel */
     private $_viewModel;
 
-
-    /**
-     * @var McpConvoworksManager
-     */
+    /** @var McpConvoworksManager */
     private $_mcpManager;
+
 
 
     public function __construct($logger, $viewModel, $mcpManager)
     {
         $this->_logger          =   $logger;
         $this->_viewModel       =   $viewModel;
-        $this->_mcpManager   =   $mcpManager;
+        $this->_mcpManager      =   $mcpManager;
     }
 
     public function accepts()
     {
-        $this->_logger->debug('Checkng action [' . $this->getAction() . ']');
-        if ($this->getAction() === self::ACTION_ENABLE) {
-            return true;
-        }
-        if ($this->getAction() === self::ACTION_UPDATE) {
-            return true;
-        }
+        $action = $this->getAction();
+        return in_array($action, [
+            self::ACTION_ENABLE,
+            self::ACTION_UPDATE,    // if you ever want to support updates
+            self::ACTION_DISABLE,   // ← now accepted
+        ], true);
     }
 
     public function getAction()
@@ -55,31 +48,37 @@ class SettingsProcessor
 
     public function run()
     {
-        $this->_logger->debug('Submitted page [' . print_r($_POST, true) . ']');
+        $svc = $this->_viewModel->getSelectedServiceId();
+        $this->_logger->info("Processing action [{$this->getAction()}] for service [{$svc}]");
 
-        $this->_logger->info('Processing action [' . $this->getAction() . '] with service [' . $this->_viewModel->getSelectedServiceId() . '] ..');
         try {
-            if ($this->getAction() === self::ACTION_ENABLE) {
-                $this->_processCreate($this->_viewModel->getSelectedServiceId());
-                add_settings_error('convo_mcp_settings', 'convo_mcp_settings', 'Mcp service configuration been successfully created!', 'success');
-            } else if ($this->getAction() === self::ACTION_UPDATE) {
-                $this->_processUpdate($this->_viewModel->getSelectedServiceId());
-                add_settings_error('convo_mcp_settings', 'convo_mcp_settings', 'Mcp service configuration been successfully updated!', 'success');
-            } else {
-                throw new \Exception('Unexpected action [' . $this->getAction() . ']');
+            switch ($this->getAction()) {
+                case self::ACTION_ENABLE:
+                    $this->_processCreate($svc);
+                    $msg = 'MCP service configuration has been successfully created!';
+                    $type = 'success';
+                    break;
+                case self::ACTION_DISABLE:
+                    $this->_processDisable($svc);
+                    $msg = 'MCP service configuration has been successfully disabled!';
+                    $type = 'success';
+                    break;
+                case self::ACTION_UPDATE:
+                    $this->_processUpdate($svc);
+                    $msg = 'MCP service configuration has been successfully updated!';
+                    $type = 'success';
+                    break;
+                default:
+                    throw new \Exception('Unexpected action [' . $this->getAction() . ']');
             }
+            add_settings_error('convo_mcp_settings', 'convo_mcp_settings', $msg, $type);
         } catch (\Exception $e) {
             $this->_logger->error($e);
             add_settings_error('convo_mcp_settings', 'convo_mcp_settings', $e->getMessage(), 'error');
-            //                 add_settings_error( 'convo_mcp_settings', 'convo_mcp_settings', 'Unexpected error while processing your request', 'error');
-
         }
 
         set_transient('convo_mcp_settings_errors', get_settings_errors(), 30);
-
-        $base_url = $this->_viewModel->getBaseUrl($this->_viewModel->getSelectedServiceId());
-        wp_safe_redirect($base_url);
-        $this->_logger->info('Redirecting to [' . $base_url . ']');
+        wp_safe_redirect($this->_viewModel->getBaseUrl($svc));
         exit;
     }
 
@@ -87,6 +86,13 @@ class SettingsProcessor
     {
         $this->_logger->info('Creatng mcp service for [' . $serviceId . ']');
         $this->_mcpManager->enableMcp($serviceId);
+    }
+
+    private function _processDisable($serviceId)
+    {
+        // update amazon config
+        $this->_logger->info('Disabling mcp service for [' . $serviceId . ']');
+        $this->_mcpManager->disableMcp($serviceId);
     }
 
     private function _processUpdate($serviceId)

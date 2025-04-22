@@ -74,6 +74,35 @@ class McpConvoworksManager
         throw new \Exception('Not implemented');
     }
 
+    public function disableMcp($serviceId)
+    {
+        $platformId =   McpServerPlatform::PLATFORM_ID;
+        $user       =   new AdminUser(wp_get_current_user());
+        $config     =   $this->_convoServiceDataProvider->getServicePlatformConfig(
+            $user,
+            $serviceId,
+            IPlatformPublisher::MAPPING_TYPE_DEVELOP
+        );
+
+        if (!isset($config[$platformId])) {
+            throw new \Convo\Core\Rest\NotFoundException('Service [' . $serviceId . '] config [' . $platformId . '] not found');
+        }
+
+        // RELEASES ?
+        // META ?
+
+        // PUBLISHER
+        $publisher    =    $this->_getMcpServerPublisher($user, $serviceId);
+        $report     =   [];
+        $publisher->delete($report);
+        $this->_logger->info('Platform delete report [' . print_r($report, true) . ']');
+
+        // CONFIG
+        $this->_logger->info('Deleting configuration [' . $platformId . '] for service [' . $serviceId . ']');
+        unset($config[$platformId]);
+        $this->_convoServiceDataProvider->updateServicePlatformConfig($user, $serviceId, $config);
+    }
+
     /**
      * @param IAdminUser $user
      * @param string $serviceId
