@@ -81,7 +81,7 @@ class ExternalChatFunctionElement extends AbstractWorkflowContainerComponent imp
                     'parameters' => [
                         'type' => 'object',
                         'properties' => empty($this->_functionData['parameters']) ? new \stdClass : $this->_functionData['parameters'],
-                        'required' => $this->_functionData['required'],
+                        'required' => $this->_functionData['required'] ?? [],
                     ],
                 ];
             }
