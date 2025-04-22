@@ -70,7 +70,7 @@ class PostRestFunctions extends AbstractRestFunctions
                 'execute' => function ($data) {
                     $id = $data['id'];
                     unset($data['id']);
-                    $fn = $this->_makeRestFn('GET', "posts/{$data['id']}");
+                    $fn = $this->_makeRestFn('GET', "posts/{$id}");
                     return $fn($data);
                 }
             ],
