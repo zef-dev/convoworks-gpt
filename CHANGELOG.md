@@ -1,6 +1,10 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.13.1 - 2025-04-22 - Menu fix
+
+* Remove MCP settings page from menu
+
 ### 0.13.0 - 2025-04-22 - MCP Server Support
 
 * Added MCP Server platform.  
