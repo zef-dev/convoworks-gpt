@@ -133,6 +133,8 @@ Two service‑level variables let you control auth and which REST APIs are activ
 **MCP_AUTH_USER_ID** (default: `0`) sets the WordPress user ID under which proxy calls run.  
 **MCP_ACTIVE_REST_APIS** (default: `["convo_mcp_register_wp_posts"]`) is the list of filter names that enable specific REST‑API tools; only filters included here will be registered.
 
+> **Security Note:** The MCP server currently has no built‑in authentication—anyone who knows your endpoint can connect. If you set **MCP_AUTH_USER_ID**, calls will run under that WordPress account (which could be dangerous on a public server). Future releases will add Basic Auth as a quick fix and OAuth2 for full security.
+
 ## Functions
 
 Convoworks GPT WordPress Plugin provides predefined functions that can be utilized within workflows to extend the capabilities and provide more dynamic interactions.
