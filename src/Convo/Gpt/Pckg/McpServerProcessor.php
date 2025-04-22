@@ -358,8 +358,15 @@ implements IConversationProcessor, IChatFunctionContainer
             $inputSchema['additionalProperties'] = false;
         }
 
-        // Add $schema to comply with MCP spec
-        $inputSchema['$schema'] = 'http://json-schema.org/draft-07/schema#';
+        if (empty((array)$def['parameters']['properties'])) {
+            return [
+                'name' => $name,
+                'description' => $description,
+                'inputSchema' => [
+                    'type' => 'object',
+                ]
+            ];
+        }
 
         return [
             'name' => $name,
