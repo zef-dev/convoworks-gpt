@@ -1,7 +1,7 @@
 
 ## Convoworks GPT WordPress plugin
 
-### 0.13.0 - 2025-04-21 - MCP Server Support
+### 0.13.0 - 2025-04-22 - MCP Server Support
 
 * Added MCP Server platform.  
 * Added **MCP Server Example** service template.  
