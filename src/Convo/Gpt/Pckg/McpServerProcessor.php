@@ -290,10 +290,15 @@ implements IConversationProcessor, IChatFunctionContainer
             $function_data = $data['params']['arguments'];
             $function_name = $data['params']['name'];
             $function = $this->_findFunction($function_name);
-
-            $function_result = $function instanceof \Convo\Core\Workflow\IScopedFunction
-                ? ($function->restoreParams($pid = $function->initParams()) ?? $function->execute($request, $response, $function_data))
-                : $function->execute($request, $response, $function_data);
+            $this->_logger->debug('Got processed JSON [' . $function_name . '][' . $function_data . ']');
+            $is_scoped = $function instanceof \Convo\Core\Workflow\IScopedFunction;
+            if ($is_scoped) {
+                $pid = $function->initParams();
+                $function_result = $function->execute($request, $response, $function_data);
+                $function->restoreParams($pid);
+            } else {
+                $function_result = $function->execute($request, $response, $function_data);
+            }
         } catch (\Throwable $e) {
             $this->_logger->warning($e);
             $function_result = json_encode(['error' => $e->getMessage()]);
