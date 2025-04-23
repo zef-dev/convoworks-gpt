@@ -36,16 +36,10 @@ class SseResponse implements IConvoResponse
 
 
 
-    public function addText($text, $append = false): void
-    {
-        throw new \RuntimeException('Not implemented');
-    }
+    public function addText($text, $append = false): void {}
 
 
-    public function getText()
-    {
-        throw new \RuntimeException('Not implemented');
-    }
+    public function getText() {}
 
 
     public function setShouldEndSession($shouldEndSession)
@@ -68,15 +62,9 @@ class SseResponse implements IConvoResponse
         throw new \RuntimeException('Not implemented');
     }
 
-    public function addRepromptText($text, $append = false)
-    {
-        throw new \RuntimeException('Not implemented');
-    }
+    public function addRepromptText($text, $append = false) {}
 
-    public function getRepromptText()
-    {
-        throw new \RuntimeException('Not implemented');
-    }
+    public function getRepromptText() {}
 
     public function getTextSsml()
     {
@@ -91,7 +79,6 @@ class SseResponse implements IConvoResponse
     public function getPlatformResponse()
     {
         return [];
-        // throw new \RuntimeException('Not implemented');
     }
 
 
