@@ -1,6 +1,10 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.13.2 - 2025-04-23 - Function scope fix
+
+* Initialize properly scoped function call
+
 ### 0.13.1 - 2025-04-22 - Menu fix
 
 * Remove MCP settings page from menu
