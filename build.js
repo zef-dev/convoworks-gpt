@@ -8,7 +8,7 @@ const buildDir = `dist/temp`; // Temporary build directory
 const outputDir = `build`; // Final output directory
 const pluginSlug = `convoworks-gpt`; // Final output directory
 const pluginDir = `${buildDir}/${pluginSlug}-v${version}`; // Directory name with version
-const rootFiles = ['src', `${pluginSlug}.php`, 'composer.json', 'composer.lock', 'README.md', 'CHANGELOG.md'];
+const rootFiles = ['assets', 'src', `${pluginSlug}.php`, 'composer.json', 'composer.lock', 'README.md', 'CHANGELOG.md'];
 
 // Step 1: Prepare directories
 fs.ensureDirSync(pluginDir);
