@@ -92,11 +92,16 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         // Write data to file
         file_put_contents($filepath, $jsonData);
 
+        $this->pingSession($sessionId);
+
+        $this->_logger->debug('Wrote notification to file: ' . $jsonData);
+    }
+
+    public function pingSession($sessionId): void
+    {
         $session = $this->getSession($sessionId);
         $session['last_active'] = time();
         $this->_saveSession($session);
-
-        $this->_logger->debug('Wrote notification to file: ' . $jsonData);
     }
 
     // PERSISTENCE
@@ -112,7 +117,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
             throw new \RuntimeException('Failed to decode session file: ' . $path);
         }
 
-        $this->_logger->debug('Loaded session: ' . json_encode($session));
+        // $this->_logger->debug('Loaded session: ' . json_encode($session));
 
         return $session;
     }

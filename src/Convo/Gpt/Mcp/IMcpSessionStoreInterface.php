@@ -18,6 +18,12 @@ interface IMcpSessionStoreInterface
      */
     public function createSession(): string;
 
+    /**
+     * Updates the last active time for the session.
+     *
+     * @param string $sessionId
+     */
+    public function pingSession($sessionId): void;
 
     /**
      * Initializes NEW session to INITIALISED.

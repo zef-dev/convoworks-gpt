@@ -29,11 +29,17 @@ class McpSessionManager
 
     // MESSAGE
     // check if valid session
-    public function getActiveSession($sessionId): array
+    public function getActiveSession($sessionId, $allowNew = false): array
     {
         $session = $this->_sessionStore->getSession($sessionId);
-        if ($session['status'] !== IMcpSessionStoreInterface::SESSION_STATUS_INITIALISED) {
-            throw new DataItemNotFoundException('No active session not found: ' . $sessionId);
+        $status_ok = [
+            IMcpSessionStoreInterface::SESSION_STATUS_INITIALISED,
+        ];
+        if ($allowNew) {
+            $status_ok[] = IMcpSessionStoreInterface::SESSION_STATUS_NEW;
+        }
+        if (!in_array($session['status'], $status_ok)) {
+            throw new DataItemNotFoundException('No active session found [' . $allowNew . ']: ' . $sessionId);
         }
         if ($session['last_active'] < time() - CONVO_GPT_MCP_SESSION_TIMEOUT) {
             throw new DataItemNotFoundException('Session expired: ' . $sessionId);
@@ -97,8 +103,20 @@ class McpSessionManager
     public function listen($sessionId): void
     {
         $lastPing = time();
+        $lastSessionCheck = time();
 
         while (!connection_aborted()) {
+
+            // Perform session check once per second
+            if ((time() - $lastSessionCheck) >= 1) {
+                try {
+                    $this->getActiveSession($sessionId, true);
+                } catch (DataItemNotFoundException $e) {
+                    $this->_logger->warning("Session check failed [$sessionId]: " . $e->getMessage());
+                    break;
+                }
+                $lastSessionCheck = time();
+            }
 
             // Send message if available
             $empty = true;
@@ -112,6 +130,7 @@ class McpSessionManager
             // Send ping if needed
             if (CONVO_GPT_MCP_PING_INTERVAL && (time() - $lastPing) >= CONVO_GPT_MCP_PING_INTERVAL) {
                 $this->streamEvent($sessionId, 'ping', '{}');
+                $this->_sessionStore->pingSession($sessionId);
                 $this->_logger->debug("Ping sent [$sessionId]");
                 $lastPing = time();
             }
