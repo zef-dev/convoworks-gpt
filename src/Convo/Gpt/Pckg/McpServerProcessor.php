@@ -80,7 +80,7 @@ implements IConversationProcessor, IChatFunctionContainer
         $session_id = $request->getSessionId();
         // $service_id = $request->getServiceId();
 
-        if (stripos($method, 'notifications') !== false) {
+        if (empty($method) || stripos($method, 'notifications') !== false) {
             $this->_handleNotification($method, $request);
             return;
         }
