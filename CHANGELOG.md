@@ -1,6 +1,11 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.14.0 - 2025-04-25 - Session ping
+
+* Improved keep alive mechanism and check
+* Added missing MCP logo 
+
 ### 0.13.2 - 2025-04-23 - Function scope fix
 
 * Initialize properly scoped function call
