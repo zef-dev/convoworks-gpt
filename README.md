@@ -7,7 +7,7 @@ Convoworks GPT is an extension package for [Convoworks framework](https://github
 This is a development version and it is yet decided will this package be part of the Convoworks core or will it stay as a separate plugin.
 
 > **Note:** The Convoworks WP plugin is currently unavailable on WordPress.org due to an automated disable triggered by email server issues. In the meantime, you can download it directly here:  
-> https://downloads.wordpress.org/plugin/convoworks-wp.0.22.43.zip
+> https://downloads.wordpress.org/plugin/convoworks-wp.0.22.44.zip
 
 ## Building the Plugin
 
