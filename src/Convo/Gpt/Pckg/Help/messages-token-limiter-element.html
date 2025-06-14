@@ -1,0 +1,43 @@
+<div>
+    <h3>GPT Messages Token Limiter</h3>
+
+    <p>
+        Limits the size of messages by estimated token count, summarizing the oldest ones. When the conversation reaches the specified maximum estimated token count, this component will shrink the conversation by summarizing the truncated messages and prepending the summary as a system message.
+    </p>
+
+    <h3>System Message</h3>
+    <p>
+        The main system prompt instructing GPT-3 on how to summarize the conversation. This prompt helps ensure that the summary contains all the essential details.
+    </p>
+
+    <h3>Max Tokens to Keep</h3>
+    <p>
+        The maximum estimated token count allowed in the conversation before it gets summarized. Tokens are estimated for each message's content.
+    </p>
+
+    <h3>Truncate to Tokens</h3>
+    <p>
+        The estimated token count to retain after the conversation is summarized. This value is set lower than the maximum to ensure the conversation size remains under control.
+    </p>
+
+    <h3>API Options</h3>
+    <p>
+        Chat completion API options that are used for summarization. These options dictate the behavior of the GPT-3 model, such as which version of the model to use, the desired temperature setting, and the token limit.
+    </p>
+
+    <h3>Result Variable Name</h3>
+    <p>
+        The name of the variable available in the truncated flow. The variable contains two fields:
+        <code>messages</code>, an array containing the current messages, and <code>truncated</code>, an array containing the truncated messages.
+    </p>
+
+    <h3>Truncated Flow</h3>
+    <p>
+        The flow that is executed when the conversation is truncated.
+    </p>
+
+    <h3>Messages</h3>
+    <p>
+        Provides the conversation messages which are being summarized. This is a service component allowing interfaces with the Convo system to retrieve the messages.
+    </p>
+</div>

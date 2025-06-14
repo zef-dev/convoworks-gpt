@@ -915,6 +915,167 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
             ),
             new \Convo\Core\Factory\ComponentDefinition(
                 $this->getNamespace(),
+                '\Convo\Gpt\Pckg\SimpleMessagesTokenLimiterElement',
+                'Simple Messages Token Limiter',
+                'Limits messages by estimated token size, simply removing the oldest ones until under the limit.',
+                [
+                    'max_tokens' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${4096}',
+                        'name' => 'Max Tokens to Keep',
+                        'description' => 'The maximum estimated token count allowed before the conversation is trimmed.',
+                        'valueType' => 'string'
+                    ],
+                    'truncate_to_tokens' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${3072}',
+                        'name' => 'Truncate to Tokens',
+                        'description' => 'The estimated token count to retain after trimming.',
+                        'valueType' => 'string'
+                    ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result variable',
+                        'description' => 'The variable that stores the result of the truncation operation.',
+                        'valueType' => 'string'
+                    ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Provides the conversation messages that need to be trimmed.',
+                        'valueType' => 'class'
+                    ],
+                    'truncated_flow' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Truncated Flow',
+                        'description' => 'The flow to execute if the conversation is truncated.',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">SIMPLE MESSAGES TOKEN LIMITER</span>' .
+                            ' => <b>{{component.properties.max_tokens}}</b>, <b>{{component.properties.truncate_to_tokens}}</b>' .
+                            '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'simple-messages-token-limiter-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
+                '\Convo\Gpt\Pckg\MessagesTokenLimiterElement',
+                'GPT Messages Token Limiter',
+                'Limits messages by estimated token size, summarizing the oldest ones until under the limit.',
+                [
+                    'system_message' => [
+                        'editor_type' => 'desc',
+                        'editor_properties' => [],
+                        'defaultValue' => 'Considering all the prior conversation including the previous summaries, please generate a concise summary capturing the key points and significant themes up until now. Please ensure the summary contains all necessary information to understand the context of the current conversation.',
+                        'name' => 'System message',
+                        'description' => 'Main, system prompt which instructs how to summarize the conversation.',
+                        'valueType' => 'string'
+                    ],
+                    'max_tokens' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${4096}',
+                        'name' => 'Max Tokens to Keep',
+                        'description' => 'The maximum estimated token count allowed before the conversation is summarized.',
+                        'valueType' => 'string'
+                    ],
+                    'truncate_to_tokens' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${3072}',
+                        'name' => 'Truncate to Tokens',
+                        'description' => 'The estimated token count to retain after summarization.',
+                        'valueType' => 'string'
+                    ],
+                    'api_key' => $API_KEY,
+                    'base_url' => $BASE_URL,
+                    'apiOptions' => [
+                        'editor_type' => 'params',
+                        'editor_properties' => ['multiple' => true],
+                        'defaultValue' => [
+                            'model' => 'gpt-3.5-turbo',
+                            'temperature' => '${0.7}',
+                            'max_tokens' => '${256}',
+                        ],
+                        'name' => 'API options',
+                        'description' => 'Chat completion API options for summarization.',
+                        'valueType' => 'array'
+                    ],
+                    'result_var' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => 'status',
+                        'name' => 'Result variable',
+                        'description' => 'The variable that stores the result of the truncation operation.',
+                        'valueType' => 'string'
+                    ],
+                    'message_provider' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Messages',
+                        'description' => 'Provides the conversation messages that need to be summarized.',
+                        'valueType' => 'class'
+                    ],
+                    'truncated_flow' => [
+                        'editor_type' => 'service_components',
+                        'editor_properties' => [
+                            'allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'],
+                            'multiple' => true
+                        ],
+                        'defaultValue' => [],
+                        'defaultOpen' => true,
+                        'name' => 'Truncated Flow',
+                        'description' => 'The flow to execute if the conversation is truncated.',
+                        'valueType' => 'class'
+                    ],
+                    '_preview_angular' => [
+                        'type' => 'html',
+                        'template' => '<div class="code"><span class="statement">GPT MESSAGES TOKEN LIMITER</span>' .
+                            ' => <b>{{component.properties.max_tokens}}</b>, <b>{{component.properties.truncate_to_tokens}}</b>' .
+                            '<br>{{component.properties.system_message}}' .
+                            '</div>'
+                    ],
+                    '_interface' => '\Convo\Core\Workflow\IConversationElement',
+                    '_workflow' => 'read',
+                    '_descend' => 'true',
+                    '_help' =>  [
+                        'type' => 'file',
+                        'filename' => 'messages-token-limiter-element.html'
+                    ],
+                ]
+            ),
+            new \Convo\Core\Factory\ComponentDefinition(
+                $this->getNamespace(),
                 '\Convo\Gpt\Pckg\SystemMessageElement',
                 'System Message',
                 'Defines a system-generated message within the chat context.',
