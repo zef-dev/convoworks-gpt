@@ -309,9 +309,28 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
             }
         );
 
+        $functions[] = new ExpressionFunction(
+            'estimate_tokens',
+            function ($content) {
+                return sprintf('estimate_tokens(%s)', var_export($content, true));
+            },
+            function ($args, $content) {
+                return self::estimateTokens($content);
+            }
+        );
+
         return $functions;
     }
 
+    public static function estimateTokens($content)
+    {
+        $word_count = str_word_count($content);
+        $char_count = mb_strlen($content);
+        $tokens_count_word_est = intval($word_count / 0.75);
+        $tokens_count_char_est = intval($char_count / 4);
+        $result = intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
+        return $result;
+    }
 
     public static function splitTextIntoChunks($text, $maxChar, $margin)
     {

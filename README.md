@@ -180,6 +180,26 @@ ${split_text_into_chunks(large_document, 20000, 500)}
 2. It accumulates text segments into chunks until the combined length exceeds the `maxChar` limit.
 3. Any chunk smaller than the margin is appended to the previous chunk, ensuring that no small, incomplete chunks are created.
 
+### `estimate_tokens`
+
+**Description:**  
+The `estimate_tokens` function provides a robust estimate of the number of tokens in a given string, useful for working with GPT models (such as OpenAI's GPT-3/4).
+
+It estimates the number of tokens by combining two heuristics:
+- Calculates the number of words and divides by 0.75.
+- Calculates the number of characters and divides by 4.
+- The final estimate is the average of these two values, rounded down to the nearest integer.
+
+**Parameters:**  
+* `$content` - The string to estimate token count for.
+
+**Usage:**  
+To estimate the number of tokens in a string:
+```
+${estimate_tokens(content)}
+```
+
+This approach provides a more accurate estimate for English and similar languages, and is suitable for most GPT model tokenization needs.
 
 
 ## Components
