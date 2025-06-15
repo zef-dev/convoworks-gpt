@@ -329,4 +329,47 @@ abstract class Util
 
         return $chunks;
     }
+
+    /**
+     * Serializes GPT messages for use in expressions (user/assistant only, non-empty content).
+     * @param array $messages
+     * @return string
+     */
+    public static function serializeGptMessages(array $messages)
+    {
+        $filteredMessages = array_filter($messages, function ($message) {
+            return in_array($message['role'], ['user', 'assistant'], true) && !empty(trim($message['content']));
+        });
+
+        return implode("\n\n", array_map(function ($message) {
+            $role = ucfirst($message['role']);
+            return sprintf("%s: %s", $role, $message['content']);
+        }, $filteredMessages));
+    }
+
+    /**
+     * Unserializes a string into GPT messages (user/assistant).
+     * @param string $string
+     * @return array
+     */
+    public static function unserializeGptMessages(string $string)
+    {
+        $messages = [];
+
+        $entries = preg_split("/\n\n+/", trim($string));
+
+        foreach ($entries as $entry) {
+            if (preg_match('/^([A-Za-z]+):\s*(.*)$/s', $entry, $matches)) {
+                $role = strtolower($matches[1]);
+                $content = $matches[2];
+
+                $messages[] = [
+                    'role' => $role,
+                    'content' => $content,
+                ];
+            }
+        }
+
+        return $messages;
+    }
 }
