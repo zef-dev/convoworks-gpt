@@ -7,86 +7,29 @@ namespace Convo\Gpt;
 abstract class Util
 {
 
-    /**
-     * Serializes an array of messages into a formatted string.
-     *
-     * Filters messages to include only those with roles 'user' or 'assistant' and non-empty content by default.
-     * If $includeSystem is true, 'system' messages are also included.
-     * The output format is "Role: Content" for each message, separated by two newlines.
-     *
-     * @param array $messages The array of messages to serialize. Each message should be an associative array
-     *                        with 'role' (string) and 'content' (string) keys.
-     * @param bool $includeSystem Whether to include 'system' messages in the output. Default is false.
-     * @return string The serialized string of messages in the format "Role: Content", with entries separated by two newlines.
-     */
-    public static function serializeMessages(array $messages, bool $includeSystem = false)
+
+    // TOKENS ESTIMATION
+    public static function estimateTokens($content)
     {
-        // Include 'user' and 'assistant' messages, and optionally 'system' messages
-        $validRoles = ['user', 'assistant'];
-        if ($includeSystem) {
-            $validRoles[] = 'system';
-        }
-
-        $filteredMessages = array_filter($messages, function ($message) use ($validRoles) {
-            return in_array($message['role'], $validRoles, true) && !empty(trim($message['content'] ?? ''));
-        });
-
-        return implode("\n\n", array_map(function ($message) {
-            $role = ucfirst($message['role']);
-            return sprintf("%s: %s", $role, $message['content']);
-        }, $filteredMessages));
+        $word_count = str_word_count($content);
+        $char_count = mb_strlen($content);
+        $tokens_count_word_est = intval($word_count / 0.75);
+        $tokens_count_char_est = intval($char_count / 4);
+        $result = intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
+        return $result;
     }
 
-
-
-    /**
-     * Unserializes a formatted string into an array of messages.
-     *
-     * The input string should be in the format "Role: Content" for each message, with entries separated by two or more newlines.
-     * Extracts the 'role' and 'content' for each message and converts the role to lowercase.
-     *
-     * @param string $string The serialized string of messages to unserialize.
-     * @return array The unserialized array of messages. Each message is an associative array with 'role' (string) and 'content' (string) keys.
-     */
-    public static function unserializeMessages(string $string)
+    public static function estimateMessageTokens($message)
     {
-        $messages = [];
-
-        $entries = preg_split("/\n\n+/", trim($string));
-
-        foreach ($entries as $entry) {
-            if (preg_match('/^([A-Za-z]+):\s*(.*)$/s', $entry, $matches)) {
-                $role = strtolower($matches[1]); // Convert role back to lowercase
-                $content = $matches[2];
-
-                $messages[] = [
-                    'role' => $role,
-                    'content' => $content,
-                ];
-            }
+        if (isset($message['content']) && is_string($message['content'])) {
+            $content = $message['content'];
+        } else {
+            $content = '';
         }
-
-        return $messages;
+        return self::estimateTokens($content);
     }
 
-    /**
-     * Truncates conversation messages while preserving logical message structure.
-     *
-     * @param array $messages Array of messages to potentially truncate.
-     * @param int $maxMessages Maximum allowed length of the array.
-     * @param int $truncateTo Minimum number of items to keep in the array if truncation is necessary.
-     * @return array Truncated or original array.
-     */
-    public static function truncate(array $messages, int $maxMessages, int $truncateTo): array
-    {
-        if (count($messages) <= $maxMessages) {
-            // No truncation needed
-            return $messages;
-        }
-
-        return self::truncateToSize($messages, $truncateTo);
-    }
-
+    // TRUNCATE
     /**
      * Truncates conversation messages to a specified size while preserving logical message structure.
      * @param array $messages Array of messages to truncate.
@@ -127,6 +70,50 @@ abstract class Util
     }
 
     /**
+     * Truncates conversation messages while preserving logical message structure.
+     *
+     * @param array $messages Array of messages to potentially truncate.
+     * @param int $maxMessages Maximum allowed length of the array.
+     * @param int $truncateTo Minimum number of items to keep in the array if truncation is necessary.
+     * @return array Truncated or original array.
+     */
+    public static function truncate(array $messages, int $maxMessages, int $truncateTo): array
+    {
+        if (count($messages) <= $maxMessages) {
+            // No truncation needed
+            return $messages;
+        }
+
+        return self::truncateToSize($messages, $truncateTo);
+    }
+
+    public static function truncateByTokens($messages, $max, $to)
+    {
+        $size = 0;
+        $counter = 0;
+        $to_no = 0;
+        $break = false;
+        foreach ($messages as $message) {
+            $size += self::estimateMessageTokens($message);
+            if ($size > $max) {
+                $break = true;
+                break;
+            }
+            if ($size <= $to) {
+                $to_no = $counter;
+            }
+            $counter++;
+        }
+
+        if ($break) {
+            return self::truncateToSize($messages, $to_no);
+        }
+
+        return $messages;
+    }
+
+
+    /**
      * Returns the truncated part of the original messages.
      *
      * @param array $originalMessages The original array of messages.
@@ -145,6 +132,7 @@ abstract class Util
         return array_slice($originalMessages, 0, $truncatedSize);
     }
 
+    // JSON HANDLING
     /**
      * Tries to correct invalid JSON data in cases when GPT uses PHP constants in function calls
      * @param string $json
@@ -210,51 +198,7 @@ abstract class Util
         return $data;
     }
 
-    public static function estimateMessageTokens($message)
-    {
-        if (isset($message['content']) && is_string($message['content'])) {
-            $content = $message['content'];
-        } else {
-            $content = '';
-        }
-        return self::estimateTokens($content);
-    }
-
-    public static function estimateTokens($content)
-    {
-        $word_count = str_word_count($content);
-        $char_count = mb_strlen($content);
-        $tokens_count_word_est = intval($word_count / 0.75);
-        $tokens_count_char_est = intval($char_count / 4);
-        $result = intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
-        return $result;
-    }
-
-    public static function truncateByTokens($messages, $max, $to)
-    {
-        $size = 0;
-        $counter = 0;
-        $to_no = 0;
-        $break = false;
-        foreach ($messages as $message) {
-            $size += self::estimateMessageTokens($message);
-            if ($size > $max) {
-                $break = true;
-                break;
-            }
-            if ($size <= $to) {
-                $to_no = $counter;
-            }
-            $counter++;
-        }
-
-        if ($break) {
-            return self::truncateToSize($messages, $to_no);
-        }
-
-        return $messages;
-    }
-
+    // SPLIT LARGE TEXT INTO CHUNKS
     public static function splitTextIntoChunks($text, $maxChar, $margin)
     {
         $chunks = [];
@@ -286,15 +230,29 @@ abstract class Util
         return $chunks;
     }
 
+    // MESSSAGES SERIALIZATION
     /**
-     * Serializes GPT messages for use in expressions (user/assistant only, non-empty content).
-     * @param array $messages
-     * @return string
+     * Serializes an array of messages into a formatted string.
+     *
+     * Filters messages to include only those with roles 'user' or 'assistant' and non-empty content by default.
+     * If $includeSystem is true, 'system' messages are also included.
+     * The output format is "Role: Content" for each message, separated by two newlines.
+     *
+     * @param array $messages The array of messages to serialize. Each message should be an associative array
+     *                        with 'role' (string) and 'content' (string) keys.
+     * @param bool $includeSystem Whether to include 'system' messages in the output. Default is false.
+     * @return string The serialized string of messages in the format "Role: Content", with entries separated by two newlines.
      */
-    public static function serializeGptMessages(array $messages)
+    public static function serializeGptMessages(array $messages, bool $includeSystem = false)
     {
-        $filteredMessages = array_filter($messages, function ($message) {
-            return in_array($message['role'], ['user', 'assistant'], true) && !empty(trim($message['content']));
+        // Include 'user' and 'assistant' messages, and optionally 'system' messages
+        $validRoles = ['user', 'assistant'];
+        if ($includeSystem) {
+            $validRoles[] = 'system';
+        }
+
+        $filteredMessages = array_filter($messages, function ($message) use ($validRoles) {
+            return in_array($message['role'], $validRoles, true) && !empty(trim($message['content'] ?? ''));
         });
 
         return implode("\n\n", array_map(function ($message) {

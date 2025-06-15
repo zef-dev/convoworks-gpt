@@ -11,7 +11,7 @@ class SummarizeMessagesTest extends TestCase
      */
     public function testSummarizeMessages($messages, $expected)
     {
-        $result = Util::serializeMessages($messages);
+        $result = Util::serializeGptMessages($messages);
         $this->assertEquals($expected, $result, "Failed asserting that serialized messages are as expected.");
     }
 

@@ -43,7 +43,7 @@ class MessagesLimiterElement extends SimpleMessagesLimiterElement
 
         $messages[] =   [
             'role' => 'user',
-            'content' => Util::serializeMessages($conversation, true)
+            'content' => Util::serializeGptMessages($conversation, true)
         ];
 
         $api_key    =   $this->evaluateString($this->_properties['api_key']);
