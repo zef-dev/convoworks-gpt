@@ -694,7 +694,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     'max_tokens' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${4096}',
+                        'defaultValue' => '${8192}',
                         'name' => 'Max Tokens to Keep',
                         'description' => 'The maximum estimated token count allowed before the conversation is trimmed.',
                         'valueType' => 'string'
@@ -702,7 +702,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     'truncate_to_tokens' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${3072}',
+                        'defaultValue' => '${4096}',
                         'name' => 'Truncate to Tokens',
                         'description' => 'The estimated token count to retain after trimming.',
                         'valueType' => 'string'
@@ -807,7 +807,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     'max_tokens' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${4096}',
+                        'defaultValue' => '${8192}',
                         'name' => 'Max Tokens to Keep',
                         'description' => 'The maximum estimated token count allowed before the conversation is trimmed.',
                         'valueType' => 'string'
@@ -815,7 +815,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     'truncate_to_tokens' => [
                         'editor_type' => 'text',
                         'editor_properties' => [],
-                        'defaultValue' => '${3072}',
+                        'defaultValue' => '${4096}',
                         'name' => 'Truncate to Tokens',
                         'description' => 'The estimated token count to retain after trimming.',
                         'valueType' => 'string'
