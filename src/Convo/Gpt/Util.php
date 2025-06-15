@@ -139,66 +139,41 @@ abstract class Util
 
     /**
      * Truncates conversation messages to a specified size while preserving logical message structure.
-     *
-     * Groups messages as follows:
-     * - A 'user' message followed by an 'assistant' message (max size 2)
-     * - A 'tool_calls' message followed by all subsequent 'tool' messages
-     *
-     * When truncating, it removes groups from the start until the total size is less than or equal to the specified size.
-     *
      * @param array $messages Array of messages to truncate.
      * @param int $size The target size to truncate the messages to.
      * @return array The truncated array of messages.
      */
     public static function truncateToSize(array $messages, int $size): array
     {
-        // Group messages as in the original function
-        $groups = [];
-        $currentGroup = [];
-        $previousRole = null;
+        if (empty($messages) || $size <= 0) {
+            return [];
+        }
 
+        $n = count($messages);
+        // If already fits, return as is
+        if ($n <= $size) {
+            return $messages;
+        }
+
+        $messages = array_reverse($messages);
+
+        $buffer = [];
+        $truncated = [];
         foreach ($messages as $message) {
-            $role = $message['role'];
 
-            if (empty($currentGroup)) {
-                $currentGroup[] = $message;
-            } else {
-                if ($role === 'user' && $previousRole !== 'user') {
-                    $groups[] = $currentGroup;
-                    $currentGroup = [$message];
+            if ($message['role'] === 'user') {
+                if (count($buffer) + count($truncated) < $size) {
+                    $truncated = array_merge($truncated, $buffer, [$message]);
+                    $buffer = [];
+                    continue;
                 } else {
-                    $currentGroup[] = $message;
+                    return array_reverse($truncated);
                 }
             }
-            $previousRole = $role;
+            $buffer[] = $message;
         }
 
-        if (!empty($currentGroup)) {
-            $groups[] = $currentGroup;
-        }
-
-        // Calculate total messages
-        $totalMessages = array_sum(array_map('count', $groups));
-
-        // Truncate groups from the beginning until totalMessages <= $size
-        $startIndex = 0;
-        while ($totalMessages > $size && $startIndex < count($groups)) {
-            $groupSize = count($groups[$startIndex]);
-            if (($totalMessages - $groupSize) >= $size) {
-                $totalMessages -= $groupSize;
-                $startIndex++;
-            } else {
-                break;
-            }
-        }
-
-        // Merge the remaining groups
-        $truncatedMessages = [];
-        for ($i = $startIndex; $i < count($groups); $i++) {
-            $truncatedMessages = array_merge($truncatedMessages, $groups[$i]);
-        }
-
-        return $truncatedMessages;
+        return array_reverse(array_merge($truncated, $buffer));
     }
 
 

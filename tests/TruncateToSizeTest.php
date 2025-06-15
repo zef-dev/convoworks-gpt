@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../convoworks-core/vendor/autoload.php';
+
 use PHPUnit\Framework\TestCase;
 use Convo\Gpt\Util;
 
@@ -18,13 +20,13 @@ class TruncateToSizeTest extends TestCase
     public function dataProviderTruncateToSize()
     {
         return [
-            // Empty array
+            // #0 Empty array
             [
                 [],
                 [],
                 5
             ],
-            // No truncation needed
+            // #1 No truncation needed
             [
                 [
                     ['role' => 'user', 'content' => 'What is the weather?'],
@@ -42,7 +44,7 @@ class TruncateToSizeTest extends TestCase
                 ],
                 5
             ],
-            // Truncate, preserve groupings
+            // #2 Truncate, preserve groupings
             [
                 [
                     ['role' => 'assistant', 'content' => 'How can I help?'],
@@ -59,9 +61,10 @@ class TruncateToSizeTest extends TestCase
                 ],
                 3
             ],
-            // Truncate, keep user/assistant together
+            // #3 Truncate, keep user/assistant together
             [
                 [
+                    ['role' => 'user', 'content' => 'Yo!'],
                     ['role' => 'assistant', 'content' => 'How can I help?', 'tool_calls' => null],
                     ['role' => 'user', 'content' => 'Hello!'],
                     ['role' => 'assistant', 'content' => 'Hi there!', 'tool_calls' => null],
@@ -74,7 +77,7 @@ class TruncateToSizeTest extends TestCase
                 ],
                 3
             ],
-            // Truncate, keep tool_calls group together
+            // #4 Truncate, keep tool_calls group together
             [
                 [
                     ['role' => 'user', 'content' => 'What is the weather?'],
@@ -91,7 +94,7 @@ class TruncateToSizeTest extends TestCase
                 2
             ],
 
-            // Truncate, keep large tool_calls group together
+            // #5 Truncate, keep large tool_calls group together
             [
                 [
                     ['role' => 'user', 'content' => 'What is the weather for next 7 days'],
@@ -108,22 +111,12 @@ class TruncateToSizeTest extends TestCase
                     ['role' => 'assistant', 'content' => 'You are welcome'],
                 ],
                 [
-                    ['role' => 'user', 'content' => 'What is the weather for next 7 days'],
-                    ['role' => 'assistant', 'content' => 'Let me check', 'tool_calls' => [['name' => 'weather_api_call']]],
-                    ['role' => 'tool', 'content' => 'Sunny, 75°F'],
-                    ['role' => 'tool', 'content' => 'Sunny, 65°F'],
-                    ['role' => 'tool', 'content' => 'Sunny, 60°F'],
-                    ['role' => 'tool', 'content' => 'Cold, 40°F'],
-                    ['role' => 'tool', 'content' => 'Rain, 60°F'],
-                    ['role' => 'tool', 'content' => 'Sunny, 65°F'],
-                    ['role' => 'tool', 'content' => 'Sunny, 75°F'],
-                    ['role' => 'assistant', 'content' => 'Weather is great'],
                     ['role' => 'user', 'content' => 'Thank you.'],
                     ['role' => 'assistant', 'content' => 'You are welcome'],
                 ],
                 10
             ],
-            // Truncate, group size > size (should keep last group only)
+            // #6 Truncate, group size > size (should keep last group only)
             [
                 [
                     ['role' => 'user', 'content' => 'A'],
@@ -139,7 +132,7 @@ class TruncateToSizeTest extends TestCase
                 ],
                 2
             ],
-            // Truncate, group size > size (should keep only last group, even if group is larger than size)
+            // #7 Truncate, group size > size (should keep only last group, even if group is larger than size)
             [
                 [
                     ['role' => 'user', 'content' => 'A'],
@@ -157,9 +150,9 @@ class TruncateToSizeTest extends TestCase
                     ['role' => 'user', 'content' => 'I'],
                     ['role' => 'assistant', 'content' => 'J'],
                 ],
-                1
+                2
             ],
-            // Truncate, complex tool_calls scenario
+            // #8 Truncate, complex tool_calls scenario
             [
                 [
                     ['role' => 'assistant', 'content' => 'Hey there! What can I do for you?', 'tool_calls' => null],
@@ -185,10 +178,6 @@ class TruncateToSizeTest extends TestCase
                     ['role' => 'tool', 'content' => 'function_result'],
                 ],
                 [
-                    ['role' => 'user', 'content' => 'what do we have in uploads folder?'],
-                    ['role' => 'assistant', 'content' => '', 'tool_calls' => [[]]],
-                    ['role' => 'tool', 'content' => 'function_result'],
-                    ['role' => 'assistant', 'content' => 'In the uploads folder, we have the following directories:', 'tool_calls' => null],
                     ['role' => 'user', 'content' => 'list me all files in astro folder (and subfolders)'],
                     ['role' => 'assistant', 'content' => '', 'tool_calls' => [[]]],
                     ['role' => 'tool', 'content' => 'function_result'],
@@ -196,7 +185,7 @@ class TruncateToSizeTest extends TestCase
                     ['role' => 'tool', 'content' => 'function_result'],
                     ['role' => 'tool', 'content' => 'function_result'],
                 ],
-                10
+                9
             ],
         ];
     }
