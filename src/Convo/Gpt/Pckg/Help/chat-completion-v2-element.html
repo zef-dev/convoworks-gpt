@@ -5,6 +5,18 @@
     <h3>Result Variable Name</h3>
     <p>The variable that stores the API completion response. Default is <strong>status</strong>, and it can hold various response details such as the full response body or the last message returned by GPT.</p>
 
+    <h3>Base URL</h3>
+    <p>
+        Optional. Sets the base URL for the API endpoint. If left blank, the default is
+        <code>https://api.openai.com/v1</code>. Use this to point to a custom or proxy endpoint if needed.
+    </p>
+
+    <h3>Max Function Result Tokens</h3>
+    <p>
+        Optional. Sets the maximum number of tokens allowed for the function result. Default is <code>8192</code>. This
+        limits the size of the output returned by a function call within the chat completion process.
+    </p>
+
     <h3>API Options</h3>
     <p>Configuration options for the chat completion API, such as the model, temperature, and token limit.</p>
 

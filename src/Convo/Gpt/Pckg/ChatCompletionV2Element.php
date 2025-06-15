@@ -234,13 +234,17 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                             $result     =   $function->execute($request, $response, $function_data);
                         }
 
-                        $MAX_RESULT_TOKENS = 1024 * 10;
-                        $result_size = Util::estimateTokens($result);
-                        if ($result_size > $MAX_RESULT_TOKENS) {
-                            throw new RuntimeException('Function [' . $function_name . '] returned too large result [' . $result_size . ']. If possible, adjust the function arguments to return less data. Maximum allowed is [' . $MAX_RESULT_TOKENS . '] tokens.');
+                        if (isset($this->_properties['max_func_result_tokens']) && !empty($this->_properties['max_func_result_tokens'])) {
+                            $MAX_RESULT_TOKENS = $this->evaluateString($this->_properties['max_func_result_tokens']);
+
+                            $result_size = Util::estimateTokens($result);
+                            $this->_logger->debug('Function [' . $function_name . '] returned result [' . $result_size . '] tokens. Max allowed is [' . $MAX_RESULT_TOKENS . ']');
+                            if ($result_size > $MAX_RESULT_TOKENS) {
+                                throw new RuntimeException('Function [' . $function_name . '] returned too large result [' . $result_size . ']. If possible, adjust the function arguments to return less data. Maximum allowed is [' . $MAX_RESULT_TOKENS . '] tokens.');
+                            }
                         }
                     } catch (\Throwable $e) {
-                        $this->_logger->warning($e);
+                        $this->_logger->warning($e->getMessage());
                         $result = json_encode(['error' => $e->getMessage()]);
                     }
 

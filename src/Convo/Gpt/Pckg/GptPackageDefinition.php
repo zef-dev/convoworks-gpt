@@ -422,13 +422,21 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     ],
                     'api_key' => $API_KEY,
                     'base_url' => $BASE_URL,
+                    'max_func_result_tokens' => [
+                        'editor_type' => 'text',
+                        'editor_properties' => [],
+                        'defaultValue' => '${8192}',
+                        'name' => 'Max Function Result Size',
+                        'description' => 'Maximum number of tokens allowed for the function result.',
+                        'valueType' => 'string'
+                    ],
                     'apiOptions' => [
                         'editor_type' => 'params',
                         'editor_properties' => ['multiple' => true],
                         'defaultValue' => [
-                            'model' => 'gpt-3.5-turbo',
-                            'temperature' => '${0.7}',
-                            'max_tokens' => '${256}',
+                            'model' => 'gpt-4o',
+                            'temperature' => '${0.1}',
+                            'max_tokens' => '${4096}',
                         ],
                         'name' => 'API options',
                         'description' => 'Configuration options for the chat completion API.',
