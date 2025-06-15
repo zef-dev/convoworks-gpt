@@ -231,6 +231,7 @@ This advanced component enables you to perform chat completion API calls with mo
 * `Result Variable Name` - Default: `status`. The variable that stores the API completion response. By default, it is `status`, but this can be changed. The available values are: `response` (full API response), `messages` (array of messages for the current conversation), and `last_message` (the last message returned by GPT as an associative array).
 * `API key` - Your OpenAI API key.
 * `Base URL` - Base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: https://api.openai.com/v1
+* `Max Function Result Size` - Optional. Sets the maximum number of tokens allowed for the function result. Default is <code>8192</code>. This limits the size of the output returned by a function call within the chat completion process.
 * `API options` - Configuration options for the chat completion API, such as the model, temperature, and token limit.
 
 **Flows:**
@@ -315,26 +316,8 @@ Limits the size of messages by summarizing the oldest ones.
 **Parameters:**
 
 - `System message` - The main system prompt.
-- `Max messages to keep` - The maximum message count before older messages get summarized.
-- `Truncate to this number of messages` - The message count to retain after truncation.
-- `API key` - Your OpenAI API key.
-- `Base URL` - The base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: `https://api.openai.com/v1`.
-- `API options` - Options for summarizing the conversation.
-- `Messages` - Provides the conversation messages.
-- `Result variable` - The variable that stores the result of the truncation operation. This variable contains:
-  - `messages`: The current set of retained messages.
-  - `truncated`: The array of truncated messages.
-- `Truncated Flow` - The flow to execute if the conversation is truncated.
-
-### GPT Messages Token Limiter
-
-Limits the size of messages by estimated token count, summarizing the oldest ones. When the conversation reaches the specified maximum estimated token count, this component summarizes the truncated messages and prepends the summary as a system message.
-
-**Parameters:**
-
-- `System message` - The main system prompt for summarization.
-- `Max tokens to keep` - The maximum estimated token count before summarization.
-- `Truncate to tokens` - The estimated token count to retain after summarization.
+- `Max Tokens to Keep` - The maximum estimated token count allowed in the conversation before it gets summarized. Tokens are estimated for each message's content.
+- `Truncate to Tokens` - The estimated token count to retain after the conversation is summarized. This value is set lower than the maximum to ensure the conversation size remains under control.
 - `API key` - Your OpenAI API key.
 - `Base URL` - The base URL for the API endpoint. If left blank, the default is the OpenAI API endpoint: `https://api.openai.com/v1`.
 - `API options` - Options for summarizing the conversation.
@@ -350,22 +333,8 @@ Limits the size of messages by trimming the array to a defined size.
 
 **Parameters:**
 
-- `Max messages to keep` - The maximum number of messages allowed before the conversation is trimmed.
-- `Truncate message count` - The number of messages to retain after trimming.
-- `Messages` - Provides the initial conversation messages array.
-- `Result variable` - The variable that stores the result of the truncation operation. This variable contains:
-  - `messages`: The current set of retained messages.
-  - `truncated`: The array of truncated messages.
-- `Truncated Flow` - The flow to execute if the conversation is truncated.
-
-### Simple Messages Token Limiter
-
-Limits the size of the messages array by estimated token count, trimming the oldest messages until the total is under the defined token limit.
-
-**Parameters:**
-
-- `Max tokens to keep` - The maximum estimated token count allowed before trimming.
-- `Truncate to tokens` - The estimated token count to retain after trimming.
+- `Max Tokens to Keep` - The maximum estimated token count allowed in the conversation before it gets summarized. Tokens are estimated for each message's content.
+- `Truncate to Tokens` - The estimated token count to retain after the conversation is summarized. This value is set lower than the maximum to ensure the conversation size remains under control.
 - `Messages` - Provides the initial conversation messages array.
 - `Result variable` - The variable that stores the result of the truncation operation. This variable contains:
   - `messages`: The current set of retained messages.

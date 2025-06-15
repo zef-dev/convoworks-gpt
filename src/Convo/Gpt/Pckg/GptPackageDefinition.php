@@ -715,22 +715,6 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'description' => 'The estimated token count to retain after trimming.',
                         'valueType' => 'string'
                     ],
-                    'max_count' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${20}',
-                        'name' => 'Max messages to keep (Deprecated)',
-                        'description' => 'The maximum number of messages before the conversation is summarized.',
-                        'valueType' => 'string'
-                    ],
-                    'truncate_to' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${10}',
-                        'name' => 'Truncate message count (Deprecated)',
-                        'description' => 'The number of messages to keep after summarization.',
-                        'valueType' => 'string'
-                    ],
                     'api_key' => $API_KEY,
                     'base_url' => $BASE_URL,
                     'apiOptions' => [
@@ -826,22 +810,6 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'defaultValue' => '${4096}',
                         'name' => 'Truncate to Tokens',
                         'description' => 'The estimated token count to retain after trimming.',
-                        'valueType' => 'string'
-                    ],
-                    'max_count' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${20}',
-                        'name' => 'Max Messages to Keep (Deprecated)',
-                        'description' => 'The maximum number of messages allowed before the conversation is trimmed.',
-                        'valueType' => 'string'
-                    ],
-                    'truncate_to' => [
-                        'editor_type' => 'text',
-                        'editor_properties' => [],
-                        'defaultValue' => '${10}',
-                        'name' => 'Truncate Message Count (Deprecated)',
-                        'description' => 'The number of messages to retain after trimming.',
                         'valueType' => 'string'
                     ],
                     'result_var' => [
