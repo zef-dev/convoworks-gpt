@@ -21,12 +21,144 @@ abstract class Util
 
     public static function estimateMessageTokens($message)
     {
-        if (isset($message['content']) && is_string($message['content'])) {
-            $content = $message['content'];
-        } else {
-            $content = '';
+        // Base overhead per message (role, metadata, etc.)
+        $message_tokens = 4; // Approximate tokens for message structure
+
+        // Count tokens for role
+        if (isset($message['role'])) {
+            $message_tokens += self::estimatetokens($message['role']);
         }
-        return self::estimateTokens($content);
+
+        // Count tokens for content
+        if (isset($message['content'])) {
+            if (is_string($message['content'])) {
+                $message_tokens += self::estimatetokens($message['content']);
+            } elseif (is_array($message['content'])) {
+                // Handle multimodal content (text, images, etc.)
+                foreach ($message['content'] as $content_part) {
+                    if (isset($content_part['text'])) {
+                        $message_tokens += self::estimatetokens($content_part['text']);
+                    }
+                    if (isset($content_part['type'])) {
+                        $message_tokens += self::estimatetokens($content_part['type']);
+                    }
+                    // Add overhead for image content (approximate)
+                    if (isset($content_part['type']) && $content_part['type'] === 'image_url') {
+                        $message_tokens += 85; // Base cost for image processing
+                    }
+                }
+            }
+        }
+
+        // Count tokens for name field (if present)
+        if (isset($message['name'])) {
+            $message_tokens += self::estimatetokens($message['name']);
+        }
+
+        // Handle tool calls (assistant messages with function calls)
+        if (isset($message['tool_calls']) && is_array($message['tool_calls'])) {
+            foreach ($message['tool_calls'] as $tool_call) {
+                // Tool call structure overhead
+                $message_tokens += 10;
+
+                if (isset($tool_call['id'])) {
+                    $message_tokens += self::estimatetokens($tool_call['id']);
+                }
+
+                if (isset($tool_call['type'])) {
+                    $message_tokens += self::estimatetokens($tool_call['type']);
+                }
+
+                if (isset($tool_call['function'])) {
+                    if (isset($tool_call['function']['name'])) {
+                        $message_tokens += self::estimatetokens($tool_call['function']['name']);
+                    }
+
+                    if (isset($tool_call['function']['arguments'])) {
+                        // Arguments are usually JSON strings
+                        $message_tokens += self::estimatetokens($tool_call['function']['arguments']);
+                    }
+                }
+            }
+        }
+
+        // Handle tool responses (tool role messages)
+        if (isset($message['role']) && $message['role'] === 'tool') {
+            // Tool ID reference
+            if (isset($message['tool_call_id'])) {
+                $message_tokens += self::estimatetokens($message['tool_call_id']);
+            }
+
+            // Tool response content is usually in 'content'
+            // Already handled above in content section
+        }
+
+        // Handle function calls (legacy format, still supported)
+        if (isset($message['function_call'])) {
+            $message_tokens += 10; // Function call overhead
+
+            if (isset($message['function_call']['name'])) {
+                $message_tokens += self::estimatetokens($message['function_call']['name']);
+            }
+
+            if (isset($message['function_call']['arguments'])) {
+                $message_tokens += self::estimatetokens($message['function_call']['arguments']);
+            }
+        }
+
+        return $message_tokens;
+    }
+
+    public static function estimateTokensForMessages($messages)
+    {
+        $total_tokens = 0;
+
+        foreach ($messages as $message) {
+            $total_tokens += self::estimateMessageTokens($message);
+        }
+
+        // Add conversation-level overhead
+        $conversation_overhead = 2; // Approximate overhead for the entire conversation
+        $total_tokens += $conversation_overhead;
+
+        return $total_tokens;
+    }
+
+    // Helper function to estimate tokens for tool definitions (if you need to count those too)
+    public static function estimateTokensForTools($tools)
+    {
+        $total_tokens = 0;
+
+        if (!is_array($tools)) {
+            return 0;
+        }
+
+        foreach ($tools as $tool) {
+            $tool_tokens = 5; // Base overhead per tool
+
+            if (isset($tool['type'])) {
+                $tool_tokens += self::estimatetokens($tool['type']);
+            }
+
+            if (isset($tool['function'])) {
+                if (isset($tool['function']['name'])) {
+                    $tool_tokens += self::estimatetokens($tool['function']['name']);
+                }
+
+                if (isset($tool['function']['description'])) {
+                    $tool_tokens += self::estimatetokens($tool['function']['description']);
+                }
+
+                if (isset($tool['function']['parameters'])) {
+                    // Parameters are JSON schema, convert to string for estimation
+                    $tool_tokens += self::estimateTokens(json_encode($tool['function']['parameters']));
+                }
+            }
+
+            $total_tokens += $tool_tokens;
+        }
+
+        return $total_tokens;
     }
 
     // TRUNCATE
