@@ -288,4 +288,45 @@ abstract class Util
         }
         return $data;
     }
+
+    public static function estimateTokens($content)
+    {
+        $word_count = str_word_count($content);
+        $char_count = mb_strlen($content);
+        $tokens_count_word_est = intval($word_count / 0.75);
+        $tokens_count_char_est = intval($char_count / 4);
+        $result = intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
+        return $result;
+    }
+
+    public static function splitTextIntoChunks($text, $maxChar, $margin)
+    {
+        $chunks = [];
+        if (empty($text)) {
+            return $chunks;
+        }
+        $currentChunk = "";
+
+        $parts = preg_split('/(\.|\?|!)\s+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        foreach ($parts as $part) {
+            if (strlen($currentChunk . $part) > $maxChar) {
+                $chunks[] = $currentChunk;
+                $currentChunk = $part;
+            } else {
+                $currentChunk .= $part;
+            }
+        }
+
+        if (!empty(trim($currentChunk))) {
+            if (strlen($currentChunk) > $margin) {
+                $chunks[] = $currentChunk;
+            } else {
+                // append to the last one if it is a small chunk
+                $last_index = count($chunks) - 1;
+                $chunks[$last_index] .= $currentChunk;
+            }
+        }
+
+        return $chunks;
+    }
 }
