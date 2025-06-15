@@ -16,6 +16,7 @@ use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\IMessages;
 use Convo\Gpt\RefuseFunctionCallException;
 use Convo\Gpt\Util;
+use RuntimeException;
 
 class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer, IMessages
 {
@@ -231,6 +232,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                             $function->restoreParams($id);
                         } else {
                             $result     =   $function->execute($request, $response, $function_data);
+                        }
+
+                        $MAX_RESULT_TOKENS = 1024 * 10;
+                        $result_size = Util::estimateTokens($result);
+                        if ($result_size > $MAX_RESULT_TOKENS) {
+                            throw new RuntimeException('Function [' . $function_name . '] returned too large result [' . $result_size . ']. If possible, adjust the function arguments to return less data. Maximum allowed is [' . $MAX_RESULT_TOKENS . '] tokens.');
                         }
                     } catch (\Throwable $e) {
                         $this->_logger->warning($e);
