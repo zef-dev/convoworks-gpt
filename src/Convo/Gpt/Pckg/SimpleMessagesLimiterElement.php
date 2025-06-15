@@ -68,11 +68,9 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
         // TRUNCATE
         $all_messages = $this->getMessages();
         $this->_logger->debug('Checking messages count [' . count($all_messages) . ']');
-        $messages = $this->_truncate(
-            $all_messages,
-            $this->evaluateString($this->_properties['max_count']),
-            $this->evaluateString($this->_properties['truncate_to'])
-        );
+
+        $messages = $this->_truncateMessages($all_messages);
+        $this->_logger->debug('Messages after truncation [' . count($messages) . ']');
 
         $truncated = Util::getTruncatedPart($all_messages, $messages);
 
@@ -104,10 +102,24 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
         }
     }
 
-    protected function _truncate($messages, $max, $to)
+    protected function _truncateMessages($messages)
     {
-        $this->_logger->debug('Going to check for truncation messages [' . count($messages) . '] against max: ' . $max . ' to: ' . $to);
-        return Util::truncate($messages, $max, $to);
+        if (isset($this->_properties['max_tokens']) && !empty($this->_properties['max_tokens'])) {
+            $messages = Util::truncateByTokens(
+                $messages,
+                intval($this->evaluateString($this->_properties['max_tokens'])),
+                intval($this->evaluateString($this->_properties['truncate_to_tokens']))
+            );
+        } else {
+            $this->_logger->warning('Compatibility mode. No max_tokens set, using max_count and truncate_to');
+            $messages = Util::truncate(
+                $messages,
+                intval($this->evaluateString($this->_properties['max_count'])),
+                intval($this->evaluateString($this->_properties['truncate_to']))
+            );
+        }
+
+        return $messages;
     }
 
     // UTIL

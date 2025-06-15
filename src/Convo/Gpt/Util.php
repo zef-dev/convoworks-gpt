@@ -72,12 +72,6 @@ abstract class Util
     /**
      * Truncates conversation messages while preserving logical message structure.
      *
-     * Groups messages as follows:
-     * - A 'user' message followed by an 'assistant' message (max size 2)
-     * - A 'tool_calls' message followed by all subsequent 'tool' messages
-     *
-     * When reducing, it removes groups from the start until it cannot remove any more without going below 'truncateTo'.
-     *
      * @param array $messages Array of messages to potentially truncate.
      * @param int $maxMessages Maximum allowed length of the array.
      * @param int $truncateTo Minimum number of items to keep in the array if truncation is necessary.
@@ -85,56 +79,12 @@ abstract class Util
      */
     public static function truncate(array $messages, int $maxMessages, int $truncateTo): array
     {
-        // Initialize variables
-        $groups = [];
-        $currentGroup = [];
-        $previousRole = null;
-
-        // Group messages based on conversation turns
-        foreach ($messages as $message) {
-            $role = $message['role'];
-
-            if (empty($currentGroup)) {
-                $currentGroup[] = $message;
-            } else {
-                if ($role === 'user' && $previousRole !== 'user') {
-                    // Start a new group
-                    $groups[] = $currentGroup;
-                    $currentGroup = [$message];
-                } else {
-                    // Add to current group
-                    $currentGroup[] = $message;
-                }
-            }
-            $previousRole = $role;
+        if (count($messages) <= $maxMessages) {
+            // No truncation needed
+            return $messages;
         }
 
-        if (!empty($currentGroup)) {
-            $groups[] = $currentGroup;
-        }
-
-        // Calculate total messages
-        $totalMessages = array_sum(array_map('count', $groups));
-
-        // Truncate groups from the beginning while keeping constraints
-        $startIndex = 0;
-        while (($totalMessages > $maxMessages || $totalMessages > $truncateTo) && $startIndex < count($groups)) {
-            $groupSize = count($groups[$startIndex]);
-            if (($totalMessages - $groupSize) >= $truncateTo) {
-                $totalMessages -= $groupSize;
-                $startIndex++;
-            } else {
-                break;
-            }
-        }
-
-        // Merge the remaining groups
-        $truncatedMessages = [];
-        for ($i = $startIndex; $i < count($groups); $i++) {
-            $truncatedMessages = array_merge($truncatedMessages, $groups[$i]);
-        }
-
-        return $truncatedMessages;
+        return self::truncateToSize($messages, $truncateTo);
     }
 
     /**
@@ -175,10 +125,6 @@ abstract class Util
 
         return array_reverse(array_merge($truncated, $buffer));
     }
-
-
-
-
 
     /**
      * Returns the truncated part of the original messages.
@@ -282,6 +228,31 @@ abstract class Util
         $tokens_count_char_est = intval($char_count / 4);
         $result = intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
         return $result;
+    }
+
+    public static function truncateByTokens($messages, $max, $to)
+    {
+        $size = 0;
+        $counter = 0;
+        $to_no = 0;
+        $break = false;
+        foreach ($messages as $message) {
+            $size += self::estimateMessageTokens($message);
+            if ($size > $max) {
+                $break = true;
+                break;
+            }
+            if ($size <= $to) {
+                $to_no = $counter;
+            }
+            $counter++;
+        }
+
+        if ($break) {
+            return self::truncateToSize($messages, $to_no);
+        }
+
+        return $messages;
     }
 
     public static function splitTextIntoChunks($text, $maxChar, $margin)

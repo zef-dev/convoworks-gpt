@@ -21,25 +21,17 @@ class MessagesLimiterElement extends SimpleMessagesLimiterElement
         $this->_gptApiFactory  =    $gptApiFactory;
     }
 
-    protected function _truncate($messages, $max, $to)
+    protected function _truncateMessages($allMessages)
     {
-        $this->_logger->debug('Truncating messages [' . count($messages) . '] to [' . $to . '] max [' . $max . ']');
-        $count = count($messages);
-        if ($count < $max) {
-            return $messages;
+        $messages = parent::_truncateMessages($allMessages);
+        $truncated = Util::getTruncatedPart($allMessages, $messages);
+
+        if ($truncated) {
+            $this->_logger->debug('Truncated messages [' . print_r($truncated, true) . ']');
+            $summarized = $this->_sumarize($truncated);
+            $messages = array_merge([['role' => 'system', 'content' => $summarized]], $messages);
         }
-
-        // TRUNCATE
-        $new_messages = Util::truncate($messages, $max, $to);
-        $truncated = Util::getTruncatedPart($messages, $new_messages);
-
-        $this->_logger->debug('Truncated messages [' . print_r($truncated, true) . ']');
-
-        // SUMMARIZE
-        $summarized = $this->_sumarize($truncated);
-        $new_messages = array_merge([['role' => 'system', 'content' => $summarized]], $new_messages);
-
-        return $new_messages;
+        return $messages;
     }
 
     private function _sumarize($conversation)
