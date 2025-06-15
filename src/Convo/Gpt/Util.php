@@ -264,6 +264,16 @@ abstract class Util
         return $data;
     }
 
+    public static function estimateMessageTokens($message)
+    {
+        if (isset($message['content']) && is_string($message['content'])) {
+            $content = $message['content'];
+        } else {
+            $content = '';
+        }
+        return self::estimateTokens($content);
+    }
+
     public static function estimateTokens($content)
     {
         $word_count = str_word_count($content);
