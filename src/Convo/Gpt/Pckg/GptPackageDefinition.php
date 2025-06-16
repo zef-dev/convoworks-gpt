@@ -764,7 +764,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">GPT MESSAGES LIMITER</span>' .
-                            ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
+                            ' => <b>{{component.properties.max_tokens}}</b>, <b>{{component.properties.truncate_to_tokens}}</b>' .
                             '<br>{{component.properties.system_message}}' .
                             '</div>'
                     ],
@@ -847,7 +847,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">SIMPLE MESSAGES LIMITER</span>' .
-                            ' => <b>{{component.properties.max_count}}</b>, <b>{{component.properties.truncate_to}}</b>' .
+                            ' => <b>{{component.properties.max_tokens}}</b>, <b>{{component.properties.truncate_to_tokens}}</b>' .
                             '</div>'
                     ],
                     '_interface' => '\Convo\Core\Workflow\IConversationElement',
