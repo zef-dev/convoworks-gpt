@@ -451,15 +451,6 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'description' => 'Executes a sub-flow to provide messages (context) for the chat completion API.',
                         'valueType' => 'class'
                     ],
-                    'functions' => [
-                        'editor_type' => 'service_components',
-                        'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],
-                        'defaultValue' => [],
-                        'defaultOpen' => false,
-                        'name' => 'Function (Deprecated)',
-                        'description' => 'Dynamically registers available functions the agent can utilize.',
-                        'valueType' => 'class'
-                    ],
                     'new_message_flow' => [
                         'editor_type' => 'service_components',
                         'editor_properties' => ['allow_interfaces' => ['\Convo\Core\Workflow\IConversationElement'], 'multiple' => true],

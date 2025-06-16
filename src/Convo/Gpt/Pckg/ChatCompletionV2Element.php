@@ -49,11 +49,6 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     /**
      * @var IConversationElement[]
      */
-    private $_functionsDefinition = [];
-
-    /**
-     * @var IConversationElement[]
-     */
     private $_newMessageFlow = [];
 
     /**
@@ -72,13 +67,6 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         foreach ($properties['ok'] as $element) {
             $this->_ok[] = $element;
             $this->addChild($element);
-        }
-
-        if (isset($properties['functions'])) {
-            foreach ($properties['functions'] as $element) {
-                $this->_functionsDefinition[] = $element;
-                $this->addChild($element);
-            }
         }
 
         if (isset($properties['new_message_flow'])) {
@@ -169,10 +157,6 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
         }
 
         foreach ($this->_messagesDefinition as $elem) {
-            $elem->read($request, $response);
-        }
-
-        foreach ($this->_functionsDefinition as $elem) {
             $elem->read($request, $response);
         }
     }
