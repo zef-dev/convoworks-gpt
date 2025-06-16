@@ -359,9 +359,9 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                             'multiple' => true
                         ],
                         'defaultValue' => [
-                            'model' => 'gpt-3.5-turbo',
+                            'model' => 'gpt-4o',
                             'temperature' => '${0.7}',
-                            'max_tokens' => '${256}',
+                            'max_tokens' => '${4096}',
                         ],
                         'name' => 'API options',
                         'description' => 'Chat completion API options that you can use',
@@ -712,9 +712,9 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'editor_type' => 'params',
                         'editor_properties' => ['multiple' => true],
                         'defaultValue' => [
-                            'model' => 'gpt-3.5-turbo',
-                            'temperature' => '${0.7}',
-                            'max_tokens' => '${256}',
+                            'model' => 'gpt-4o',
+                            'temperature' => '${0.1}',
+                            'max_tokens' => '${2048}',
                         ],
                         'name' => 'API options',
                         'description' => 'Chat completion API options for summarization.',
