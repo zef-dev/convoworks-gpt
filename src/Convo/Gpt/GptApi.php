@@ -34,35 +34,6 @@ class GptApi
         $this->_logger->debug('GptApi created [' . $this->_baseUrl . ']');
     }
 
-    /**
-     * @param array $data
-     * @return mixed
-     * @deprecated
-     */
-    public function completion($data)
-    {
-        $headers = [
-            'Authorization' => 'Bearer ' . $this->_apiKey,
-        ];
-
-        $this->_logger->debug('Http request data [' . print_r($data, true) . ']');
-
-        $config = [];
-
-        $client = $this->_httpFactory->getHttpClient($config);
-        $request = $this->_httpFactory->buildRequest(IHttpFactory::METHOD_POST, $this->_baseUrl . '/completions', $headers, $data);
-
-        $response = $client->sendRequest($request);
-
-        $response_raw = $response->getBody()->getContents();
-
-        $response_data = json_decode($response_raw, true);
-
-        $this->_logger->debug('Http response data [' . print_r($response_data, true) . ']');
-
-        return $response_data;
-    }
-
     public function chatCompletion($data)
     {
         $apiUrl = $this->_baseUrl . '/chat/completions';
