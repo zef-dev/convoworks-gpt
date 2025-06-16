@@ -105,6 +105,7 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
     protected function _truncateMessages($messages)
     {
         if (isset($this->_properties['max_tokens']) && !empty($this->_properties['max_tokens'])) {
+            $this->_logger->warning('Checking messages size in tokens [' . count($messages) . '][' . Util::estimateTokensForMessages($messages) . ']');
             $messages = Util::truncateByTokens(
                 $messages,
                 intval($this->evaluateString($this->_properties['max_tokens'])),
