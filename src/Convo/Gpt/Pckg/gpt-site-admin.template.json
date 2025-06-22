@@ -334,8 +334,6 @@
                                         "class": "\\Convo\\Gpt\\Pckg\\SimpleMessagesLimiterElement",
                                         "namespace": "convo-gpt",
                                         "properties": {
-                                            "max_count": "${MAX_MESSAGES}",
-                                            "truncate_to": "${TRUNCATE_TO}",
                                             "message_provider": [
                                                 {
                                                     "class": "\\Convo\\Gpt\\Pckg\\ConversationMessagesElement",
