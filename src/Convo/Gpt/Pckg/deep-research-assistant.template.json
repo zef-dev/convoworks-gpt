@@ -1,7 +1,7 @@
 {
     "template_id": "deep-research-assistant",
     "name": "Deep Research Assistant",
-    "description": "An AI\u2011powered assistant that automates iterative web searches, extracts actionable insights, and produces a structured Markdown report.",
+    "description": "An AI powered assistant that automates iterative web searches, extracts actionable insights, and produces a structured Markdown report.",
     "service": {
         "convo_service_version": 40,
         "packages": [
@@ -16,8 +16,9 @@
             "DEFAULT_MAX_TOKENS": "${12000}",
             "DEFAULT_MODEL": "o3-mini",
             "REASONING_EFFORT": "medium",
-            "MAX_MESSAGES": "${40}",
-            "TRUNCATE_TO": "${30}",
+            "MAX_MESSAGES_TOKENS": "${100000}",
+            "TRUNCATE_TO_TOKENS": "${40000}",
+            "MAX_FUNCTION_RESULT_SIZE": "${8192}",
             "DEFAULT_UTIL_MODEL": "gpt-4o-mini",
             "FIRECRAWL_API_BASE_URL": "https:\/\/api.firecrawl.dev",
             "FIRECRAWL_API_KEY": "fc-",
@@ -262,8 +263,6 @@
                                         "class": "\\Convo\\Gpt\\Pckg\\SimpleMessagesLimiterElement",
                                         "namespace": "convo-gpt",
                                         "properties": {
-                                            "max_count": "${MAX_MESSAGES}",
-                                            "truncate_to": "${TRUNCATE_TO}",
                                             "message_provider": [
                                                 {
                                                     "class": "\\Convo\\Gpt\\Pckg\\ConversationMessagesElement",
@@ -288,7 +287,10 @@
                                                         "_component_id": "fgwycrzl-taxx-ac70-hqvc-uqalw5rhdiax"
                                                     }
                                                 }
-                                            ]
+                                            ],
+                                            "result_var": "status",
+                                            "max_tokens": "${MAX_MESSAGES_TOKENS}",
+                                            "truncate_to_tokens": "${TRUNCATE_TO_TOKENS}"
                                         }
                                     }
                                 ],
@@ -402,7 +404,8 @@
                                             "_component_id": "dpe2raif-t8lw-n2ng-bsar-ijould0yg87m"
                                         }
                                     }
-                                ]
+                                ],
+                                "max_func_result_tokens": "${MAX_FUNCTION_RESULT_SIZE}"
                             }
                         }
                     ],
@@ -1496,47 +1499,6 @@
                                     }
                                 ],
                                 "_component_id": "9dzyjkkd-p6w5-dv5s-ksns-jtuddgqc2gvy"
-                            }
-                        },
-                        {
-                            "class": "\\Convo\\Pckg\\Core\\Elements\\NamedFunctionElement",
-                            "namespace": "convo-core",
-                            "properties": {
-                                "name": "estimate_tokens",
-                                "function_args": {
-                                    "content": ""
-                                },
-                                "result_data": "${function_result}",
-                                "ok": [
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "parameters": "function",
-                                            "scope_type": "request",
-                                            "properties": {
-                                                "word_count": "${str_word_count( content)}",
-                                                "char_count": "${strlen( content)}",
-                                                "tokens_count_word_est": "${ intval( word_count \/ 0.75)}",
-                                                "tokens_count_char_est": "${ intval( char_count \/ 4)}"
-                                            },
-                                            "_component_id": "q3whjhdf-vvr5-6oc8-d85p-qggvtvwq44qh"
-                                        }
-                                    },
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "parameters": "function",
-                                            "scope_type": "request",
-                                            "properties": {
-                                                "function_result": "${ intval( (tokens_count_word_est + tokens_count_char_est) \/ 2)}"
-                                            },
-                                            "_component_id": "totjn14t-xbzr-p3qy-a8df-rpuhfrne2yot"
-                                        }
-                                    }
-                                ],
-                                "_component_id": "vzo7t1qh-npqx-kvwg-zahv-9h0x7wekjgfu"
                             }
                         }
                     ],
