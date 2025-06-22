@@ -11,12 +11,13 @@
         ],
         "contexts": [],
         "variables": {
-            "GPT_API_KEY": "",
+            "GPT_API_KEY": "sk-",
             "GPT_DEFAULT_TEMPERATURE": "${0.3}",
-            "GPT_DEFAULT_MAX_TOKENS": "${10000}",
+            "GPT_DEFAULT_MAX_TOKENS": "${4096}",
             "GPT_DEFAULT_MODEL": "gpt-4o-mini",
-            "MAX_MESSAGES": "${20}",
-            "TRUNCATE_TO": "${10}"
+            "MAX_MESSAGES_TOKENS": "${8192}",
+            "TRUNCATE_TO_TOKENS": "${4096}",
+            "MAX_FUNCTION_RESULT_SIZE": "${2048}"
         },
         "preview_variables": [],
         "entities": [],
@@ -36,6 +37,18 @@
                             "properties": {
                                 "fragment_id": "Inc_Check_API_Key",
                                 "_component_id": "eo3c2v9m-a6ik-clok-auk9-qempzaukjgpn"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "parameters": "service",
+                                "scope_type": "session",
+                                "properties": {
+                                    "TOKEN_USAGE": "${{\"total\": 0, \"input\": 0, \"output\": 0}}"
+                                },
+                                "_component_id": "vohn5di7-tbrd-almx-rp7m-qn2gm4wqqokq"
                             }
                         },
                         {
@@ -339,8 +352,6 @@
                                         "class": "\\Convo\\Gpt\\Pckg\\MessagesLimiterElement",
                                         "namespace": "convo-gpt",
                                         "properties": {
-                                            "max_count": "${MAX_MESSAGES}",
-                                            "truncate_to": "${TRUNCATE_TO}",
                                             "message_provider": [
                                                 {
                                                     "class": "\\Convo\\Gpt\\Pckg\\ConversationMessagesElement",
@@ -361,6 +372,16 @@
                                             "system_message": "Considering all the prior conversation including the previous summaries, please generate a concise summary capturing the key points and significant themes up until now. Please ensure the summary contains all necessary information to understand the context of the current conversation.",
                                             "truncated_flow": [
                                                 {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "log_message": "Truncated ${count( status.truncated)} messages",
+                                                        "log_level": "info",
+                                                        "disable_test_view": false,
+                                                        "_component_id": "zb7mzna6-f8tz-bgab-wuqp-mvzkb7iiq5qa"
+                                                    }
+                                                },
+                                                {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
@@ -372,11 +393,48 @@
                                                         "_component_id": "ez5pacy9-bufd-uexa-wpi1-fkne3oq5nyzj"
                                                     }
                                                 }
-                                            ]
+                                            ],
+                                            "max_tokens": "${MAX_MESSAGES_TOKENS}",
+                                            "truncate_to_tokens": "${TRUNCATE_TO_TOKENS}",
+                                            "result_var": "status"
                                         }
                                     }
                                 ],
                                 "new_message_flow": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "test": "${status.last_message.role === 'assistant'}",
+                                            "then": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "parameters": "service",
+                                                        "scope_type": "session",
+                                                        "properties": {
+                                                            "TOKEN_USAGE[\"total\"]": "${TOKEN_USAGE[\"total\"] + status.response.usage.total_tokens}"
+                                                        },
+                                                        "_component_id": "ljnhlgt0-n3b0-xrnk-k3ho-tukxkvjc0gzz"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "log_message": "Current usage: ${status.response.usage.total_tokens}\nTotal usage ${TOKEN_USAGE[\"total\"]}",
+                                                        "log_level": "info",
+                                                        "disable_test_view": false,
+                                                        "_component_id": "iqd0yxxa-sjsm-m4xi-fids-dsqisad3n8kx"
+                                                    }
+                                                }
+                                            ],
+                                            "else_if": [],
+                                            "else": [],
+                                            "_component_id": "1otcq4tr-dmsq-tvym-r7uh-enas2wx419jw"
+                                        }
+                                    },
                                     {
                                         "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
                                         "namespace": "convo-core",
@@ -486,7 +544,8 @@
                                             "_component_id": "t48kpe5x-gpwa-ptxd-no1a-4jejjexwaers"
                                         }
                                     }
-                                ]
+                                ],
+                                "max_func_result_tokens": "${MAX_FUNCTION_RESULT_SIZE}"
                             }
                         }
                     ],
