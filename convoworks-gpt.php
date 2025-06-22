@@ -9,7 +9,7 @@
  * Plugin URI: https://github.com/zef-dev/convoworks-gpt
  * Update URI: https://raw.githubusercontent.com/zef-dev/convoworks-gpt/main/update.json
  * Author: ZEF Development
- * Version: 0.14.0
+ * Version: 0.15.0
  * Author URI: https://zef.dev
  * Text Domain: convoworks-gpt
  */
