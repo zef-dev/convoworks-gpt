@@ -1,7 +1,7 @@
 {
     "template_id": "gpt-site-admin",
     "name": "GPT Site Admin",
-    "description": "This GPT-powered bot assists in managing WordPress sites by performing tasks such as updating posts, modifying taxonomy, and uploading images. Utilizing PHP and WordPress functions, it efficiently accesses and modifies site data as necessary.",
+    "description": "This GPT-powered bot assists in managing WordPress sites by utilizing PHP and WordPress functions, it efficiently accesses and modifies site data as necessary.",
     "service": {
         "convo_service_version": 40,
         "packages": [
@@ -11,13 +11,14 @@
         ],
         "contexts": [],
         "variables": {
-            "GPT_API_KEY": "",
+            "GPT_API_KEY": "sk-",
             "DEFAULT_TEMPERATURE": "${0.1}",
-            "DEFAULT_MAX_TOKENS": "${4000}",
+            "DEFAULT_MAX_TOKENS": "${4096}",
             "DEFAULT_MODEL": "gpt-4o",
-            "MAX_MESSAGES": "${20}",
-            "TRUNCATE_TO": "${12}",
-            "MAX_EXECUTION_TIME": "${300}"
+            "MAX_MESSAGES_TOKENS": "${8000}",
+            "TRUNCATE_TO_TOKENS": "${6000}",
+            "MAX_EXECUTION_TIME": "${600}",
+            "MAX_FUNCTION_RESULT_SIZE": "${4096}"
         },
         "preview_variables": [],
         "entities": [],
@@ -37,6 +38,18 @@
                             "properties": {
                                 "fragment_id": "Inc_Check_API_Key",
                                 "_component_id": "cveakoja-56ai-aody-gied-dl9fgehdwcal"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "parameters": "service",
+                                "scope_type": "session",
+                                "properties": {
+                                    "TOKEN_USAGE": "${{\"total\": 0, \"input\": 0, \"output\": 0}}"
+                                },
+                                "_component_id": "uqagbriq-0bl5-ki1c-jukw-pokucq9pvpxz"
                             }
                         },
                         {
@@ -282,27 +295,39 @@
                                         }
                                     },
                                     {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
                                         "namespace": "convo-core",
                                         "properties": {
-                                            "fragment_id": "Chat_Context_System_Information",
-                                            "_component_id": "af90myez-tpjc-t5at-z3rd-g1mhngpswi6n"
-                                        }
-                                    },
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "fragment_id": "Chat_Context_Additional_Instructions",
-                                            "_component_id": "sefycqde-9fze-t7le-bjo9-sq6c6m4oqp2t"
-                                        }
-                                    },
-                                    {
-                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                                        "namespace": "convo-core",
-                                        "properties": {
-                                            "fragment_id": "Chat_Context_Functions",
-                                            "_component_id": "4lyouuku-ksde-wzch-fyvi-gvokpdifr7fr"
+                                            "test": "${current_user_can(\"administrator\")}",
+                                            "then": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Chat_Context_System_Information",
+                                                        "_component_id": "af90myez-tpjc-t5at-z3rd-g1mhngpswi6n"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Chat_Context_Additional_Instructions",
+                                                        "_component_id": "1o5gbaq7-etsr-7s0b-jjyl-oss4dxkki6mx"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "fragment_id": "Chat_Context_Functions",
+                                                        "_component_id": "evwj92dw-wcdc-pqlv-yv4i-7uruswo8ordi"
+                                                    }
+                                                }
+                                            ],
+                                            "else_if": [],
+                                            "else": [],
+                                            "_component_id": "qxqj6dto-7x1o-qoes-hmto-ewajwkhkpnkx"
                                         }
                                     },
                                     {
@@ -324,6 +349,16 @@
                                             "_component_id": "xshgptwh-9nmy-7ii3-9a8z-ieyv6vylftjv",
                                             "truncated_flow": [
                                                 {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "log_message": "Truncated ${count( status.truncated)} messages",
+                                                        "log_level": "info",
+                                                        "disable_test_view": false,
+                                                        "_component_id": "wujkwnrb-nkrh-ev5s-amnh-cqtactzqcr5d"
+                                                    }
+                                                },
+                                                {
                                                     "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
                                                     "namespace": "convo-core",
                                                     "properties": {
@@ -335,11 +370,48 @@
                                                         "_component_id": "fgwycrzl-taxx-ac70-hqvc-uqalw5rhdiax"
                                                     }
                                                 }
-                                            ]
+                                            ],
+                                            "result_var": "status",
+                                            "max_tokens": "${MAX_MESSAGES_TOKENS}",
+                                            "truncate_to_tokens": "${TRUNCATE_TO_TOKENS}"
                                         }
                                     }
                                 ],
                                 "new_message_flow": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "test": "${status.last_message.role === 'assistant'}",
+                                            "then": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "parameters": "service",
+                                                        "scope_type": "session",
+                                                        "properties": {
+                                                            "TOKEN_USAGE[\"total\"]": "${TOKEN_USAGE[\"total\"] + status.response.usage.total_tokens}"
+                                                        },
+                                                        "_component_id": "jgzrhc2c-h9ef-31jl-s13f-15wjfijfqsg9"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "log_message": "Current usage: ${status.response.usage.total_tokens}\nTotal usage ${TOKEN_USAGE[\"total\"]}",
+                                                        "log_level": "info",
+                                                        "disable_test_view": false,
+                                                        "_component_id": "g7be7zra-qmp0-xld8-ipog-mgczba1ygbzw"
+                                                    }
+                                                }
+                                            ],
+                                            "else_if": [],
+                                            "else": [],
+                                            "_component_id": "ghwcio7f-jwiu-kq0k-mpva-2gjuuqlcwx1l"
+                                        }
+                                    },
                                     {
                                         "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
                                         "namespace": "convo-core",
@@ -449,7 +521,8 @@
                                             "_component_id": "dpe2raif-t8lw-n2ng-bsar-ijould0yg87m"
                                         }
                                     }
-                                ]
+                                ],
+                                "max_func_result_tokens": "${MAX_FUNCTION_RESULT_SIZE}"
                             }
                         }
                     ],
@@ -514,7 +587,7 @@
                             "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
                             "namespace": "convo-gpt",
                             "properties": {
-                                "content": "## Additional Context: Website system info:\n\n* home_url: ${home_url()}\n* ABSPATH: ${ constant( \"ABSPATH\")}\n* website name: ${ wp_call_user_func( 'get_bloginfo', ['name'] )}\n* PHP version ${phpversion}\n\n### Active theme\n\nslug: ${wp_call_user_func( \"get_template\")}",
+                                "content": "## Additional Context: Website system info:\n\n* home_url: `${home_url()}`\n* ABSPATH: `${ constant( \"ABSPATH\")}`\n* website name: **${ wp_call_user_func( 'get_bloginfo', ['name'] )}**\n* PHP version: `${phpversion}`\n* WPDB prefix: `${ wp_call_user_func_array( ['$wpdb', 'get_blog_prefix'] )}`\n\n### Active theme\n\nslug: ${wp_call_user_func( \"get_template\")}",
                                 "_component_id": "sp19eyie-nfvy-qt97-tenw-mdxkr9v1qp5y"
                             }
                         }
@@ -530,11 +603,29 @@
                     "name": "Chat Context - Additional Instructions",
                     "elements": [
                         {
-                            "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                            "class": "\\Convo\\Gpt\\Pckg\\SystemMessageGroupElement",
                             "namespace": "convo-gpt",
                             "properties": {
-                                "content": "## Additional Context: Specific Tasks Instructions\n\n### Setting Images as Featured\n\nWhen uploading a new image from a URL using the `media_sideload_image()` function, ensure that you set the `return_type` to `id`. This approach allows you to obtain an attachment ID, which is essential for performing subsequent operations on the uploaded image. \n\nTo assign the uploaded image as a featured thumbnail to a specific post, use the set_post_thumbnail() function.",
-                                "_component_id": "hhabfj28-fwis-m8wf-89pv-plhr3ker1nso"
+                                "trim_children": false,
+                                "message_provider": [
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "content": "## Additional Context: Specific Tasks Instructions",
+                                            "_component_id": "hhabfj28-fwis-m8wf-89pv-plhr3ker1nso"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "content": "### Setting Images as Featured\n\nWhen uploading a new image from a URL using the `media_sideload_image()` function, ensure that you set the `return_type` to `id`. This approach allows you to obtain an attachment ID, which is essential for performing subsequent operations on the uploaded image. \n\nTo assign the uploaded image as a featured thumbnail to a specific post, use the set_post_thumbnail() function.",
+                                            "_component_id": "oc3euq94-1d6h-fthc-31qi-uuppny6qbfzm"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "igiu5p4o-hp7d-ztau-zhrk-5gqi8muzfgva"
                             }
                         }
                     ],
@@ -553,7 +644,7 @@
                             "namespace": "convo-gpt",
                             "properties": {
                                 "name": "call_user_func_array",
-                                "description": "This function stands as a potent gateway, enabling dynamic interaction with the live WordPress and PHP environment. It skillfully encapsulates PHP's native `call_user_func_array()` function, allowing for the direct invocation of PHP functions with an array of arguments, thereby harnessing PHP\u2019s innate capabilities and reflecting immediate changes within the system's operational sphere.\n\nEvery execution will return a JSON object, always featuring a `function_result` field, encapsulating the function's return value. This structured return format ensures a standardized, readable output, simplifying subsequent processing and interpretation.\n\nWhen a function execution concludes due to a thrown exception, the return value will be a JSON object. The exception message can be accessed through the 'error' field in this JSON object.",
+                                "description": "This function stands as a potent gateway, enabling dynamic interaction with the live WordPress and PHP environment. It skillfully encapsulates PHP's native `call_user_func_array()` function, allowing for the direct invocation of PHP functions with an array of arguments, thereby harnessing PHP\u2019s innate capabilities and reflecting immediate changes within the system's operational sphere.\n\nEvery execution will return a JSON object, always featuring a `function_result` field, encapsulating the function's return value. This structured return format ensures a standardized, readable output, simplifying subsequent processing and interpretation.\n\nWhen a function execution concludes due to a thrown exception, the return value will be a JSON object. The exception message can be accessed through the 'error' field in this JSON object.\n\n**Optional Arguments:** When invoking functions or methods, especially those with optional parameters, prefer omitting arguments rather than explicitly setting them to `null` unless `null` has a specific meaning in the context of the function or method. This is very important, because in many cases `null` will not change into default value, unless argument is completely skipped. \nFor example when calling `get_results` on `$wpdb`, the second argument should be skipped, because `null` will not default to `OBJECT`.",
                                 "parameters": {
                                     "callback": "${{\n  \"oneOf\": [\n    {\n      \"type\": \"string\",\n      \"description\": \"Specifies the name of the global PHP function to be invoked.\"\n    },\n    {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"minItems\": 2,\n      \"maxItems\": 2,\n      \"description\": \"Specifies an array with two elements. The first element is either the name of an object (as a string, e.g., \\\"$wpdb\\\") or a class name. The second element is the method to invoke on that object or class.\"\n    }\n  ],\n  \"description\": \"Specifies the operation to be executed. It can either be a string representing a global PHP function name or an array with two elements. For object method invocations, the first element must be the object name (e.g., \\\"$wpdb\\\" for the WordPress database object), and the second element must be the method name to invoke on that object.\"\n}\n}",
                                     "args": "${{\n        \"type\": \"array\",\n        \"items\": {\n          \"oneOf\": [\n            { \"type\": \"object\" },\n            {\n              \"type\": \"array\",\n              \"items\": {\n                \"oneOf\": [\n                  { \"type\": \"object\" },\n                  { \"type\": \"string\" },\n                  { \"type\": \"number\" },\n                  { \"type\": \"boolean\" },\n                  { \"type\": \"null\" }\n                ]\n              }\n            },\n            { \"type\": \"string\" },\n            { \"type\": \"number\" },\n            { \"type\": \"boolean\" },\n            { \"type\": \"null\" }\n          ]\n        },\n        \"description\": \"Represents an array encapsulating the parameters intended for the specified PHP function. Each element within this array directly corresponds to the arguments accepted by the target function. It\u2019s essential to enclose all parameters within an array to maintain a consistent structure and ensure precise argument delivery, even if there\u2019s only a single argument.\"\n      }}"
@@ -590,6 +681,115 @@
                                 ],
                                 "_component_id": "elpyhinh-jnfh-giu3-kr1z-3nu0wob0masc",
                                 "defaults": "${{\"args\":[]}}"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "generate_post_excerpt",
+                                "description": "This function generates and returns an excerpt for the given post.",
+                                "parameters": {
+                                    "post_id": "${{\"type\": \"number\", \"description\": \"ID of the post that excerpt should be generated for\"}}",
+                                    "prompt": "${{\"type\": \"string\", \"description\": \"Additional instruction how excerpt should be formed\"}}"
+                                },
+                                "defaults": "${{}}",
+                                "required": "${[\"post_id\"]}",
+                                "request_data": "data",
+                                "result_data": "${function_result}",
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "parameters": "function",
+                                            "scope_type": "request",
+                                            "properties": {
+                                                "POST": "${get_post( data.post_id)}"
+                                            },
+                                            "_component_id": "6qncyhvq-xp2r-bogh-e1q4-ipxpi81ws2xf"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\ChatCompletionV2Element",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "result_var": "status",
+                                            "api_key": "${GPT_API_KEY}",
+                                            "apiOptions": {
+                                                "model": "${DEFAULT_MODEL}",
+                                                "temperature": "${DEFAULT_TEMPERATURE}",
+                                                "max_tokens": "${DEFAULT_MAX_TOKENS}"
+                                            },
+                                            "ok": [],
+                                            "_component_id": "cy7tvh12-ynbg-u12q-bcaw-xmohvkkwx410",
+                                            "functions": [],
+                                            "message_provider": [
+                                                {
+                                                    "class": "\\Convo\\Gpt\\Pckg\\SystemMessageGroupElement",
+                                                    "namespace": "convo-gpt",
+                                                    "properties": {
+                                                        "trim_children": false,
+                                                        "message_provider": [
+                                                            {
+                                                                "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                                                "namespace": "convo-gpt",
+                                                                "properties": {
+                                                                    "content": "You are SEO AI assistant on the WordPress website. Your role is to generate excerpt for a given post.",
+                                                                    "_component_id": "d6en9mdh-hrre-fqg2-0jv5-xzajtft2rpjb"
+                                                                }
+                                                            },
+                                                            {
+                                                                "class": "\\Convo\\Pckg\\Core\\Elements\\IfElement",
+                                                                "namespace": "convo-core",
+                                                                "properties": {
+                                                                    "test": "${data.prompt}",
+                                                                    "then": [
+                                                                        {
+                                                                            "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                                                            "namespace": "convo-gpt",
+                                                                            "properties": {
+                                                                                "content": "${data.prompt}",
+                                                                                "_component_id": "fe7xo0od-9snw-nuuo-c3cl-s5zcmnfmnjyr"
+                                                                            }
+                                                                        }
+                                                                    ],
+                                                                    "else_if": [],
+                                                                    "else": [],
+                                                                    "_component_id": "b6owaisl-guuo-hifo-rhpm-88nwgcqsvjuy"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "_component_id": "pnba5prl-ekft-bxxk-yuhc-mwv8qcn8q6fh"
+                                                    }
+                                                },
+                                                {
+                                                    "class": "\\Convo\\Gpt\\Pckg\\SystemMessageElement",
+                                                    "namespace": "convo-gpt",
+                                                    "properties": {
+                                                        "content": "The post to generate excerpt for:\n\n**${POST.post_title}**\n\n${html_to_markdown( POST.post_content)}",
+                                                        "_component_id": "ujhso703-tgsy-4diz-arke-tbdl7awfwcek"
+                                                    }
+                                                }
+                                            ],
+                                            "new_message_flow": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "session",
+                                                        "parameters": "function",
+                                                        "properties": {
+                                                            "function_result": "${status.last_message.content}"
+                                                        },
+                                                        "_component_id": "e72k6lvc-mqii-5nil-b6bq-w2sjgnwewkko"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "_component_id": "ymx5jop5-m5j6-p3lk-b3hn-3uk4i3vapok2"
                             }
                         }
                     ],
