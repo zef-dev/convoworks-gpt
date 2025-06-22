@@ -1,7 +1,7 @@
 
 ## Convoworks GPT WordPress plugin
 
-### 0.15.0 - 2025-06-16 - Token-based limiters
+### 0.15.0 - 2025-06-22 - Token-based limiters
 
 * Message limiter elements now use token-based limits.
 * You can now limit function call result size (in tokens).
