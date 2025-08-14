@@ -61,7 +61,13 @@ class McpSessionManager
     {
         set_time_limit(0);
         ignore_user_abort(true);
-        ob_implicit_flush(1);
+
+        if (PHP_VERSION_ID >= 80000) {
+            ob_implicit_flush(true);
+        } else {
+            ob_implicit_flush(1);
+        }
+
         while (ob_get_level()) ob_end_clean();
 
         $session_id     =   $this->_sessionStore->createSession();
