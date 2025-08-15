@@ -10,7 +10,6 @@ use Psr\Log\LoggerInterface;
 
 class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 {
-
     /**
      * @var LoggerInterface
      */
@@ -24,7 +23,6 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         $this->_basePath = $basePath;
     }
 
-    // SSE
     // create new session
     public function createSession(): string
     {
@@ -46,13 +44,18 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         return $session_id;
     }
 
+    public function saveSession($session): void
+    {
+        $this->_saveSession($session);
+    }
+
     // read next message (deletes it)
     public function nextEvent($sessionId): ?array
     {
         $path = $this->_basePath . $sessionId;
         $files = glob($path . '/*.json');
         if (empty($files)) {
-            return null; // or throw an exception if preferred
+            return null;
         }
         $file = $files[0];
         $data = json_decode(file_get_contents($file), true);
@@ -75,21 +78,16 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         $this->_saveSession($session);
     }
 
-    // queues the notification
+    // queues the notification (now queues full JSON-RPC message)
     public function queueEvent($sessionId, $data): void
     {
         $path = $this->_basePath . $sessionId;
 
-        // Prepare filename using microtime to ensure uniqueness
         $filename = sprintf('%s.json', microtime(true));
-
-        // Full file path
         $filepath = $path . DIRECTORY_SEPARATOR . $filename;
 
-        // JSON serialize the data
         $jsonData = json_encode($data, JSON_PRETTY_PRINT);
 
-        // Write data to file
         file_put_contents($filepath, $jsonData);
 
         $this->pingSession($sessionId);
@@ -117,18 +115,13 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
             throw new \RuntimeException('Failed to decode session file: ' . $path);
         }
 
-        // $this->_logger->debug('Loaded session: ' . json_encode($session));
-
         return $session;
     }
 
     private function _saveSession($session)
     {
         $path = $this->_basePath . $session['session_id'] . '.json';
-        // JSON serialize the data
         $jsonData = json_encode($session, JSON_PRETTY_PRINT);
-
-        // Write data to file
         file_put_contents($path, $jsonData);
     }
 

@@ -6,6 +6,7 @@ namespace Convo\Gpt\Pckg;
 
 use Convo\Core\ComponentNotFoundException;
 use Convo\Core\DataItemNotFoundException;
+use Convo\Core\Rest\InvalidRequestException;
 use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\IRequestFilterResult;
@@ -16,6 +17,8 @@ use Convo\Core\Workflow\DefaultFilterResult;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\Mcp\McpServerCommandRequest;
 use Convo\Gpt\Mcp\McpSessionManager;
+use Convo\Gpt\Mcp\SseResponse;
+use stdClass;
 
 class McpServerProcessor extends AbstractWorkflowContainerComponent
 implements IConversationProcessor, IChatFunctionContainer
@@ -78,14 +81,13 @@ implements IConversationProcessor, IChatFunctionContainer
         /** @var McpServerCommandRequest $request */
         $method = $request->getMethod();
         $session_id = $request->getSessionId();
-        // $service_id = $request->getServiceId();
 
         if (empty($method) || stripos($method, 'notifications') !== false) {
             $this->_handleNotification($method, $request);
             return;
         }
 
-        // Dispatch map
+        // Dispatch map (added completion/complete)
         $handlers = [
             'ping' => '_handlePing',
             'initialize' => '_handleInitialize',
@@ -94,7 +96,8 @@ implements IConversationProcessor, IChatFunctionContainer
             'prompts/list' => '_handlePromptsList',
             'prompts/get' => '_handlePromptsGet',
             'resources/list' => '_handleResourcesList',
-            'resources/templates/list' => '_handleResourceTemplatesList'
+            'resources/templates/list' => '_handleResourceTemplatesList',
+            'completion/complete' => '_handleCompletionComplete'
         ];
 
         if (isset($handlers[$method])) {
@@ -108,18 +111,12 @@ implements IConversationProcessor, IChatFunctionContainer
         }
     }
 
-    private function _handlePing(McpServerCommandRequest $request, IConvoResponse $response)
+    private function _handlePing(McpServerCommandRequest $request, SseResponse $response)
     {
-        $message = [
-            "jsonrpc" => "2.0",
-            "id" => $request->getId(),
-            "result" => new \stdClass()
-        ];
-
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
+        $response->setPlatformResponse(new \stdClass());
     }
 
-    private function _handleInitialize(McpServerCommandRequest $request, IConvoResponse $response)
+    private function _handleInitialize(McpServerCommandRequest $request, SseResponse $response)
     {
         $this->_mcpSessionManager->activateSession($request->getSessionId());
 
@@ -127,53 +124,40 @@ implements IConversationProcessor, IChatFunctionContainer
         $params = $data['params'];
         $req_version = $params['protocolVersion'] ?? null;
 
-        if ($req_version !== '2024-11-05') {
+        if ($req_version !== '2025-06-18' && $req_version !== "2025-03-26") {  // Updated to new version
             $this->_logger->warning('Unsupported protocol version: ' . $req_version);
 
-            $error = [
-                "jsonrpc" => "2.0",
-                "id" => $request->getId(),
-                "error" => [
-                    "code" => -32602,
-                    "message" => "Unsupported protocol version",
-                    "data" => [
-                        "supported" => ["2024-11-05"],
-                        "requested" => $req_version
-                    ]
-                ]
-            ];
-
-            $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $error);
-            return;
+            throw new InvalidRequestException("Unsupported protocol version [$req_version]");
         }
 
-        $id = $request->getId();
-        $message = [
-            "jsonrpc" => "2.0",
-            "id" => $id,
-            "result" => [
-                "protocolVersion" => "2024-11-05",
-                "capabilities" => [
-                    "tools"   => ["listChanged" => true],
-                    "prompts" => ["listChanged" => true]
-                ],
-                "serverInfo" => [
-                    "name" => $this->evaluateString($this->_name),
-                    "version" => $this->evaluateString($this->_version),
-                ]
+        $result = [
+            "protocolVersion" => "2025-06-18",
+            "capabilities" => [
+                "tools"   => ["listChanged" => true],
+                "completions" => new \stdClass(),
+            ],
+            "serverInfo" => [
+                "name" => $this->evaluateString($this->_name),
+                "version" => $this->evaluateString($this->_version),
             ]
         ];
 
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
+        if (!empty($this->_prompts)) {
+            $result['capabilities']['prompts']['listChanged'] = true;
+        }
+
+        $response->setPlatformResponse($result);
     }
 
-    private function _handlePromptsList(McpServerCommandRequest $request, IConvoResponse $response)
+    private function _handlePromptsList(McpServerCommandRequest $request, SseResponse $response)
     {
         foreach ($this->_tools as $elem) {
             $elem->read($request, $response);
         }
 
-        // TODO: support pagination if you ever need it
+        $params = $request->getPlatformData()['params'] ?? [];
+        $cursor = $params['cursor'] ?? null;
+
         $prompts = array_map(function ($p) {
             return [
                 'name'        => $p['name'],
@@ -182,15 +166,12 @@ implements IConversationProcessor, IChatFunctionContainer
             ];
         }, $this->_prompts);
 
-        $msg = [
-            'jsonrpc' => '2.0',
-            'id'      => $request->getId(),
-            'result'  => ['prompts' => $prompts]
-        ];
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $msg);
+        $result = ['prompts' => $prompts];
+
+        $response->setPlatformResponse($result);
     }
 
-    private function _handlePromptsGet(McpServerCommandRequest $request, IConvoResponse $response)
+    private function _handlePromptsGet(McpServerCommandRequest $request, SseResponse $response)
     {
         $id     = $request->getId();
         $params = $request->getPlatformData()['params'] ?? [];
@@ -233,8 +214,9 @@ implements IConversationProcessor, IChatFunctionContainer
             ]]
         ];
 
-        $msg = ['jsonrpc' => '2.0', 'id' => $id, 'result' => $result];
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $msg);
+        // $msg = ['jsonrpc' => '2.0', 'id' => $id, 'result' => $result];
+        // $this->_mcpSessionManager->enqueueMessage($request->getSessionId(), $msg);
+        $response->setPlatformResponse($result);
     }
 
     private function _findPrompt($name)
@@ -254,11 +236,11 @@ implements IConversationProcessor, IChatFunctionContainer
             'id'      => $id,
             'error'   => ['code' => $code, 'message' => $message]
         ];
-        $this->_mcpSessionManager->enqueueEvent($req->getSessionId(), 'message', $err);
+        $this->_mcpSessionManager->enqueueMessage($req->getSessionId(), $err);
     }
 
 
-    private function _handleToolsList(McpServerCommandRequest $request, IConvoResponse $response)
+    private function _handleToolsList(McpServerCommandRequest $request, SseResponse $response)
     {
         foreach ($this->_tools as $elem) {
             $elem->read($request, $response);
@@ -268,15 +250,11 @@ implements IConversationProcessor, IChatFunctionContainer
             return $func->getDefinition();
         }, $this->_functions));
 
-        $message = [
-            'jsonrpc' => '2.0',
-            'id' => $request->getId(),
-            'result' => ['tools' => $tools]
-        ];
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', $message);
+        $result = ['tools' => $tools];
+        $response->setPlatformResponse($result);
     }
 
-    private function _handleToolsCall(McpServerCommandRequest $request, IConvoResponse $response)
+    private function _handleToolsCall(McpServerCommandRequest $request, SseResponse $response)
     {
         foreach ($this->_tools as $elem) {
             $elem->read($request, $response);
@@ -305,32 +283,37 @@ implements IConversationProcessor, IChatFunctionContainer
             $is_error = true;
         }
 
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', [
-            'jsonrpc' => '2.0',
-            'id' => $id,
-            'result' => [
-                "content" => [['type' => 'text', 'text' => $function_result]],
-                "isError" => $is_error
+        $result = [
+            "content" => [['type' => 'text', 'text' => $function_result]],
+            "isError" => $is_error
+        ];
+
+        $response->setPlatformResponse($result);
+    }
+
+    private function _handleResourcesList(McpServerCommandRequest $request, SseResponse $response)
+    {
+        $result = ['resources' => new \stdClass()];
+        $response->setPlatformResponse($result);
+    }
+
+    private function _handleResourceTemplatesList(McpServerCommandRequest $request, SseResponse $response)
+    {
+        $result = ['templates' => new \stdClass()];
+        $response->setPlatformResponse($result);
+    }
+
+    private function _handleCompletionComplete(McpServerCommandRequest $request, SseResponse $response)
+    {
+        // TODO: Implement actual completions based on ref and argument
+        $result = [
+            "completion" => [
+                "values" => [],
+                "hasMore" => false
             ]
-        ]);
-    }
+        ];
 
-    private function _handleResourcesList(McpServerCommandRequest $request, IConvoResponse $response)
-    {
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', [
-            'jsonrpc' => '2.0',
-            'id' => $request->getId(),
-            'result' => ['resources' => []]
-        ]);
-    }
-
-    private function _handleResourceTemplatesList(McpServerCommandRequest $request, IConvoResponse $response)
-    {
-        $this->_mcpSessionManager->enqueueEvent($request->getSessionId(), 'message', [
-            'jsonrpc' => '2.0',
-            'id' => $request->getId(),
-            'result' => ['templates' => []]
-        ]);
+        $response->setPlatformResponse($result);
     }
 
     private function _handleNotification($method, McpServerCommandRequest $request)
@@ -338,21 +321,27 @@ implements IConversationProcessor, IChatFunctionContainer
         $data = $request->getPlatformData();
         $requestId = $data['params']['requestId'] ?? null;
         $this->_logger->info('Got notification [' . $request->getServiceId() . '][' . $method . '] for [' . $requestId . ']');
+
+        // Explicitly handle notifications/initialized
+        if ($method === 'notifications/initialized') {
+            $this->_logger->info('Client sent notifications/initialized; session is ready');
+            // No response needed for notifications
+            return;
+        }
+
+        // Handle other notifications if needed
+        $this->_logger->debug('Unhandled notification method [' . $method . ']');
     }
 
 
     private function _convertToolDefinitionToMcp($def)
     {
         $name = $def['name'];
-        // $def = $toolDef['definition'];
 
-        // Default description if not present
         $description = $def['description'] ?? 'No description provided.';
 
-        // Transform parameters
         $inputSchema = $def['parameters'] ?? [];
 
-        // Add missing schema fields if needed
         if (!isset($inputSchema['type'])) {
             $inputSchema['type'] = 'object';
         }
@@ -363,21 +352,18 @@ implements IConversationProcessor, IChatFunctionContainer
             $inputSchema['additionalProperties'] = false;
         }
 
-        if (empty((array)$def['parameters']['properties'])) {
-            return [
-                'name' => $name,
-                'description' => $description,
-                'inputSchema' => [
-                    'type' => 'object',
-                ]
-            ];
-        }
-
-        return [
+        $tool = [
             'name' => $name,
             'description' => $description,
-            'inputSchema' => $inputSchema
+            'inputSchema' => $inputSchema,
+            'annotations' => new \stdClass()
         ];
+
+        if (empty((array)$def['parameters']['properties'])) {
+            $tool['inputSchema'] = ['type' => 'object'];
+        }
+
+        return $tool;
     }
 
 
@@ -407,7 +393,6 @@ implements IConversationProcessor, IChatFunctionContainer
 
         /** @var McpServerCommandRequest $request */
 
-        // $data = $request->getPlatformData();
         $id = $request->getId();
         $method = $request->getMethod();
         $this->_logger->debug('Command: ' . $method . ' - ' . $id);

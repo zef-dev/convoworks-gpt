@@ -39,6 +39,7 @@ interface IMcpSessionStoreInterface
      * @throws DataItemNotFoundException
      */
     public function getSession(string $sessionId): array;
+    public function saveSession($session): void;
 
     /**
      * Persists an event/message for the session.

@@ -14,6 +14,7 @@ use Convo\Gpt\Mcp\McpFilesystemSessionStore;
 use Convo\Gpt\Mcp\McpServerPlatform;
 use Convo\Gpt\Mcp\McpSessionManager;
 use Convo\Gpt\Mcp\SSERestHandler;
+use Convo\Gpt\Mcp\StreamableRestHandler;
 use Convo\Gpt\Pckg\GptPackageDefinition;
 use Psr\Log\LoggerInterface;
 
@@ -102,8 +103,23 @@ class PluginContext
                     $logger = $container->get('logger');
                     $api_factory = new GptApiFactory($logger, $container->get('httpFactory'));
                     $mcp_store = new McpFilesystemSessionStore($logger, CONVO_GPT_MCP_SESSION_STORAGE_PATH);
-                    $mcp_manager = new McpSessionManager($logger, $mcp_store);
-                    $handler = new SSERestHandler(
+                    $mcp_manager = new McpSessionManager(
+                        $logger,
+                        $mcp_store,
+                        $container->get('convoServiceFactory'),
+                        $container->get('convoServiceParamsFactory')
+                    );
+
+                    // $handler = new SSERestHandler(
+                    //     $logger,
+                    //     $container->get('httpFactory'),
+                    //     $container->get('convoServiceFactory'),
+                    //     $container->get('convoServiceParamsFactory'),
+                    //     $container->get('convoServiceDataProvider'),
+                    //     $container->get('eventDispatcher'),
+                    //     $mcp_manager
+                    // );
+                    $handler = new StreamableRestHandler(
                         $logger,
                         $container->get('httpFactory'),
                         $container->get('convoServiceFactory'),

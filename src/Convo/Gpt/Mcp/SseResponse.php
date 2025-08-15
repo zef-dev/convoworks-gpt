@@ -22,6 +22,8 @@ class SseResponse implements IConvoResponse
      */
     private $_mcpSessionManager;
 
+    private $_platformResponse = [];
+
     public function __construct($sessionId, $mcpSessionManager)
     {
         $this->_sessionId = $sessionId;
@@ -34,6 +36,17 @@ class SseResponse implements IConvoResponse
         $this->_mcpSessionManager->enqueueEvent($this->_sessionId, $event, json_encode($data));
     }
 
+    public function setPlatformResponse($data)
+    {
+        $this->_platformResponse = $data;
+    }
+
+    public function getPlatformResponse()
+    {
+        return is_array($this->_platformResponse) && empty($this->_platformResponse)
+            ? new \stdClass()
+            : $this->_platformResponse;
+    }
 
 
     public function addText($text, $append = false): void {}
@@ -74,11 +87,6 @@ class SseResponse implements IConvoResponse
     public function getRepromptTextSsml()
     {
         throw new \RuntimeException('Not implemented');
-    }
-
-    public function getPlatformResponse()
-    {
-        return [];
     }
 
 
