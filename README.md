@@ -46,8 +46,8 @@ npm run build
 2. **Copy the base MCP URL**  
    In the service editor’s **Releases** view (under **Development**), click **LINK** next to `convo-gpt.mcp-server` to copy your MCP server’s base URL to the clipboard.
 
-3. **Connect with an SSE‑enabled client**  
-   Any MCP client that speaks Server‑Sent Events (SSE) can use this URL directly—just paste it into the “server URL” field (for example, cLine for VS Code).
+3. **Connect with an Streamable HTTP enabled client**  
+   Any MCP client that speaks Streamable HTTP can use this URL directly—just paste it into the “server URL” field (for example, cLine for VS Code).
 
 ### WordPress REST API as MCP Tools
 
@@ -62,22 +62,19 @@ Convoworks GPT exposes the full WP REST API as MCP tools—definitions are buil
 
 If your client only supports stdio (like Claude Desktop), you can bridge it via `mcp-proxy`:
 
-1. **Install the proxy**  
-   ```bash
-   npm install -g mcp-proxy
-   ```
-
-2. **Configure your client**  
+**Configure your client**  
    In your `claude_desktop_config.json`, add (use endpoint url provided in the Releases view):
    ```jsonc
    "convoworks-proxy": {
-     "command": "mcp-proxy",
-     "args": [
-       "http://localhost/wordpress/wp-json/convo/v1/public/service-run/external/convo-gpt/mcp-server/a/mcp-prototype"
-     ]
-   }
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost/wordpress/wp-json/convo/v1/public/service-run/external/convo-gpt/mcp-server/a/mcp-prototype",
+		"--transport", "http-only"
+      ]
+    }
    ```
-   This wraps the SSE endpoint over stdio so Claude Desktop can communicate with your MCP server.
+   This wraps the Streamable HTTP endpoint over stdio so Claude Desktop can communicate with your MCP server.
 
 ### Configuration Constants
 
