@@ -26,7 +26,7 @@ npm run build
 
 ### Installation & Quick Start
 
-* Download and activate **Convoworks WP** through your plugin installer (available on [WordPress.org](https://wordpress.org/plugins/convoworks-wp/)). No additional configuration is required.
+* Download and activate **Convoworks WP** - available on [convoworks.com](https://convoworks.com/downloads/). No additional configuration is required.
 * Upload the **convoworks-gpt** plugin zip file through your WordPress plugin installer and activate it.
 * In your WP admin panel, navigate to Convoworks WP, click on **Create new**, enter the desired name, select the **GPT Example Chat** or **GPT Site Admin** template, and press **Submit**.
 * In your newly created service, navigate to the **Variables** view and enter your OpenAI key into the `GPT_API_KEY` variable.
