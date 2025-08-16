@@ -10,9 +10,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 use Convo\Core\Rest\RestSystemUser;
-use Convo\Core\Util\IHttpFactory;
-use Convo\Core\Util\StrUtil;
-use Convo\Core\EventDispatcher\ServiceRunRequestEvent;
 use Convo\Core\Rest\InvalidRequestException;
 use Convo\Core\Rest\NotFoundException;
 use Convo\Core\Rest\RequestInfo;
@@ -25,11 +22,6 @@ class StreamableRestHandler implements RequestHandlerInterface
      * @var \Convo\Core\Factory\ConvoServiceFactory
      */
     private $_convoServiceFactory;
-
-    /**
-     * @var \Convo\Core\Params\IServiceParamsFactory
-     */
-    private $_convoServiceParamsFactory;
 
     /**
      * @var \Convo\Core\Util\IHttpFactory
@@ -47,31 +39,36 @@ class StreamableRestHandler implements RequestHandlerInterface
     private $_convoServiceDataProvider;
 
     /**
-     * @var \Convo\Core\EventDispatcher\EventDispatcher
-     */
-    private $_eventDispatcher;
-
-    /**
      * @var McpSessionManager
      */
     private $_mcpSessionManager;
+
+    /**
+     * @var CommandDispatcher
+     */
+    private $_commandDispatcher;
+
+    /**
+     * @var StreamHandler
+     */
+    private $_streamHandler;
 
     public function __construct(
         $logger,
         $httpFactory,
         $serviceFactory,
-        $serviceParamsFactory,
         $serviceDataProvider,
-        $eventDispatcher,
-        $mcpSessionManager
+        $mcpSessionManager,
+        $commandDispatcher,
+        $stream
     ) {
         $this->_logger                        =    $logger;
         $this->_httpFactory                    =    $httpFactory;
         $this->_convoServiceFactory         =    $serviceFactory;
-        $this->_convoServiceParamsFactory    =    $serviceParamsFactory;
         $this->_convoServiceDataProvider    =     $serviceDataProvider;
-        $this->_eventDispatcher             =   $eventDispatcher;
         $this->_mcpSessionManager             =   $mcpSessionManager;
+        $this->_commandDispatcher             =   $commandDispatcher;
+        $this->_streamHandler                        =   $stream;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -146,10 +143,10 @@ class StreamableRestHandler implements RequestHandlerInterface
         }
 
         // Start SSE stream
-        $this->_mcpSessionManager->startSseStream($session_id);  // New method, see below
+        $this->_streamHandler->startSse($session_id, $this->_mcpSessionManager);  // New method, see below
         $this->_logger->info('Exiting SSE stream for session [' . $session_id . ']');
         // The stream is started with headers sent, so return an empty response object or handle accordingly
-        exit(0);  // Since headers and stream are handled inside startSseStream
+        exit(0);  // Since headers and stream are handled inside startSse
 
         // return $this->_httpFactory->buildResponse('', 200, ['Content-Type' => 'text/event-stream']);
     }
@@ -194,7 +191,7 @@ class StreamableRestHandler implements RequestHandlerInterface
             $session_id = $this->_mcpSessionManager->startSession();
         }
 
-        $responses = $this->_mcpSessionManager->processIncoming($data, $session_id, $variant, $serviceId);
+        $responses = $this->_commandDispatcher->processIncoming($data, $session_id, $variant, $serviceId);
 
         $headers = ['Content-Type' => 'application/json'];
         if (!empty($session_id)) {
@@ -205,49 +202,6 @@ class StreamableRestHandler implements RequestHandlerInterface
         $this->_logger->info("Returning responses ... " . json_encode($responses, JSON_PRETTY_PRINT));
 
         return $this->_httpFactory->buildResponse(json_encode($responses), 200, $headers);
-    }
-
-    private function _handleStreamableRequest(ServerRequestInterface $request, $variant, $serviceId)
-    {
-        $owner        =    new RestSystemUser();
-
-        try {
-            $version_id            =    $this->_convoServiceFactory->getVariantVersion($owner, $serviceId, McpServerPlatform::PLATFORM_ID, $variant);
-        } catch (ComponentNotFoundException $e) {
-            throw new \Convo\Core\Rest\NotFoundException('Service variant [' . $serviceId . '][' . $variant . '] not found', 0, $e);
-        }
-
-        try {
-            $platform_config    =    $this->_convoServiceDataProvider->getServicePlatformConfig($owner, $serviceId, $version_id);
-        } catch (ComponentNotFoundException $e) {
-            throw new NotFoundException('Service platform config [' . $serviceId . '][' . $version_id . '] not found', 0, $e);
-        }
-
-        if (!isset($platform_config[McpServerPlatform::PLATFORM_ID])) {
-            throw new InvalidRequestException('Service [' . $serviceId . '] version [' . $version_id . '] is not enabled for platform [' . McpServerPlatform::PLATFORM_ID . ']');
-        }
-
-        // Authorization check (OAuth 2.1 based - simple bearer token validation for demo; integrate proper OAuth validation in production)
-        // $auth = $request->getHeaderLine('Authorization');
-        // if (!str_starts_with($auth, 'Bearer ') || substr($auth, 7) !== 'secret') {  // Replace with real token validation
-        //     return $this->_httpFactory->buildResponse('Unauthorized', 401, ['Content-Type' => 'text/plain']);
-        // }
-
-        $this->_logger->info("Running variant [$variant] of [$serviceId]");
-
-        $session_id = $this->_mcpSessionManager->startSession();
-
-        // Open input stream for reading client messages
-        $input_handle = fopen('php://input', 'r');
-        stream_set_blocking($input_handle, false);
-
-        try {
-            $this->_mcpSessionManager->listen($session_id, $input_handle, $request, $variant, $serviceId);
-        } finally {
-            fclose($input_handle);
-            $this->_logger->info('Stream closed. Exiting ...');
-            exit(0);
-        }
     }
 
     // UTIL

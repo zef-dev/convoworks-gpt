@@ -49,19 +49,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         $this->_saveSession($session);
     }
 
-    // read next message (deletes it)
-    public function nextEvent($sessionId): ?array
-    {
-        $path = $this->_basePath . $sessionId;
-        $files = glob($path . '/*.json');
-        if (empty($files)) {
-            return null;
-        }
-        $file = $files[0];
-        $data = json_decode(file_get_contents($file), true);
-        unlink($file);
-        return $data;
-    }
+
 
     // COMMANDS
     public function initialiseSession($sessionId): void
@@ -79,20 +67,43 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
     }
 
     // queues the notification (now queues full JSON-RPC message)
-    public function queueEvent($sessionId, $data): void
+    public function queueEvent(string $sessionId, array $data): void
     {
-        $path = $this->_basePath . $sessionId;
-
-        $filename = sprintf('%s.json', microtime(true));
-        $filepath = $path . DIRECTORY_SEPARATOR . $filename;
-
-        $jsonData = json_encode($data, JSON_PRETTY_PRINT);
-
-        file_put_contents($filepath, $jsonData);
-
+        $queueFile = $this->_getQueueFile($sessionId);
+        file_put_contents($queueFile, json_encode($data) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $this->pingSession($sessionId);
+    }
 
-        $this->_logger->debug('Wrote notification to file: ' . $jsonData);
+    public function queueEvents(string $sessionId, array $events): void
+    {
+        $queueFile = $this->_getQueueFile($sessionId);
+        $lines = array_map(function ($e) {
+            return json_encode($e);
+        }, $events);
+        file_put_contents($queueFile, implode(PHP_EOL, $lines) . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $this->pingSession($sessionId);
+    }
+
+    // read next message (deletes it)
+    public function nextEvent($sessionId): ?array
+    {
+        $queueFile = $this->_getQueueFile($sessionId);
+        if (!file_exists($queueFile) || filesize($queueFile) === 0) return null;
+        $handle = fopen($queueFile, 'r+');
+        flock($handle, LOCK_EX);
+        $event = json_decode(fgets($handle), true);
+        $remaining = fread($handle, filesize($queueFile));
+        rewind($handle);
+        ftruncate($handle, 0);
+        fwrite($handle, $remaining);
+        flock($handle, LOCK_UN);
+        fclose($handle);
+        return $event;
+    }
+
+    private function _getQueueFile(string $sessionId): string
+    {
+        return $this->_basePath . $sessionId . '/queue.jsonl';
     }
 
     public function pingSession($sessionId): void

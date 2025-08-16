@@ -39,6 +39,13 @@ interface IMcpSessionStoreInterface
      * @throws DataItemNotFoundException
      */
     public function getSession(string $sessionId): array;
+
+    /**
+     * Saves the session data.
+     *
+     * @param array $session
+     * @return void
+     */
     public function saveSession($session): void;
 
     /**
@@ -49,6 +56,15 @@ interface IMcpSessionStoreInterface
      * @return void
      */
     public function queueEvent(string $sessionId, array $data): void;
+
+    /**
+     * Persists multiple events/messages for the session.
+     *
+     * @param string $sessionId
+     * @param array $events
+     * @return void
+     */
+    public function queueEvents(string $sessionId, array $events): void;
 
     /**
      * Retrieves and removes the next queued message for the session.

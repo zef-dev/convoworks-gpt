@@ -17,24 +17,14 @@ class SseResponse implements IConvoResponse
 
     private $_sessionId;
 
-    /**
-     * @var McpSessionManager
-     */
-    private $_mcpSessionManager;
-
     private $_platformResponse = [];
 
-    public function __construct($sessionId, $mcpSessionManager)
+    public function __construct($sessionId)
     {
         $this->_sessionId = $sessionId;
-        $this->_mcpSessionManager = $mcpSessionManager;
         $this->_logger = new NullLogger();
     }
 
-    public function sendEvent($event, $data): void
-    {
-        $this->_mcpSessionManager->enqueueEvent($this->_sessionId, $event, json_encode($data));
-    }
 
     public function setPlatformResponse($data)
     {

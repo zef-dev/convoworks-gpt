@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Convo\Gpt;
 
-
-
 use Convo\Providers\ConvoWPPlugin;
 use Convo\Core\Factory\IPackageDescriptor;
 use Convo\Gpt\Admin\McpConvoworksManager;
 use Convo\Gpt\Admin\SettingsViewModel;
+use Convo\Gpt\Mcp\CommandDispatcher;
 use Convo\Gpt\Mcp\McpFilesystemSessionStore;
 use Convo\Gpt\Mcp\McpServerPlatform;
 use Convo\Gpt\Mcp\McpSessionManager;
-use Convo\Gpt\Mcp\SSERestHandler;
 use Convo\Gpt\Mcp\StreamableRestHandler;
+use Convo\Gpt\Mcp\StreamHandler;
+use Convo\Gpt\Mcp\StreamWriter;
 use Convo\Gpt\Pckg\GptPackageDefinition;
 use Psr\Log\LoggerInterface;
 
@@ -103,30 +103,29 @@ class PluginContext
                     $logger = $container->get('logger');
                     $api_factory = new GptApiFactory($logger, $container->get('httpFactory'));
                     $mcp_store = new McpFilesystemSessionStore($logger, CONVO_GPT_MCP_SESSION_STORAGE_PATH);
+                    $stream_writer = new StreamWriter($logger, $container->get('httpFactory'));
+                    $stream_handler = new StreamHandler($stream_writer, $logger);
                     $mcp_manager = new McpSessionManager(
                         $logger,
                         $mcp_store,
                         $container->get('convoServiceFactory'),
                         $container->get('convoServiceParamsFactory')
                     );
+                    $command_dispatcher = new CommandDispatcher(
+                        $container->get('convoServiceFactory'),
+                        $container->get('convoServiceParamsFactory'),
+                        $logger,
+                        $mcp_manager
+                    );
 
-                    // $handler = new SSERestHandler(
-                    //     $logger,
-                    //     $container->get('httpFactory'),
-                    //     $container->get('convoServiceFactory'),
-                    //     $container->get('convoServiceParamsFactory'),
-                    //     $container->get('convoServiceDataProvider'),
-                    //     $container->get('eventDispatcher'),
-                    //     $mcp_manager
-                    // );
                     $handler = new StreamableRestHandler(
                         $logger,
                         $container->get('httpFactory'),
                         $container->get('convoServiceFactory'),
-                        $container->get('convoServiceParamsFactory'),
                         $container->get('convoServiceDataProvider'),
-                        $container->get('eventDispatcher'),
-                        $mcp_manager
+                        $mcp_manager,
+                        $command_dispatcher,
+                        $stream_handler
                     );
                     $mcp_platform = new McpServerPlatform(
                         $logger,

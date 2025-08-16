@@ -215,7 +215,6 @@ implements IConversationProcessor, IChatFunctionContainer
         ];
 
         // $msg = ['jsonrpc' => '2.0', 'id' => $id, 'result' => $result];
-        // $this->_mcpSessionManager->enqueueMessage($request->getSessionId(), $msg);
         $response->setPlatformResponse($result);
     }
 

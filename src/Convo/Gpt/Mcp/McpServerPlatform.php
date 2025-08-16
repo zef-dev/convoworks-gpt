@@ -20,9 +20,8 @@ class McpServerPlatform implements IRestPlatform
      */
     private $_logger;
 
-
     /**
-     * @var SSERestHandler
+     * @var StreamableRestHandler
      */
     private $_publicHandler;
 
