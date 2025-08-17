@@ -27,7 +27,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
     }
 
     // create new session
-    public function createSession(): string
+    public function createSession($clientName): string
     {
         $session_id = StrUtil::uuidV4();
         $path = $this->_getServicePath() . $session_id;
@@ -39,6 +39,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         $session = [
             'session_id' => $session_id,
             'status' => IMcpSessionStoreInterface::SESSION_STATUS_NEW,
+            'clientName' => $clientName,
             'created_at' => time(),
             'last_active' => time(),
         ];

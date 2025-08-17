@@ -45,9 +45,9 @@ class McpSessionManager
     }
 
     // creates new session and sets up stream headers
-    public function startSession(): string
+    public function startSession($clientName): string
     {
-        $session_id     =   $this->_sessionStore->createSession();
+        $session_id     =   $this->_sessionStore->createSession($clientName);
 
         $this->_logger->info("New session started: $session_id");
 

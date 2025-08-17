@@ -237,7 +237,8 @@ class StreamableRestHandler implements RequestHandlerInterface
         // $this->_logger->debug("Got headers " . json_encode($request->getHeaders(), JSON_PRETTY_PRINT));
 
         if (empty($session_id)) {
-            $session_id = $this->_mcpSessionManagerFactory->getSessionManager($serviceId)->startSession();
+            $session_id = $this->_mcpSessionManagerFactory->getSessionManager($serviceId)
+                ->startSession($data['params']['clientInfo']['name'] ?? 'unknown');
         }
 
         $responses = $this->_commandDispatcher->processIncoming($data, $session_id, $variant, $serviceId);
