@@ -138,6 +138,49 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 
 
     // UTIL
+
+
+    /**
+     * Deletes session files and folders that have been inactive for the given time (in seconds).
+     *
+     * @param int $inactiveTime Seconds of inactivity before deletion.
+     * @return int Number of deleted sessions.
+     */
+    public function cleanupInactiveSessions(int $inactiveTime): int
+    {
+        $deleted = 0;
+        $files = glob($this->_basePath . '*.json');
+        foreach ($files as $file) {
+            $session = json_decode(file_get_contents($file), true);
+            if (!$session || !isset($session['last_active'])) {
+                continue;
+            }
+            if ($session['last_active'] < time() - $inactiveTime) {
+                $sessionId = $session['session_id'];
+                // Delete session file
+                @unlink($file);
+                // Delete queue file
+                $queueFile = $this->_getQueueFile($sessionId);
+                if (is_file($queueFile)) {
+                    @unlink($queueFile);
+                }
+                // Delete session folder
+                $sessionFolder = $this->_basePath . $sessionId;
+                if (is_dir($sessionFolder)) {
+                    // Remove all files in folder
+                    $folderFiles = glob($sessionFolder . '/*');
+                    foreach ($folderFiles as $f) {
+                        @unlink($f);
+                    }
+                    @rmdir($sessionFolder);
+                }
+                $deleted++;
+                $this->_logger->info("Deleted inactive session: $sessionId");
+            }
+        }
+        return $deleted;
+    }
+
     public function __toString()
     {
         return get_class($this) . '[]';

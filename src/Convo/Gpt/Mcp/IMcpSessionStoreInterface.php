@@ -76,9 +76,10 @@ interface IMcpSessionStoreInterface
     public function nextEvent(string $sessionId): ?array;
 
     /**
-     * Returns a string representation for debugging/logging.
+     * Deletes session files and folders that have been inactive for the given time (in seconds).
      *
-     * @return string
+     * @param int $inactiveTime Seconds of inactivity before deletion.
+     * @return int Number of deleted sessions.
      */
-    public function __toString();
+    public function cleanupInactiveSessions(int $inactiveTime): int;
 }
