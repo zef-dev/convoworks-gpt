@@ -103,6 +103,7 @@ implements IConversationProcessor, IChatFunctionContainer
         if (isset($handlers[$method])) {
             if ($method !== 'initialize') {
                 $this->_mcpSessionManager->getActiveSession($session_id);
+                $this->_mcpSessionManager->getSessionStore()->cleanupInactiveSessions(CONVO_GPT_MCP_SESSION_TIMEOUT);
             }
 
             $this->{$handlers[$method]}($request, $response);

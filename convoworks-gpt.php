@@ -31,7 +31,7 @@ if (!defined('CONVO_GPT_MCP_SESSION_STORAGE_PATH')) {
 
 // Session timeout in seconds (how long an inactive session stays alive)
 if (!defined('CONVO_GPT_MCP_SESSION_TIMEOUT')) {
-    define('CONVO_GPT_MCP_SESSION_TIMEOUT', 60 * 30);
+    define('CONVO_GPT_MCP_SESSION_TIMEOUT', 60 * 60 * 24 * 30);
 }
 
 // Background poll interval (microseconds) for checking new messages
