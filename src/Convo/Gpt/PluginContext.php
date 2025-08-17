@@ -102,13 +102,12 @@ class PluginContext
                 function () use ($container) {
                     $logger = $container->get('logger');
                     $api_factory = new GptApiFactory($logger, $container->get('httpFactory'));
-                    $mcp_store = new McpFilesystemSessionStore($logger, CONVO_GPT_MCP_SESSION_STORAGE_PATH);
                     $stream_writer = new StreamWriter($logger, $container->get('httpFactory'));
                     $stream_handler = new StreamHandler($stream_writer, $logger);
 
                     $mcp_manager_factory = new McpSessionManagerFactory(
                         $logger,
-                        $mcp_store
+                        CONVO_GPT_MCP_SESSION_STORAGE_PATH
                     );
 
                     $command_dispatcher = new CommandDispatcher(

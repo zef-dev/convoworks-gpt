@@ -13,30 +13,28 @@ class McpSessionManagerFactory
      */
     private $_logger;
 
-    /**
-     * @var IMcpSessionStoreInterface
-     */
-    private $_sessionStore;
+
+    private $_basePath;
 
     /**
      * @var McpSessionManager[]
      */
     private $_instances = [];
 
-    public function __construct($logger, $sessionStore)
+    public function __construct($logger, $basePath)
     {
         $this->_logger                      =   $logger;
-        $this->_sessionStore                =   $sessionStore;
+        $this->_basePath                    =   $basePath;
     }
 
     public function getSessionManager($serviceId): McpSessionManager
     {
         if (!isset($this->_instances[$serviceId])) {
             $this->_logger->debug("Creating new McpSessionManager for service: $serviceId");
+            $mcp_store = new McpFilesystemSessionStore($this->_logger, $this->_basePath, $serviceId);
             $this->_instances[$serviceId] = new McpSessionManager(
                 $this->_logger,
-                $this->_sessionStore,
-                $serviceId
+                $mcp_store
             );
         }
         return $this->_instances[$serviceId];

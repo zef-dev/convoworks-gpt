@@ -17,17 +17,20 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 
     private $_basePath;
 
-    public function __construct($logger, $basePath)
+    private $_serviceId;
+
+    public function __construct($logger, $basePath, $serviceId)
     {
         $this->_logger = $logger;
         $this->_basePath = $basePath;
+        $this->_serviceId = $serviceId;
     }
 
     // create new session
     public function createSession(): string
     {
         $session_id = StrUtil::uuidV4();
-        $path = $this->_basePath . $session_id;
+        $path = $this->_getServicePath() . $session_id;
         if (false === wp_mkdir_p($path)) {
             throw new \RuntimeException('Failed to create session directory: ' . $path);
         }
@@ -103,7 +106,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 
     private function _getQueueFile(string $sessionId): string
     {
-        return $this->_basePath . $sessionId . '/queue.jsonl';
+        return $this->_getServicePath() . $sessionId . '/queue.jsonl';
     }
 
     public function pingSession($sessionId): void
@@ -113,10 +116,15 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
         $this->_saveSession($session);
     }
 
+    private function _getServicePath(): string
+    {
+        return $this->_basePath . $this->_serviceId . '/';
+    }
+
     // PERSISTENCE
     public function getSession($sessionId): array
     {
-        $path = $this->_basePath . $sessionId . '.json';
+        $path = $this->_getServicePath() . $sessionId . '.json';
         if (!is_file($path)) {
             throw new DataItemNotFoundException('Session file [' . $path . '] not found');
         }
@@ -131,7 +139,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
 
     private function _saveSession($session)
     {
-        $path = $this->_basePath . $session['session_id'] . '.json';
+        $path = $this->_getServicePath() . $session['session_id'] . '.json';
         $jsonData = json_encode($session, JSON_PRETTY_PRINT);
         file_put_contents($path, $jsonData);
     }
@@ -149,7 +157,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
     public function cleanupInactiveSessions(int $inactiveTime): int
     {
         $deleted = 0;
-        $files = glob($this->_basePath . '*.json');
+        $files = glob($this->_getServicePath() . '*.json');
         foreach ($files as $file) {
             $session = json_decode(file_get_contents($file), true);
             if (!$session || !isset($session['last_active'])) {
@@ -165,7 +173,7 @@ class McpFilesystemSessionStore implements IMcpSessionStoreInterface
                     @unlink($queueFile);
                 }
                 // Delete session folder
-                $sessionFolder = $this->_basePath . $sessionId;
+                $sessionFolder = $this->_getServicePath() . $sessionId;
                 if (is_dir($sessionFolder)) {
                     // Remove all files in folder
                     $folderFiles = glob($sessionFolder . '/*');
