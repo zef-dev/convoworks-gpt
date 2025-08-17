@@ -1363,4 +1363,11 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
 
         return $data;
     }
+
+    // @deprecated use Util::splitTextIntoChunks instead
+    public static function splitTextIntoChunks($text, $maxChar, $margin)
+    {
+        error_log('Convo\Gpt\Pckg\GptPackageDefinition::splitTextIntoChunks is deprecated, use Convo\Gpt\Util::splitTextIntoChunks instead');
+        return Util::splitTextIntoChunks($text, $maxChar, $margin);
+    }
 }
