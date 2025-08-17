@@ -187,7 +187,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handlePromptsGet(McpServerCommandRequest $request, SseResponse $response)
     {
-        $id     = $request->getId();
+        $id     = $request->getPlatformData()['id'] ?? null;
         $params = $request->getPlatformData()['params'] ?? [];
         $name   = $params['name'] ?? null;
         $args   = $params['arguments'] ?? [];
@@ -244,9 +244,13 @@ implements IConversationProcessor, IChatFunctionContainer
     {
         $err = [
             'jsonrpc' => '2.0',
-            'id'      => $id,
             'error'   => ['code' => $code, 'message' => $message]
         ];
+
+        if (trim($id) !== '') {
+            $err['id'] = $id;
+        }
+
         $this->_mcpSessionManagerFactory->getSessionManager($req->getServiceId())->enqueueMessage($req->getSessionId(), $err);
     }
 

@@ -79,6 +79,8 @@ class StreamableRestHandler implements RequestHandlerInterface
     {
         $info = new RequestInfo($request);
         $this->_logger->debug('Got info [' . $info . ']');
+        $this->_logger->debug('Got mpc session id [' . $request->getHeaderLine('mcp_session_id') . ']');
+        $this->_logger->debug('Got request data [' . print_r($request->getParsedBody(), true) . ']');
 
         // Handle OAuth discovery endpoints to prevent 404s
         if ($info->get() && $info->route('.well-known/oauth-protected-resource')) {
@@ -244,6 +246,11 @@ class StreamableRestHandler implements RequestHandlerInterface
         if (!empty($session_id)) {
             $headers['mcp-session-id'] = $session_id;
             $headers['MCP-Protocol-Version'] = '2025-06-18';  // As per new spec
+        }
+
+        if (empty($responses)) {
+            $this->_logger->debug('No response needed for notification; returning 204');
+            return $this->_httpFactory->buildResponse('', 204, $headers);
         }
 
         $this->_logger->info("Returning responses ... " . json_encode($responses, JSON_PRETTY_PRINT));

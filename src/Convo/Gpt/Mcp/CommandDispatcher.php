@@ -67,13 +67,35 @@ class CommandDispatcher
             $data = $data[0];
         }
 
+        // Handle notifications (no 'id')
+        if (!isset($data['id'])) {
+            $this->_logger->debug('Processing notification [' . $data['method'] . ']; no response needed');
+            $owner = new RestSystemUser();
+            $role = McpServerCommandRequest::SPECIAL_ROLE_MCP;
+            $version_id = $this->_convoServiceFactory->getVariantVersion($owner, $serviceId, McpServerPlatform::PLATFORM_ID, $variant);
+            $service = $this->_convoServiceFactory->getService($owner, $serviceId, $version_id, $this->_convoServiceParamsFactory);
+
+            $text_request = new McpServerCommandRequest($serviceId, $sessionId, StrUtil::uuidV4(), $data, $role);
+            $text_response = new SseResponse($sessionId);
+            $text_response->setLogger($this->_logger);
+
+            try {
+                $this->_logger->info('Running service instance [' . $service->getId() . '] for notification [' . $data['method'] . ']');
+                $service->run($text_request, $text_response);
+            } catch (Throwable $e) {
+                $this->_logger->error('Error processing notification [' . $data['method'] . ']: ' . $e->getMessage());
+            }
+
+            return []; // No response body for notifications
+        }
+
         $owner = new RestSystemUser();
         $role = McpServerCommandRequest::SPECIAL_ROLE_MCP;
         $version_id = $this->_convoServiceFactory->getVariantVersion($owner, $serviceId, McpServerPlatform::PLATFORM_ID, $variant);
         $service = $this->_convoServiceFactory->getService($owner, $serviceId, $version_id, $this->_convoServiceParamsFactory);
 
-        $req_id = $data['id'] ?? StrUtil::uuidV4();
-        $text_request = new McpServerCommandRequest($serviceId, $sessionId, $req_id, $data, $role);
+        $req_id = $data['id'];
+        $text_request = new McpServerCommandRequest($serviceId, $sessionId, StrUtil::uuidV4(), $data, $role);
         $text_response = new SseResponse($sessionId);
         $text_response->setLogger($this->_logger);
 
@@ -118,8 +140,8 @@ class CommandDispatcher
         if (is_array($message) && array_keys($message) === range(0, count($message) - 1)) {
             $responses = [];
             foreach ($message as $single_msg) {
-                $req_id = $single_msg['id'] ?? StrUtil::uuidV4();
-                $text_request = new McpServerCommandRequest($serviceId, $sessionId, $req_id, $single_msg, $role);
+                $req_id = $single_msg['id'];
+                $text_request = new McpServerCommandRequest($serviceId, $sessionId, StrUtil::uuidV4(), $single_msg, $role);
                 $text_response = new SseResponse($sessionId);
                 $text_response->setLogger($this->_logger);
                 try {
@@ -132,8 +154,8 @@ class CommandDispatcher
                 $manager->enqueueMessage($sessionId, $responses);
             }
         } else {
-            $req_id = $message['id'] ?? StrUtil::uuidV4();
-            $text_request = new McpServerCommandRequest($serviceId, $sessionId, $req_id, $message, $role);
+            $req_id = $message['id'];
+            $text_request = new McpServerCommandRequest($serviceId, $sessionId, StrUtil::uuidV4(), $message, $role);
             $text_response = new SseResponse($sessionId);
             $text_response->setLogger($this->_logger);
             try {
