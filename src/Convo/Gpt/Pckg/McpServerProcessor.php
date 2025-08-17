@@ -111,6 +111,16 @@ implements IConversationProcessor, IChatFunctionContainer
         }
     }
 
+    private function _readTools(McpServerCommandRequest $request, SseResponse $response)
+    {
+        $this->_functions = [];
+        $this->_prompts = [];
+
+        foreach ($this->_tools as $elem) {
+            $elem->read($request, $response);
+        }
+    }
+
     private function _handlePing(McpServerCommandRequest $request, SseResponse $response)
     {
         $response->setPlatformResponse(new \stdClass());
@@ -130,9 +140,7 @@ implements IConversationProcessor, IChatFunctionContainer
             throw new InvalidRequestException("Unsupported protocol version [$req_version]");
         }
 
-        foreach ($this->_tools as $elem) {
-            $elem->read($request, $response);
-        }
+        $this->_readTools($request, $response);
 
         $result = [
             "protocolVersion" => "2025-06-18",
@@ -158,9 +166,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handlePromptsList(McpServerCommandRequest $request, SseResponse $response)
     {
-        foreach ($this->_tools as $elem) {
-            $elem->read($request, $response);
-        }
+        $this->_readTools($request, $response);
 
         $params = $request->getPlatformData()['params'] ?? [];
         $cursor = $params['cursor'] ?? null;
@@ -185,9 +191,7 @@ implements IConversationProcessor, IChatFunctionContainer
         $name   = $params['name'] ?? null;
         $args   = $params['arguments'] ?? [];
 
-        foreach ($this->_tools as $elem) {
-            $elem->read($request, $response);
-        }
+        $this->_readTools($request, $response);
 
         try {
             $prompt = $this->_findPrompt($name);
@@ -248,9 +252,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handleToolsList(McpServerCommandRequest $request, SseResponse $response)
     {
-        foreach ($this->_tools as $elem) {
-            $elem->read($request, $response);
-        }
+        $this->_readTools($request, $response);
 
         $tools = array_map([$this, '_convertToolDefinitionToMcp'], array_map(function ($func) {
             return $func->getDefinition();
@@ -262,9 +264,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handleToolsCall(McpServerCommandRequest $request, SseResponse $response)
     {
-        foreach ($this->_tools as $elem) {
-            $elem->read($request, $response);
-        }
+        $this->_readTools($request, $response);
 
         $id = $request->getId();
         $data = $request->getPlatformData();
