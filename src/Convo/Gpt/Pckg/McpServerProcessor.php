@@ -16,7 +16,7 @@ use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\DefaultFilterResult;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\Mcp\McpServerCommandRequest;
-use Convo\Gpt\Mcp\McpSessionManager;
+use Convo\Gpt\Mcp\McpSessionManagerFactory;
 use Convo\Gpt\Mcp\SseResponse;
 use stdClass;
 
@@ -39,15 +39,15 @@ implements IConversationProcessor, IChatFunctionContainer
     private $_tools;
 
     /**
-     * @var McpSessionManager
+     * @var McpSessionManagerFactory
      */
-    private $_mcpSessionManager;
+    private $_mcpSessionManagerFactory;
 
-    public function __construct($properties, $mcpSessionManager)
+    public function __construct($properties, $mcpSessionManagerFactory)
     {
         parent::__construct($properties);
 
-        $this->_mcpSessionManager  =   $mcpSessionManager;
+        $this->_mcpSessionManagerFactory  =   $mcpSessionManagerFactory;
         $this->_name     =   $properties['name'];
         $this->_version  =   $properties['version'];
         $this->_tools    =   $properties['tools'];
@@ -102,8 +102,8 @@ implements IConversationProcessor, IChatFunctionContainer
 
         if (isset($handlers[$method])) {
             if ($method !== 'initialize') {
-                $this->_mcpSessionManager->getActiveSession($session_id);
-                $this->_mcpSessionManager->getSessionStore()->cleanupInactiveSessions(CONVO_GPT_MCP_SESSION_TIMEOUT);
+                $this->_mcpSessionManagerFactory->getSessionManager($request->getServiceId())->getActiveSession($session_id);
+                $this->_mcpSessionManagerFactory->getSessionManager($request->getServiceId())->getSessionStore()->cleanupInactiveSessions(CONVO_GPT_MCP_SESSION_TIMEOUT);
             }
 
             $this->{$handlers[$method]}($request, $response);
@@ -129,7 +129,7 @@ implements IConversationProcessor, IChatFunctionContainer
 
     private function _handleInitialize(McpServerCommandRequest $request, SseResponse $response)
     {
-        $this->_mcpSessionManager->activateSession($request->getSessionId());
+        $this->_mcpSessionManagerFactory->getSessionManager($request->getServiceId())->activateSession($request->getSessionId());
 
         $data = $request->getPlatformData();
         $params = $data['params'];
@@ -240,14 +240,14 @@ implements IConversationProcessor, IChatFunctionContainer
         throw new DataItemNotFoundException("Prompt '{$name}' not found");
     }
 
-    private function _throwRpcError($id, $code, $message, $req)
+    private function _throwRpcError($id, $code, $message, McpServerCommandRequest $req)
     {
         $err = [
             'jsonrpc' => '2.0',
             'id'      => $id,
             'error'   => ['code' => $code, 'message' => $message]
         ];
-        $this->_mcpSessionManager->enqueueMessage($req->getSessionId(), $err);
+        $this->_mcpSessionManagerFactory->getSessionManager($req->getServiceId())->enqueueMessage($req->getSessionId(), $err);
     }
 
 

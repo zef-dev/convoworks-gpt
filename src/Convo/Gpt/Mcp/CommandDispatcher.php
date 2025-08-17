@@ -33,20 +33,20 @@ class CommandDispatcher
     private $_logger;
 
     /**
-     * @var McpSessionManager
+     * @var McpSessionManagerFactory
      */
-    private $_mcpSessionManager;
+    private $_mcpSessionManagerFactory;
 
     public function __construct(
         ConvoServiceFactory $convoServiceFactory,
         IServiceParamsFactory $convoServiceParamsFactory,
         LoggerInterface $logger,
-        McpSessionManager $mcpSessionManager
+        McpSessionManagerFactory $mcpSessionManagerFactory
     ) {
         $this->_convoServiceFactory = $convoServiceFactory;
         $this->_convoServiceParamsFactory = $convoServiceParamsFactory;
         $this->_logger = $logger;
-        $this->_mcpSessionManager = $mcpSessionManager;
+        $this->_mcpSessionManagerFactory = $mcpSessionManagerFactory;
     }
 
     /**
@@ -60,7 +60,7 @@ class CommandDispatcher
      */
     public function processIncoming(array $data, string $sessionId, string $variant, string $serviceId): array
     {
-        $this->_mcpSessionManager->getActiveSession($sessionId, true);
+        $this->_mcpSessionManagerFactory->getSessionManager($serviceId)->getActiveSession($sessionId, true);
 
         if (is_array($data) && array_keys($data) === range(0, count($data) - 1)) {
             $this->_logger->warning('Batching not supported in 2025-06-18; processing first message only');
@@ -113,6 +113,8 @@ class CommandDispatcher
         $version_id = $this->_convoServiceFactory->getVariantVersion($owner, $serviceId, McpServerPlatform::PLATFORM_ID, $variant);
         $service = $this->_convoServiceFactory->getService($owner, $serviceId, $version_id, $this->_convoServiceParamsFactory);
 
+        $manager = $this->_mcpSessionManagerFactory->getSessionManager($serviceId);
+
         if (is_array($message) && array_keys($message) === range(0, count($message) - 1)) {
             $responses = [];
             foreach ($message as $single_msg) {
@@ -127,7 +129,7 @@ class CommandDispatcher
                 }
             }
             if (!empty($responses)) {
-                $this->_mcpSessionManager->enqueueMessage($sessionId, $responses);
+                $manager->enqueueMessage($sessionId, $responses);
             }
         } else {
             $req_id = $message['id'] ?? StrUtil::uuidV4();
@@ -138,7 +140,7 @@ class CommandDispatcher
                 $service->run($text_request, $text_response);
             } catch (Throwable $e) {
                 $error = ['jsonrpc' => '2.0', 'id' => $req_id, 'error' => ['code' => -32603, 'message' => $e->getMessage()]];
-                $this->_mcpSessionManager->enqueueMessage($sessionId, $error);
+                $manager->enqueueMessage($sessionId, $error);
             }
         }
     }

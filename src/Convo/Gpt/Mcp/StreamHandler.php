@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Convo\Gpt\Mcp;
 
 use Convo\Core\DataItemNotFoundException;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -88,76 +87,5 @@ class StreamHandler
         }
 
         $this->_logger->info("SSE disconnected for session [$sessionId]");
-    }
-
-    /**
-     * Manages bidirectional streaming.
-     *
-     * @param string $sessionId
-     * @param resource $inputHandle
-     * @param ServerRequestInterface $httpRequest
-     * @param McpSessionManager $manager
-     * @param string $variant
-     * @param string $serviceId
-     */
-    public function listenBidirectional(
-        string $sessionId,
-        $inputHandle,
-        ServerRequestInterface $httpRequest,
-        McpSessionManager $manager,
-        string $variant,
-        string $serviceId
-    ): void {
-        $lastPing = time();
-        $lastSessionCheck = time();
-        $buffer = '';
-
-        while (!connection_aborted()) {
-            if ((time() - $lastSessionCheck) >= 1) {
-                try {
-                    $manager->getActiveSession($sessionId, true);
-                } catch (DataItemNotFoundException $e) {
-                    $this->_logger->warning("Session check failed [$sessionId]: " . $e->getMessage());
-                    break;
-                }
-                $lastSessionCheck = time();
-            }
-
-            $read = fread($inputHandle, 8192);
-            if ($read !== false && $read !== '') {
-                $buffer .= $read;
-                while (($pos = strpos($buffer, "\n")) !== false) {
-                    $line = substr($buffer, 0, $pos);
-                    $buffer = substr($buffer, $pos + 1);
-                    $line = trim($line);
-                    if ($line) {
-                        $incoming_message = json_decode($line, true);
-                        if ($incoming_message) {
-                            $manager->getCommandDispatcher()->processMessage(
-                                $incoming_message,
-                                $sessionId,
-                                $variant,
-                                $serviceId
-                            );
-                        }
-                    }
-                }
-            }
-
-            while ($message = $manager->getSessionStore()->nextEvent($sessionId)) {
-                $json = json_encode($message);
-                $this->_streamWriter->sendMessage($json);
-            }
-
-            if (CONVO_GPT_MCP_PING_INTERVAL && (time() - $lastPing) >= CONVO_GPT_MCP_PING_INTERVAL) {
-                $this->_streamWriter->sendPing();
-                $manager->getSessionStore()->pingSession($sessionId);
-                $lastPing = time();
-            }
-
-            usleep(CONVO_GPT_MCP_LISTEN_USLEEP);
-        }
-
-        $this->_logger->info("Disconnected for session [$sessionId]");
     }
 }

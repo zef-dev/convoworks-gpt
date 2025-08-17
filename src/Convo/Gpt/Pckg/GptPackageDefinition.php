@@ -10,6 +10,7 @@ use Convo\Gpt\GptApiFactory;
 use Convo\Core\Expression\ExpressionFunction;
 use Convo\Core\Factory\IPlatformProvider;
 use Convo\Gpt\Mcp\McpServerPlatform;
+use Convo\Gpt\Mcp\McpSessionManagerFactory;
 use Convo\Gpt\Util;
 use Psr\Log\LoggerInterface;
 
@@ -23,9 +24,9 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
     private $_gptApiFactory;
 
     /**
-     * @var McpSessionManager
+     * @var McpSessionManagerFactory
      */
-    private $_mcpSessionManager;
+    private $_mcpSessionManagerFactory;
 
     /**
      * @var McpServerPlatform
@@ -36,11 +37,11 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
         LoggerInterface $logger,
         $gptApiFactory,
         $mcpPlatform,
-        $mcpSessionManager
+        $mcpSessionManagerFactory
     ) {
         $this->_gptApiFactory  =   $gptApiFactory;
         $this->_mcpPlatform    =   $mcpPlatform;
-        $this->_mcpSessionManager    =   $mcpSessionManager;
+        $this->_mcpSessionManagerFactory    =   $mcpSessionManagerFactory;
 
         parent::__construct($logger, self::NAMESPACE, __DIR__);
 
@@ -1148,17 +1149,17 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'description'      => 'Drop conversation elements here that should be exposed as MCP tools/prompts.',
                         'valueType'        => 'class',
                     ],
-                    '_factory' => new class($this->_mcpSessionManager) implements \Convo\Core\Factory\IComponentFactory
+                    '_factory' => new class($this->_mcpSessionManagerFactory) implements \Convo\Core\Factory\IComponentFactory
                     {
-                        private $_mcpSessionManager;
+                        private $_mcpSessionManagerFactory;
 
-                        public function __construct($mcpSessionManager)
+                        public function __construct($mcpSessionManagerFactory)
                         {
-                            $this->_mcpSessionManager       =   $mcpSessionManager;
+                            $this->_mcpSessionManagerFactory       =   $mcpSessionManagerFactory;
                         }
                         public function createComponent($properties, $service)
                         {
-                            return new McpServerProcessor($properties, $this->_mcpSessionManager);
+                            return new McpServerProcessor($properties, $this->_mcpSessionManagerFactory);
                         }
                     },
                     '_preview_angular' => [

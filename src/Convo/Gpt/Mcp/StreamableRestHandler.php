@@ -43,9 +43,9 @@ class StreamableRestHandler implements RequestHandlerInterface
     private $_convoServiceDataProvider;
 
     /**
-     * @var McpSessionManager
+     * @var McpSessionManagerFactory
      */
-    private $_mcpSessionManager;
+    private $_mcpSessionManagerFactory;
 
     /**
      * @var CommandDispatcher
@@ -62,7 +62,7 @@ class StreamableRestHandler implements RequestHandlerInterface
         $httpFactory,
         $serviceFactory,
         $serviceDataProvider,
-        $mcpSessionManager,
+        $mcpSessionManagerFactory,
         $commandDispatcher,
         $stream
     ) {
@@ -70,7 +70,7 @@ class StreamableRestHandler implements RequestHandlerInterface
         $this->_httpFactory                    =    $httpFactory;
         $this->_convoServiceFactory         =    $serviceFactory;
         $this->_convoServiceDataProvider    =     $serviceDataProvider;
-        $this->_mcpSessionManager             =   $mcpSessionManager;
+        $this->_mcpSessionManagerFactory    =   $mcpSessionManagerFactory;
         $this->_commandDispatcher             =   $commandDispatcher;
         $this->_streamHandler                        =   $stream;
     }
@@ -162,7 +162,7 @@ class StreamableRestHandler implements RequestHandlerInterface
         }
 
         try {
-            $this->_mcpSessionManager->terminateSession($session_id);
+            $this->_mcpSessionManagerFactory->getSessionManager($serviceId)->terminateSession($session_id);
             return $this->_httpFactory->buildResponse('', 204, ['Content-Type' => 'text/plain']);
         } catch (DataItemNotFoundException $e) {
             throw new NotFoundException('Session [' . $session_id . '] not found', 0, $e);
@@ -198,7 +198,7 @@ class StreamableRestHandler implements RequestHandlerInterface
         }
 
         // Start SSE stream
-        $this->_streamHandler->startSse($session_id, $this->_mcpSessionManager);  // New method, see below
+        $this->_streamHandler->startSse($session_id, $this->_mcpSessionManagerFactory->getSessionManager($serviceId));  // New method, see below
         $this->_logger->info('Exiting SSE stream for session [' . $session_id . ']');
         // The stream is started with headers sent, so return an empty response object or handle accordingly
         exit(0);  // Since headers and stream are handled inside startSse
@@ -235,7 +235,7 @@ class StreamableRestHandler implements RequestHandlerInterface
         // $this->_logger->debug("Got headers " . json_encode($request->getHeaders(), JSON_PRETTY_PRINT));
 
         if (empty($session_id)) {
-            $session_id = $this->_mcpSessionManager->startSession();
+            $session_id = $this->_mcpSessionManagerFactory->getSessionManager($serviceId)->startSession();
         }
 
         $responses = $this->_commandDispatcher->processIncoming($data, $session_id, $variant, $serviceId);

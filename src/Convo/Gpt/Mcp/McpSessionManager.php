@@ -19,16 +19,10 @@ class McpSessionManager
      */
     private $_sessionStore;
 
-    /**
-     * @var CommandDispatcher
-     */
-    private $_commandDispatcher;
-
-    public function __construct($logger, $sessionStore, $commandDispatcher)
+    public function __construct($logger, $sessionStore)
     {
         $this->_logger                      =   $logger;
         $this->_sessionStore                =   $sessionStore;
-        $this->_commandDispatcher           =   $commandDispatcher;
     }
 
     // check if valid session
@@ -90,11 +84,6 @@ class McpSessionManager
     public function getSessionStore(): IMcpSessionStoreInterface
     {
         return $this->_sessionStore;
-    }
-
-    public function getCommandDispatcher(): CommandDispatcher
-    {
-        return $this->_commandDispatcher;
     }
 
     // UTIL

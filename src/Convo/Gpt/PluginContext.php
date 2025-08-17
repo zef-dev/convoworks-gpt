@@ -11,7 +11,7 @@ use Convo\Gpt\Admin\SettingsViewModel;
 use Convo\Gpt\Mcp\CommandDispatcher;
 use Convo\Gpt\Mcp\McpFilesystemSessionStore;
 use Convo\Gpt\Mcp\McpServerPlatform;
-use Convo\Gpt\Mcp\McpSessionManager;
+use Convo\Gpt\Mcp\McpSessionManagerFactory;
 use Convo\Gpt\Mcp\StreamableRestHandler;
 use Convo\Gpt\Mcp\StreamHandler;
 use Convo\Gpt\Mcp\StreamWriter;
@@ -105,17 +105,17 @@ class PluginContext
                     $mcp_store = new McpFilesystemSessionStore($logger, CONVO_GPT_MCP_SESSION_STORAGE_PATH);
                     $stream_writer = new StreamWriter($logger, $container->get('httpFactory'));
                     $stream_handler = new StreamHandler($stream_writer, $logger);
-                    $mcp_manager = new McpSessionManager(
+
+                    $mcp_manager_factory = new McpSessionManagerFactory(
                         $logger,
-                        $mcp_store,
-                        $container->get('convoServiceFactory'),
-                        $container->get('convoServiceParamsFactory')
+                        $mcp_store
                     );
+
                     $command_dispatcher = new CommandDispatcher(
                         $container->get('convoServiceFactory'),
                         $container->get('convoServiceParamsFactory'),
                         $logger,
-                        $mcp_manager
+                        $mcp_manager_factory
                     );
 
                     $handler = new StreamableRestHandler(
@@ -123,7 +123,7 @@ class PluginContext
                         $container->get('httpFactory'),
                         $container->get('convoServiceFactory'),
                         $container->get('convoServiceDataProvider'),
-                        $mcp_manager,
+                        $mcp_manager_factory,
                         $command_dispatcher,
                         $stream_handler
                     );
@@ -138,7 +138,7 @@ class PluginContext
                         $logger,
                         $api_factory,
                         $mcp_platform,
-                        $mcp_manager
+                        $mcp_manager_factory
                     );
                 }
             );
