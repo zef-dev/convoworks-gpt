@@ -130,10 +130,13 @@ implements IConversationProcessor, IChatFunctionContainer
             throw new InvalidRequestException("Unsupported protocol version [$req_version]");
         }
 
+        foreach ($this->_tools as $elem) {
+            $elem->read($request, $response);
+        }
+
         $result = [
             "protocolVersion" => "2025-06-18",
             "capabilities" => [
-                "tools"   => ["listChanged" => true],
                 "completions" => new \stdClass(),
             ],
             "serverInfo" => [
@@ -141,6 +144,10 @@ implements IConversationProcessor, IChatFunctionContainer
                 "version" => $this->evaluateString($this->_version),
             ]
         ];
+
+        if (!empty($this->_functions)) {
+            $result['capabilities']['tools']['listChanged'] = true;
+        }
 
         if (!empty($this->_prompts)) {
             $result['capabilities']['prompts']['listChanged'] = true;
