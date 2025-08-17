@@ -10,6 +10,7 @@ interface IMcpSessionStoreInterface
 {
     const SESSION_STATUS_NEW = 'NEW';
     const SESSION_STATUS_INITIALISED = 'INITIALISED';
+    const SESSION_STATUS_TERMINATED = 'TERMINATED';
 
     /**
      * Creates a new session and returns the session ID.

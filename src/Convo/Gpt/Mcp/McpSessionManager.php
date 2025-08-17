@@ -75,7 +75,7 @@ class McpSessionManager
     public function terminateSession($sessionId): void
     {
         $session = $this->_sessionStore->getSession($sessionId);
-        $session['status'] = 'terminated';
+        $session['status'] = IMcpSessionStoreInterface::SESSION_STATUS_TERMINATED;
         $session['last_active'] = time();
         $this->_sessionStore->saveSession($session);
         $this->_logger->info("Session terminated: $sessionId");
