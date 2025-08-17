@@ -76,6 +76,32 @@ class StreamableRestHandler implements RequestHandlerInterface
         $info = new RequestInfo($request);
         $this->_logger->debug('Got info [' . $info . ']');
 
+        // Handle OAuth discovery endpoints to prevent 404s
+        if ($info->get() && $info->route('.well-known/oauth-protected-resource')) {
+            return $this->_httpFactory->buildResponse(json_encode([]), 200, ['Content-Type' => 'application/json']);
+        }
+        if ($info->get() && $info->route('.well-known/oauth-authorization-server')) {
+            return $this->_httpFactory->buildResponse(json_encode([]), 200, ['Content-Type' => 'application/json']);
+        }
+        if ($info->post() && $info->route('register')) {
+            return $this->_httpFactory->buildResponse(json_encode(['error' => 'OAuth not supported']), 400, ['Content-Type' => 'application/json']);
+        }
+
+        try {
+            $this->_validateApplicationPassword($request);
+        } catch (InvalidRequestException $e) {
+            // Enqueue a JSON-RPC error if needed, but for HTTP response, add WWW-Authenticate
+            $headers = [
+                'Content-Type' => 'application/json',
+                'WWW-Authenticate' => 'Basic realm="MCP Server"'  // Add this to indicate Basic Auth
+            ];
+            return $this->_httpFactory->buildResponse(
+                json_encode(['error' => ['code' => -32000, 'message' => $e->getMessage()]]),
+                $e->getCode(),
+                $headers
+            );
+        }
+
         if ($route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}')) {
             $variant = $route->get('variant');
             $serviceId = $route->get('serviceId');
@@ -89,6 +115,39 @@ class StreamableRestHandler implements RequestHandlerInterface
         }
 
         throw new NotFoundException('Could not map [' . $info . ']');
+    }
+
+    private function _validateApplicationPassword(ServerRequestInterface $request): void
+    {
+        $auth = $request->getHeaderLine('Authorization');
+        $this->_logger->debug('Checking auth header: ' . $auth);
+        if (empty($auth) || !str_starts_with($auth, 'Basic ')) {
+            $this->_logger->warning('Missing or invalid Authorization header');
+            throw new InvalidRequestException('Missing or invalid Authorization header', 401);
+        }
+
+        $credentials = base64_decode(substr($auth, 6), true);
+        if ($credentials === false) {
+            $this->_logger->warning('Failed to decode Basic auth credentials');
+            throw new InvalidRequestException('Invalid Basic auth credentials', 401);
+        }
+
+        list($username, $app_password) = explode(':', $credentials, 2);
+
+        // Use WordPress Application Passwords authentication
+        $user = wp_authenticate_application_password(null, $username, $app_password);
+        if (is_wp_error($user)) {
+            $this->_logger->warning('Application password authentication failed for user [' . $username . ']: ' . $user->get_error_message());
+            throw new InvalidRequestException('Authentication failed: ' . $user->get_error_message(), 401);
+        }
+
+        if (!$user instanceof \WP_User) {
+            $this->_logger->warning('No valid WP_User returned for [' . $username . ']');
+            throw new InvalidRequestException('Invalid user', 401);
+        }
+
+        wp_set_current_user($user->ID);
+        $this->_logger->info('Authenticated user [' . $user->user_login . '] with ID [' . $user->ID . '] via Application Password');
     }
 
     private function _handleDeleteRequest(ServerRequestInterface $request, $variant, $serviceId)
