@@ -49,19 +49,19 @@ class SettingsView
             return;
         }
 
-        // choose action based on enabled state
+        // choose action and form state based on enabled state
         if ($enabled) {
-            $action   = SettingsProcessor::ACTION_DISABLE;
-            $btnTitle = 'Disable';
+            $action   = SettingsProcessor::ACTION_UPDATE;
+            $btnTitle = 'Update';
             $title    = 'Connected to MCP Server platform';
-            $desc     = 'Click “Disable” to disconnect from the MCP Server.';
-            $submit   = true;
+            $desc     = 'Update MCP Server platform options below, or disable the platform.';
+            $showDisable = true;
         } else {
             $action   = SettingsProcessor::ACTION_ENABLE;
             $btnTitle = 'Enable';
             $title    = 'Your Convoworks service is not connected to the MCP Server yet';
-            $desc     = 'Click “Enable” to set up the MCP Server integration.';
-            $submit   = true;
+            $desc     = 'Set up the MCP Server integration below.';
+            $showDisable = false;
         }
 
         echo '<h1>' . get_admin_page_title() . ' – '
@@ -81,17 +81,38 @@ class SettingsView
                 <div class="inner" style="padding-left:20px;">
                     <h3><?php echo esc_html($title) ?></h3>
                     <p><?php echo esc_html($desc) ?></p>
+                    <table class="form-table">
+                        <tr>
+                            <th class="settings-label" scope="row">
+                                <label for="basic_auth">Require Basic Auth</label>
+                            </th>
+                            <td class="settings-input">
+                                <input
+                                    type="checkbox"
+                                    id="basic_auth"
+                                    name="basic_auth"
+                                    value="1"
+                                    <?php if ($this->_viewModel->getBasicAuth()) echo 'checked'; ?> />
+                                <span class="settings-helper">If checked, the MCP endpoint will require HTTP Basic Authentication.</span>
+                            </td>
+                        </tr>
+                    </table>
                     <p class="submit">
                         <input
                             id="convo_mcp_submit"
                             type="submit"
                             value="<?php echo esc_attr($btnTitle) ?>"
                             class="button-primary"
-                            <?php if ($enabled): ?>
-                            style="background-color:#dc3232;border-color:#dc3232;"
-                            onclick="return confirm('Are you sure you want to disable the MCP Server?');"
-                            <?php endif; ?>
                             name="Submit" />
+                        <?php if ($showDisable): ?>
+                            <button
+                                type="submit"
+                                name="action"
+                                value="<?php echo esc_attr(SettingsProcessor::ACTION_DISABLE); ?>"
+                                class="button-primary"
+                                style="background-color:#dc3232;border-color:#dc3232;margin-left:10px;"
+                                onclick="return confirm('Are you sure you want to disable the MCP Server?');">Disable</button>
+                        <?php endif; ?>
                         <a href="<?php echo esc_url($this->_viewModel->getBackToConvoworksUrl()); ?>" class="button-secondary">
                             Back
                         </a>

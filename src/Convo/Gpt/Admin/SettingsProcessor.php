@@ -85,7 +85,8 @@ class SettingsProcessor
     private function _processCreate($serviceId)
     {
         $this->_logger->info('Creatng mcp service for [' . $serviceId . ']');
-        $this->_mcpManager->enableMcp($serviceId);
+        $basicAuth = isset($_POST['basic_auth']) && $_POST['basic_auth'] ? true : false;
+        $this->_mcpManager->enableMcp($serviceId, $basicAuth);
     }
 
     private function _processDisable($serviceId)
@@ -97,8 +98,8 @@ class SettingsProcessor
 
     private function _processUpdate($serviceId)
     {
-        // update amazon config
         $this->_logger->info('Updating mcp service for [' . $serviceId . ']');
-        $this->_mcpManager->updateMcp($serviceId);
+        $basicAuth = isset($_POST['basic_auth']) && $_POST['basic_auth'] ? true : false;
+        $this->_mcpManager->updateMcp($serviceId, $basicAuth);
     }
 }

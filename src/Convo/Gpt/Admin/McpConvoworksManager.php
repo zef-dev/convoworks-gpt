@@ -70,9 +70,18 @@ class McpConvoworksManager
         $publisher->enable();
     }
 
-    public function updateMcp($serviceId)
+    public function updateMcp($serviceId, $basicAuth = false)
     {
-        throw new \Exception('Not implemented');
+        $this->_logger->info('Updating MCP config for service [' . $serviceId . ']');
+        $user = new \Convo\Wp\AdminUser(wp_get_current_user());
+        $config = $this->_convoServiceDataProvider->getServicePlatformConfig($user, $serviceId, \Convo\Core\Publish\IPlatformPublisher::MAPPING_TYPE_DEVELOP);
+        $platformId = \Convo\Gpt\Mcp\McpServerPlatform::PLATFORM_ID;
+        if (!isset($config[$platformId])) {
+            throw new \Convo\Core\Rest\NotFoundException('Service [' . $serviceId . '] config [' . $platformId . '] not found');
+        }
+        $config[$platformId]['basic_auth'] = $basicAuth;
+        $config[$platformId]['time_updated'] = time();
+        $this->_convoServiceDataProvider->updateServicePlatformConfig($user, $serviceId, $config);
     }
 
     public function disableMcp($serviceId)

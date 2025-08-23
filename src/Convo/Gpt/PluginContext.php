@@ -67,7 +67,7 @@ class PluginContext
     public function getSettingsViewModel()
     {
         if (!isset($this->_cache['settingsViewModel'])) {
-            $this->_cache['settingsViewModel'] = new SettingsViewModel($this->getLogger());
+            $this->_cache['settingsViewModel'] = new SettingsViewModel($this->getLogger(), $this->getContainer()->get('convoServiceDataProvider'));
             $this->_cache['settingsViewModel']->init();
         }
 

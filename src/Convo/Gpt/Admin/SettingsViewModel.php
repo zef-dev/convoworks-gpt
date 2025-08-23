@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class SettingsViewModel
 {
+    private $_basicAuth = false;
 
 
     /**
@@ -17,13 +18,18 @@ class SettingsViewModel
      */
     private $_logger;
 
+    /**
+     * @var IServiceDataProvider
+     */
+    private $_convoServiceDataProvider;
+
     private $_submited;
     private $_errors    =   [];
     private $_notices   =   [];
-
-    public function __construct($logger)
+    public function __construct($logger, $convoServiceDataProvider)
     {
         $this->_logger          =   $logger;
+        $this->_convoServiceDataProvider      =   $convoServiceDataProvider;
     }
 
     public function init()
@@ -55,6 +61,28 @@ class SettingsViewModel
         if ($saved) {
             $this->_notices = $saved;
             delete_transient("convo_mcp_settings_errors");
+        }
+
+        // Load basicAuth from submitted data, or from config if available
+        if (!empty($this->_submited) && isset($this->_submited['basic_auth'])) {
+            $this->_basicAuth = $this->_submited['basic_auth'] ? true : false;
+        } else {
+            // Try to load from manager/config
+            try {
+                $svcId = $this->getSelectedServiceId();
+                $user = new \Convo\Wp\AdminUser(wp_get_current_user());
+                $config = $this->_convoServiceDataProvider->getServicePlatformConfig(
+                    $user,
+                    $svcId,
+                    \Convo\Core\Publish\IPlatformPublisher::MAPPING_TYPE_DEVELOP
+                );
+                $platformId = \Convo\Gpt\Mcp\McpServerPlatform::PLATFORM_ID;
+                if (isset($config[$platformId]['basic_auth'])) {
+                    $this->_basicAuth = $config[$platformId]['basic_auth'] ? true : false;
+                }
+            } catch (\Throwable $e) {
+                $this->_logger->error($e);
+            }
         }
     }
 
@@ -137,6 +165,16 @@ class SettingsViewModel
     public function getNotices()
     {
         return $this->_notices;
+    }
+
+    public function getBasicAuth()
+    {
+        return $this->_basicAuth;
+    }
+
+    public function setBasicAuth($value)
+    {
+        $this->_basicAuth = $value ? true : false;
     }
 
     // UTIL
