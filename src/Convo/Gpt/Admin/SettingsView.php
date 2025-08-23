@@ -96,6 +96,21 @@ class SettingsView
                                 <span class="settings-helper">If checked, the MCP endpoint will require HTTP Basic Authentication.</span>
                             </td>
                         </tr>
+                        <tr>
+                            <th class="settings-label" scope="row">
+                                <label for="special_role">Special role</label>
+                            </th>
+                            <td class="settings-input">
+                                <input
+                                    type="text"
+                                    id="special_role"
+                                    name="special_role"
+                                    value="mcp-server"
+                                    readonly
+                                    class="setting-text" />
+                                <span class="settings-helper">The MCP workflow will start from the block with this special role.</span>
+                            </td>
+                        </tr>
                     </table>
                     <p class="submit">
                         <input
@@ -152,6 +167,12 @@ class SettingsView
 
             .settings-input input.setting-text {
                 width: 100%;
+            }
+
+            #special_role {
+                width: 200px;
+                display: block;
+                margin-bottom: 10px;
             }
 
             #wrapbox {
