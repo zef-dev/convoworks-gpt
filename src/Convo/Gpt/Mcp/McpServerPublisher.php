@@ -35,7 +35,7 @@ class McpServerPublisher extends AbstractServicePublisher
 
     public function delete(array &$report)
     {
-        //         throw new NotImplementedException('Deletion not yet implemented for ['.$this->getPlatformId().'] platform');
+        $this->_serviceReleaseManager->withdrawPlatform($this->_user, $this->_serviceId, McpServerPlatform::PLATFORM_ID);
     }
 
     public function getStatus()

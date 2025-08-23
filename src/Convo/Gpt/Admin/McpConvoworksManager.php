@@ -10,6 +10,7 @@ use Convo\Core\IAdminUser;
 use Convo\Core\Factory\IPackageDescriptor;
 use Convo\Core\Factory\IPlatformProvider;
 use Convo\Core\IServiceDataProvider;
+use Convo\Core\Rest\NotFoundException;
 use Convo\Gpt\Mcp\McpServerPlatform;
 use Psr\Log\LoggerInterface;
 
@@ -42,14 +43,22 @@ class McpConvoworksManager
     public function isServiceEnabled($serviceId)
     {
         $user       =   new AdminUser(wp_get_current_user());
-        $config     =   $this->_convoServiceDataProvider->getServicePlatformConfig($user, $serviceId, IPlatformPublisher::MAPPING_TYPE_DEVELOP);
+        $config     =   $this->_convoServiceDataProvider->getServicePlatformConfig(
+            $user,
+            $serviceId,
+            IPlatformPublisher::MAPPING_TYPE_DEVELOP
+        );
         return isset($config[McpServerPlatform::PLATFORM_ID]);
     }
 
     public function getServiceName($serviceId)
     {
         $user       =   new AdminUser(wp_get_current_user());
-        $service    =   $this->_convoServiceDataProvider->getServiceData($user, $serviceId, IPlatformPublisher::MAPPING_TYPE_DEVELOP);
+        $service    =   $this->_convoServiceDataProvider->getServiceData(
+            $user,
+            $serviceId,
+            IPlatformPublisher::MAPPING_TYPE_DEVELOP
+        );
         return $service['name'];
     }
 
@@ -60,7 +69,11 @@ class McpConvoworksManager
         $user       =   new AdminUser(wp_get_current_user());
         $publisher  =   $this->_getMcpServerPublisher($user, $serviceId);
 
-        $config =   $this->_convoServiceDataProvider->getServicePlatformConfig($user, $serviceId, IPlatformPublisher::MAPPING_TYPE_DEVELOP);
+        $config =   $this->_convoServiceDataProvider->getServicePlatformConfig(
+            $user,
+            $serviceId,
+            IPlatformPublisher::MAPPING_TYPE_DEVELOP
+        );
 
         $config[McpServerPlatform::PLATFORM_ID]  =   [];
         $config[McpServerPlatform::PLATFORM_ID]['time_created'] = time();
@@ -73,11 +86,15 @@ class McpConvoworksManager
     public function updateMcp($serviceId, $basicAuth = false)
     {
         $this->_logger->info('Updating MCP config for service [' . $serviceId . ']');
-        $user = new \Convo\Wp\AdminUser(wp_get_current_user());
-        $config = $this->_convoServiceDataProvider->getServicePlatformConfig($user, $serviceId, \Convo\Core\Publish\IPlatformPublisher::MAPPING_TYPE_DEVELOP);
-        $platformId = \Convo\Gpt\Mcp\McpServerPlatform::PLATFORM_ID;
+        $user = new AdminUser(wp_get_current_user());
+        $config = $this->_convoServiceDataProvider->getServicePlatformConfig(
+            $user,
+            $serviceId,
+            IPlatformPublisher::MAPPING_TYPE_DEVELOP
+        );
+        $platformId = McpServerPlatform::PLATFORM_ID;
         if (!isset($config[$platformId])) {
-            throw new \Convo\Core\Rest\NotFoundException('Service [' . $serviceId . '] config [' . $platformId . '] not found');
+            throw new NotFoundException('Service [' . $serviceId . '] config [' . $platformId . '] not found');
         }
         $config[$platformId]['basic_auth'] = $basicAuth;
         $config[$platformId]['time_updated'] = time();
@@ -95,12 +112,10 @@ class McpConvoworksManager
         );
 
         if (!isset($config[$platformId])) {
-            throw new \Convo\Core\Rest\NotFoundException('Service [' . $serviceId . '] config [' . $platformId . '] not found');
+            throw new NotFoundException('Service [' . $serviceId . '] config [' . $platformId . '] not found');
         }
 
         // RELEASES ?
-        // META ?
-
         // PUBLISHER
         $publisher    =    $this->_getMcpServerPublisher($user, $serviceId);
         $report     =   [];
@@ -116,7 +131,7 @@ class McpConvoworksManager
     /**
      * @param IAdminUser $user
      * @param string $serviceId
-     * @return \Convo\Core\Publish\IPlatformPublisher
+     * @return IPlatformPublisher
      */
     private function _getMcpServerPublisher($user, $serviceId)
     {
