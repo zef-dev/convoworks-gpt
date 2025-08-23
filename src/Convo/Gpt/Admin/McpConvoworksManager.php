@@ -53,7 +53,7 @@ class McpConvoworksManager
         return $service['name'];
     }
 
-    public function enableMcp($serviceId)
+    public function enableMcp($serviceId, $basicAuth = false)
     {
         $this->_logger->info('Enabling service [' . $serviceId . ']');
 
@@ -65,6 +65,7 @@ class McpConvoworksManager
         $config[McpServerPlatform::PLATFORM_ID]  =   [];
         $config[McpServerPlatform::PLATFORM_ID]['time_created'] = time();
         $config[McpServerPlatform::PLATFORM_ID]['time_updated'] = time();
+        $config[McpServerPlatform::PLATFORM_ID]['basic_auth'] = $basicAuth;
         $this->_convoServiceDataProvider->updateServicePlatformConfig($user, $serviceId, $config);
         $publisher->enable();
     }
