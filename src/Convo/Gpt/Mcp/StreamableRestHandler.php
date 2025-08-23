@@ -93,24 +93,28 @@ class StreamableRestHandler implements RequestHandlerInterface
             return $this->_httpFactory->buildResponse(json_encode(['error' => 'OAuth not supported']), 400, ['Content-Type' => 'application/json']);
         }
 
-        try {
-            $this->_validateApplicationPassword($request);
-        } catch (InvalidRequestException $e) {
-            // Enqueue a JSON-RPC error if needed, but for HTTP response, add WWW-Authenticate
-            $headers = [
-                'Content-Type' => 'application/json',
-                'WWW-Authenticate' => 'Basic realm="MCP Server"'  // Add this to indicate Basic Auth
-            ];
-            return $this->_httpFactory->buildResponse(
-                json_encode(['error' => ['code' => -32000, 'message' => $e->getMessage()]]),
-                $e->getCode(),
-                $headers
-            );
-        }
+
 
         if ($route = $info->route('service-run/external/convo-gpt/mcp-server/{variant}/{serviceId}')) {
             $variant = $route->get('variant');
             $serviceId = $route->get('serviceId');
+
+            try {
+                $this->_validateApplicationPassword($request, $serviceId, $variant);
+            } catch (InvalidRequestException $e) {
+                // Enqueue a JSON-RPC error if needed, but for HTTP response, add WWW-Authenticate
+                $headers = [
+                    'Content-Type' => 'application/json',
+                    'WWW-Authenticate' => 'Basic realm="MCP Server"'  // Add this to indicate Basic Auth
+                ];
+                return $this->_httpFactory->buildResponse(
+                    json_encode(['error' => ['code' => -32000, 'message' => $e->getMessage()]]),
+                    $e->getCode(),
+                    $headers
+                );
+            }
+
+
             if ($info->get()) {
                 return $this->_handleSseStream($request, $variant, $serviceId);
             } elseif ($info->post()) {
@@ -123,10 +127,41 @@ class StreamableRestHandler implements RequestHandlerInterface
         throw new NotFoundException('Could not map [' . $info . ']');
     }
 
-    private function _validateApplicationPassword(ServerRequestInterface $request): void
+    private function _validateApplicationPassword(ServerRequestInterface $request, $serviceId, $variant): void
     {
+        $owner        =    new RestSystemUser();
+
+        try {
+            $version_id            =    $this->_convoServiceFactory->getVariantVersion(
+                $owner,
+                $serviceId,
+                McpServerPlatform::PLATFORM_ID,
+                $variant
+            );
+        } catch (ComponentNotFoundException $e) {
+            throw new NotFoundException('Service variant [' . $serviceId . '][' . $variant . '] not found', 0, $e);
+        }
+
+        try {
+            $config    =    $this->_convoServiceDataProvider->getServicePlatformConfig(
+                $owner,
+                $serviceId,
+                $version_id
+            );
+        } catch (ComponentNotFoundException $e) {
+            throw new NotFoundException('Service platform config [' . $serviceId . '][' . $version_id . '] not found', 0, $e);
+        }
+
+        $this->_logger->debug('Got service platform config: ' . json_encode($config, JSON_PRETTY_PRINT));
+
+        if (!isset($config[McpServerPlatform::PLATFORM_ID]['basic_auth']) || !$config[McpServerPlatform::PLATFORM_ID]['basic_auth']) {
+            // Basic auth not enabled, skip validation
+            $this->_logger->info('Basic auth not enabled for service [' . $serviceId . '], skipping auth validation');
+            return;
+        }
+
         $auth = $request->getHeaderLine('Authorization');
-        $this->_logger->debug('Checking auth header: ' . $auth);
+        $this->_logger->debug('Checking auth header: ' . substr($auth, 0, 20) . '...');
         if (empty($auth) || !str_starts_with($auth, 'Basic ')) {
             $this->_logger->warning('Missing or invalid Authorization header');
             throw new InvalidRequestException('Missing or invalid Authorization header', 401);
