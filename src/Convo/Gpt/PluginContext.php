@@ -9,7 +9,6 @@ use Convo\Core\Factory\IPackageDescriptor;
 use Convo\Gpt\Admin\McpConvoworksManager;
 use Convo\Gpt\Admin\SettingsViewModel;
 use Convo\Gpt\Mcp\CommandDispatcher;
-use Convo\Gpt\Mcp\McpFilesystemSessionStore;
 use Convo\Gpt\Mcp\McpServerPlatform;
 use Convo\Gpt\Mcp\McpSessionManagerFactory;
 use Convo\Gpt\Mcp\StreamableRestHandler;
@@ -34,8 +33,8 @@ class PluginContext
     {
         $this->_logger  =   $this->getContainer()->get('logger');
 
-        $this->_logger->debug('-------------------------------------------------------------');
-        $this->_logger->debug('Initializing Convoworks MCP Plugin Context');
+        // $this->_logger->debug('-------------------------------------------------------------');
+        // $this->_logger->debug('Initializing Convoworks MCP Plugin Context');
     }
 
     /**

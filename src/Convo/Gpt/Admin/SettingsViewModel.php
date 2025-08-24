@@ -35,7 +35,7 @@ class SettingsViewModel
     public function init()
     {
         if (!isset($_REQUEST['page']) || $_REQUEST['page'] !== SettingsView::ID) {
-            $this->_logger->info('Not convoworks mcp server call. Exiting ...');
+            // $this->_logger->debug('Not convoworks mcp server call. Exiting ...');
             return;
         }
 
