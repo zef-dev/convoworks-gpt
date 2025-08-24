@@ -74,6 +74,22 @@ If your client only supports stdio (like Claude Desktop), you can bridge it via 
       ]
     }
    ```
+   Or with basic authentification:
+   ```jsonc
+   "convoworks-proxy": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost/wordpress/wp-json/convo/v1/public/service-run/external/convo-gpt/mcp-server/a/mcp-prototype",
+		"--transport", "http-only",
+		"--header",
+        "Authorization:${AUTH_HEADER}"
+      ],
+      "env": {
+        "AUTH_HEADER": "Basic YOURBASE64ENCODEDKEY"
+      }
+    }
+   ```
    This wraps the Streamable HTTP endpoint over stdio so Claude Desktop can communicate with your MCP server.
 
 ### Configuration Constants
@@ -111,7 +127,7 @@ This template is a solid base for building your next public-facing chat. For mor
 
 ### GPT Site Admin
 
-The GPT Site Admin template is designed as a robust AI assistant to help manage your system. In addition to basic instructions, this bot has access to PHP's `call_user_func()` function, enabling it to fetch and manipulate posts, create files, and more.
+The GPT Site Admin template is a powerful AI assistant designed to help you manage your WordPress site. Beyond basic instructions, this bot can use PHP's `call_user_func()` to fetch and manipulate posts, create files, and perform other advanced operations. It also has access to WordPress REST API and remote function capabilities, enabling seamless integration with your site's data and external services.
 
 For more details, check out [The GPT Site Admin: A New Era of AI Integration with WordPress](https://convoworks.com/the-gpt-site-assistant-a-new-era-of-ai-integration-with-wordpress/).
 
@@ -125,12 +141,10 @@ A demo service with several switchable examples demonstrating no‑code function
 
 #### Service Configuration Variables
 
-Two service‑level variables let you control auth and which REST APIs are active:
+This service‑level variable let you set which REST APIs are active (full list available above in the "Available Filters" section):
 
-**MCP_AUTH_USER_ID** (default: `0`) sets the WordPress user ID under which proxy calls run.  
 **MCP_ACTIVE_REST_APIS** (default: `["convo_mcp_register_wp_posts"]`) is the list of filter names that enable specific REST‑API tools; only filters included here will be registered.
 
-> **Security Note:** The MCP server currently has no built‑in authentication—anyone who knows your endpoint can connect. If you set **MCP_AUTH_USER_ID**, calls will run under that WordPress account (which could be dangerous on a public server). Future releases will add Basic Auth as a quick fix and OAuth2 for full security.
 
 ## Functions
 

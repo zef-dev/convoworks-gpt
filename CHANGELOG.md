@@ -1,6 +1,11 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.16.0 - 2025-08-23 - MCP 2025-06-18
+
+* Updated to MCP specification 2025-06-18 and Streamable HTTP.
+* Added support for basic authentication in MCP server, using WordPress application passwords.
+
 ### 0.15.0 - 2025-06-22 - Token-based limiters
 
 * Message limiter elements now use token-based limits.
