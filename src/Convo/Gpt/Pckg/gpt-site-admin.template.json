@@ -641,6 +641,142 @@
                             "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
                             "namespace": "convo-gpt",
                             "properties": {
+                                "name": "rest_do_request",
+                                "description": "This function creates a real WP_REST_Request and executes it using `rest_do_request()`. \nIt accepts a route (no query string), optional query\/body params, and returns the full REST API response from WordPress.",
+                                "parameters": {
+                                    "method": "${{ \n  \"type\": \"string\", \n  \"description\": \"HTTP method to use in the WP_REST_Request (e.g., GET, POST, PUT, DELETE)\", \n  \"enum\": [\"GET\", \"POST\", \"PUT\", \"DELETE\", \"PATCH\"] \n}}",
+                                    "route": "${{ \n  \"type\": \"string\", \n  \"description\": \"Route path for WP_REST_Request (e.g., '\/wp\/v2\/categories'). Do not include query string here.\" \n}}",
+                                    "query_params": "${{ \n  \"type\": \"object\", \n  \"description\": \"Query parameters passed to WP_REST_Request (e.g., {\\\"per_page\\\": 1}). These are added to the route as ?key=value.\", \n  \"additionalProperties\": { \"type\": [\"string\", \"number\", \"boolean\", \"null\"] } \n}}",
+                                    "body_params": "${{ \n  \"type\": \"object\", \n  \"description\": \"Body parameters passed to WP_REST_Request. Supports nested structures. Used for POST\/PUT\/PATCH.\", \n  \"additionalProperties\": true \n}}"
+                                },
+                                "required": "${[\"method\", \"route\"]}",
+                                "request_data": "data",
+                                "result_data": "${function_result}",
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpRestDoRequestElement",
+                                        "namespace": "convo-wp-core",
+                                        "properties": {
+                                            "result_name": "wp_rest_result",
+                                            "method": "${data.method}",
+                                            "route": "${data.route}",
+                                            "args": "${data.attributes}",
+                                            "on_success": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "function",
+                                                        "properties": {
+                                                            "function_result": "${wp_rest_result}"
+                                                        },
+                                                        "_component_id": "firi1p6p-8qvz-gtwe-znb1-nxznluba8egs"
+                                                    }
+                                                }
+                                            ],
+                                            "on_failure": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "function",
+                                                        "properties": {
+                                                            "function_result": "${wp_rest_result}"
+                                                        },
+                                                        "_component_id": "h8tdxnxb-qnnr-oo5c-vtsr-moli5vqdwmid"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "xeuoyif4-izod-hmdm-5atx-rpvmwxdxeeoj",
+                                            "_use_var_args": true,
+                                            "_use_var_query_params": true,
+                                            "query_params": "${data.query_params}",
+                                            "_use_var_body_params": true,
+                                            "body_params": "${data.body_params}"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "7lfxlysf-jymp-2fx1-fqd6-oc6lklzmeoim",
+                                "defaults": "${{\"query_params\":[], \"body_params\":[]}}"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "wp_remote_request",
+                                "description": "This function creates a real external HTTP request and executes it using `wp_remote_request()`. \nIt accepts a full URL, optional query\/body params, headers, content type, and timeout, and returns the full response.",
+                                "parameters": {
+                                    "method": "${{ \n  \"type\": \"string\", \n  \"description\": \"HTTP method to use in the request (e.g., GET, POST, PUT, DELETE)\", \n  \"enum\": [\"GET\", \"POST\", \"PUT\", \"DELETE\", \"PATCH\"] \n}}",
+                                    "url": "${{ \n  \"type\": \"string\", \n  \"description\": \"Full URL for the external request (e.g., 'https:\/\/api.example.com\/v1\/categories').\" \n}}",
+                                    "query_params": "${{ \n  \"type\": \"object\", \n  \"description\": \"Query parameters to append to the URL (e.g., {\\\"per_page\\\": 1}). These are added as ?key=value.\", \n  \"additionalProperties\": { \"type\": [\"string\", \"number\", \"boolean\", \"null\"] } \n}}",
+                                    "body": "${{ \n  \"type\": \"object\", \n  \"description\": \"Body parameters for the request. Supports nested structures. Used for POST\/PUT\/PATCH.\", \n  \"additionalProperties\": true \n}}",
+                                    "headers": "${{ \n  \"type\": \"object\", \n  \"description\": \"HTTP headers for the request (e.g., {\\\"Authorization\\\": \\\"Bearer token\\\"}).\", \n  \"additionalProperties\": { \"type\": \"string\" } \n}}",
+                                    "content_type": "${{ \n  \"type\": \"string\", \n  \"description\": \"Content type for the body (e.g., 'application\/json' or 'application\/x-www-form-urlencoded')\", \n  \"enum\": [\"application\/json\", \"application\/x-www-form-urlencoded\"] \n}}",
+                                    "timeout": "${{ \n  \"type\": \"integer\", \n  \"description\": \"Request timeout in seconds.\" \n}}"
+                                },
+                                "required": "${[\"method\", \"url\"]}",
+                                "request_data": "data",
+                                "result_data": "${function_result}",
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Wp\\Pckg\\WpCore\\WpRemoteRequestElement",
+                                        "namespace": "convo-wp-core",
+                                        "properties": {
+                                            "result_name": "wp_rest_result",
+                                            "method": "${data.method}",
+                                            "url": "${data.url}",
+                                            "query_params": "${data.query_params}",
+                                            "body_params": "${data.body}",
+                                            "headers": "${data.headers}",
+                                            "content_type": "application\/json",
+                                            "timeout": 30,
+                                            "on_success": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "function",
+                                                        "properties": {
+                                                            "function_result": "${wp_rest_result}"
+                                                        },
+                                                        "_component_id": "jjkd4mdd-kmsi-1uk1-xuuc-j1efyefbrux2"
+                                                    }
+                                                }
+                                            ],
+                                            "on_failure": [
+                                                {
+                                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                                    "namespace": "convo-core",
+                                                    "properties": {
+                                                        "scope_type": "request",
+                                                        "parameters": "function",
+                                                        "properties": {
+                                                            "function_result": "${wp_rest_result}"
+                                                        },
+                                                        "_component_id": "curbs2hn-dxlz-qdje-zwhw-1lxnkdw1bmva"
+                                                    }
+                                                }
+                                            ],
+                                            "_component_id": "kcrxdgm8-jata-ebtv-g0bx-h7d431pqooli",
+                                            "_use_var_query_params": true,
+                                            "_use_var_body_params": true,
+                                            "_use_var_headers": true,
+                                            "_use_var_timeout": false
+                                        }
+                                    }
+                                ],
+                                "_component_id": "xfpsmyte-amqy-x5lg-0k2v-p8hq1ya1hmnc",
+                                "defaults": "${{\"query_params\":{}, \"body_params\":{}, \"headers\":{}, \"content_type\":\"application\/json\", \"timeout\":30}}"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
+                            "namespace": "convo-gpt",
+                            "properties": {
                                 "name": "call_user_func_array",
                                 "description": "This function stands as a potent gateway, enabling dynamic interaction with the live WordPress and PHP environment. It skillfully encapsulates PHP's native `call_user_func_array()` function, allowing for the direct invocation of PHP functions with an array of arguments, thereby harnessing PHP\u2019s innate capabilities and reflecting immediate changes within the system's operational sphere.\n\nEvery execution will return a JSON object, always featuring a `function_result` field, encapsulating the function's return value. This structured return format ensures a standardized, readable output, simplifying subsequent processing and interpretation.\n\nWhen a function execution concludes due to a thrown exception, the return value will be a JSON object. The exception message can be accessed through the 'error' field in this JSON object.\n\n**Optional Arguments:** When invoking functions or methods, especially those with optional parameters, prefer omitting arguments rather than explicitly setting them to `null` unless `null` has a specific meaning in the context of the function or method. This is very important, because in many cases `null` will not change into default value, unless argument is completely skipped. \nFor example when calling `get_results` on `$wpdb`, the second argument should be skipped, because `null` will not default to `OBJECT`.",
                                 "parameters": {
