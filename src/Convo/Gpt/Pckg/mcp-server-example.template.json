@@ -1,384 +1,386 @@
 {
-    "service_id": "mcp-server-example-template",
-    "convo_service_version": 40,
-    "packages": [
-        "convo-core",
-        "convo-wp-core",
-        "convo-gpt"
-    ],
-    "contexts": [],
-    "variables": {
-        "MCP_ACTIVE_REST_APIS": "${[\"convo_mcp_register_wp_posts\"]}"
-    },
-    "preview_variables": [],
-    "entities": [],
-    "intents": [],
-    "blocks": [
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\SpecialRoleProcessorBlock",
-            "namespace": "convo-core",
-            "properties": {
-                "block_id": "MCP_Server",
-                "name": "MCP Server",
-                "role": "mcp-server",
-                "processors": [
-                    {
-                        "class": "\\Convo\\Gpt\\Pckg\\McpServerProcessor",
-                        "namespace": "convo-gpt",
-                        "properties": {
-                            "name": "WP MCP Server",
-                            "version": "1.0",
-                            "tools": [
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "comment": "Use the Include Fragment element to enable one or more example fragments at once.",
-                                        "context": null,
-                                        "_component_id": "nnqq0ek8-q7tu-hrue-p9su-tut8rgtfndlf"
-                                    }
-                                },
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "fragment_id": "Example_3_External_functions",
-                                        "_component_id": "opnqcued-9y6b-mrm2-ig7a-rck674iyy624"
-                                    }
-                                },
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "fragment_id": "Example_4_Prompt_template",
-                                        "_component_id": "pkwngmaa-r2ja-angh-qcnu-3bxdvxm2palw"
-                                    }
-                                }
-                            ],
-                            "_component_id": "6p0uigl8-lbqp-8if5-diuw-xwwvijqgfbtf"
-                        }
-                    }
-                ],
-                "failback": [],
-                "_component_id": "b9th0mg2-ymeo-hhkt-orif-ozjcafiqs2a0"
-            }
+    "template_id": "mcp-server-example",
+    "name": "MCP Server Example",
+    "description": "MCP Server template containing several example usages.",
+    "service": {
+        "convo_service_version": 40,
+        "packages": [
+            "convo-core",
+            "convo-wp-core",
+            "convo-gpt"
+        ],
+        "contexts": [],
+        "variables": {
+            "MCP_ACTIVE_REST_APIS": "${[\"convo_mcp_register_wp_posts\"]}"
         },
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
-            "namespace": "convo-core",
-            "properties": {
-                "role": "error_handler",
-                "block_id": "Error_handler",
-                "name": "Error handler",
-                "pre_dispatch": [],
-                "elements": [
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "log_message": "${error.getMessage()}",
-                            "_component_id": "pqamtg9p-fdnj-tvdq-1ckm-3ynp5zznvg2n"
-                        }
-                    }
-                ],
-                "processors": [],
-                "fallback": [],
-                "_component_id": "701jr3fq-gior-sdop-w9or-cdgglgnvp1k8"
-            }
-        }
-    ],
-    "fragments": [
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-            "namespace": "convo-core",
-            "properties": {
-                "fragment_id": "Example_1_No_Code_Functions",
-                "name": "Example 1 - No Code Functions",
-                "elements": [
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "comment": "Example no\u2011code function implementation. \nInside the function body, you can use other Convoworks components to build complex flows, query the database, make HTTP requests, or even call GPT.",
-                            "context": null,
-                            "_component_id": "qpqypryk-dxpf-t9w9-sotp-8lkywsgpe7bm"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
-                        "namespace": "convo-gpt",
-                        "properties": {
-                            "name": "say_hello",
-                            "description": "Returns welcome message for a given name.",
-                            "parameters": {
-                                "name": "${{\"type\":\"string\"}}"
-                            },
-                            "defaults": "${{}}",
-                            "required": "${[\"name\"]}",
-                            "request_data": "data",
-                            "result_data": "${function_result}",
-                            "ok": [
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "parameters": "function",
-                                        "scope_type": "request",
-                                        "properties": {
-                                            "function_result": "Hello my friend, ${data.name}"
-                                        },
-                                        "_component_id": "imfqshb4-yol9-f08t-szdj-kethh2bk8did"
-                                    }
-                                }
-                            ],
-                            "_component_id": "nxkipmtz-ylo9-e25u-qdii-dspyeyiz0bt7"
-                        }
-                    }
-                ],
-                "_component_id": "zqgeknrv-d3fr-yfmc-96jg-krxwg9ryjv6n"
-            }
-        },
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-            "namespace": "convo-core",
-            "properties": {
-                "fragment_id": "Example_2_WP_REST_Proxy_call",
-                "name": "Example 2 - WP REST Proxy call",
-                "elements": [
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "comment": "Example wrapping a single REST API method.\nThis is a simple example of how to wrap a REST API method. You can use the same approach to wrap any other REST API method.",
-                            "context": null,
-                            "_component_id": "rvbcztkd-vjo8-uv1y-acy6-itkjtdvejuld"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Gpt\\Pckg\\WpRestProxyFunction",
-                        "namespace": "convo-gpt",
-                        "properties": {
-                            "name": "list_posts_manual",
-                            "description": "Lists all posts with filtering, sorting, and pagination options",
-                            "parameters": {
-                                "page": "${{ \"type\": \"number\", \"description\": \"Page number (default 1)\" }}",
-                                "per_page": "${{ \"type\": \"number\", \"description\": \"Items per page (default 10, max 100)\" }}",
-                                "search": "${{ \"type\": \"string\", \"description\": \"Search term for post content or title\" }}",
-                                "after": "${{ \"type\": \"string\", \"description\": \"ISO8601 date string to get posts published after this date\" }}",
-                                "author": "${{ \"type\": \"number\", \"description\": \"Author ID\" }}",
-                                "categories": "${{ \"type\": \"array\", \"items\": { \"type\": \"number\" }, \"description\": \"Category IDs\" }}",
-                                "tags": "${{ \"type\": \"array\", \"items\": { \"type\": \"number\" }, \"description\": \"Tag IDs\" }}",
-                                "status": "${{ \"type\": \"string\", \"enum\": [\"publish\", \"future\", \"draft\", \"pending\", \"private\"], \"description\": \"Post status\" }}",
-                                "orderby": "${{ \"type\": \"string\", \"enum\": [\"date\", \"id\", \"include\", \"title\", \"slug\", \"modified\"], \"description\": \"Sort posts by parameter\" }}",
-                                "order": "${{ \"type\": \"string\", \"enum\": [\"asc\", \"desc\"], \"description\": \"Order direction\" }}"
-                            },
-                            "required": "${[]}",
-                            "defaults": "${{\"per_page\": 10, \"status\": \"publish\"}}",
-                            "method": "GET",
-                            "endpoint": "posts",
-                            "pagination": true,
-                            "_component_id": "ftv5tpeb-rlia-3qtx-0sf2-9kff8h9kyg5o",
-                            "_use_var_parameters": false
-                        }
-                    }
-                ],
-                "_component_id": "nkdnwh9d-gxkt-6g3f-lofc-xd26xyykythn"
-            }
-        },
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-            "namespace": "convo-core",
-            "properties": {
-                "fragment_id": "Example_3_External_functions",
-                "name": "Example 3 - External functions",
-                "elements": [
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "comment": "Check and modify which REST APIs are active in the Variables view. Available values:\n convo_mcp_register_wp_posts, convo_mcp_register_wp_pages, convo_mcp_register_wp_comments, convo_mcp_register_wp_users, convo_mcp_register_wp_media, convo_mcp_register_wp_plugins, convo_mcp_register_wp_taxonomies, convo_mcp_register_wp_settings.",
-                            "context": null,
-                            "_component_id": "oqsuzdtn-juqs-4snq-ea6s-uq41wx3fjsvv"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "log_message": "Call function registration hook for each active REST API.",
-                            "log_level": "info",
-                            "disable_test_view": false,
-                            "_component_id": "8xmzqkj7-ah4g-sy8t-herv-lzntx6csvads"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "parameters": "service",
-                            "scope_type": "request",
+        "preview_variables": [],
+        "entities": [],
+        "intents": [],
+        "blocks": [
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\SpecialRoleProcessorBlock",
+                "namespace": "convo-core",
+                "properties": {
+                    "block_id": "MCP_Server",
+                    "name": "MCP Server",
+                    "role": "mcp-server",
+                    "processors": [
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\McpServerProcessor",
+                            "namespace": "convo-gpt",
                             "properties": {
-                                "chat_functions": "${[]}"
-                            },
-                            "_component_id": "8bnaiphe-rpzg-jmsx-f88s-hyfgbaokrare"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "name": null,
-                            "data_collection": "${MCP_ACTIVE_REST_APIS}",
-                            "item": "item",
-                            "elements": [
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "scope_type": "request",
-                                        "parameters": "service",
+                                "name": "WP MCP Server",
+                                "version": "1.0",
+                                "tools": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                                        "namespace": "convo-core",
                                         "properties": {
-                                            "chat_functions": "${apply_filters(item.value, chat_functions, _workflowComponent)}"
-                                        },
-                                        "_component_id": "xupj6i1q-oykk-ppkx-ehdg-ta3e2tk2c8gk"
-                                    }
-                                }
-                            ],
-                            "offset": null,
-                            "limit": null,
-                            "loop_until": "",
-                            "_component_id": "oc7ooyah-nlei-86vt-24at-f4weymm0zmev"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "comment": "Register each registered function.",
-                            "context": null,
-                            "_component_id": "94abjw80-mxbd-aokk-jwfq-xcuoedqwwdex"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "data_collection": "${chat_functions}",
-                            "item": "gpt_function",
-                            "elements": [
-                                {
-                                    "class": "\\Convo\\Gpt\\Pckg\\ExternalChatFunctionElement",
-                                    "namespace": "convo-gpt",
-                                    "properties": {
-                                        "name": "${gpt_function.value.name}",
-                                        "description": "${gpt_function.value.description}",
-                                        "parameters": "${gpt_function.value.parameters}",
-                                        "required": "${gpt_function.value.required}",
-                                        "_component_id": "xmllmmv7-y0v7-jtg1-tzdm-qytdcro5bfd6",
-                                        "execute": "${gpt_function.value.execute}",
-                                        "defaults": "${gpt_function.value.defaults}"
-                                    }
-                                }
-                            ],
-                            "offset": null,
-                            "limit": null,
-                            "loop_until": "",
-                            "_component_id": "tbn1cgjk-zz4x-clna-ignk-ul6fh7z3hf1n"
-                        }
-                    }
-                ],
-                "_component_id": "uxltzmeg-phzg-zno6-sh8f-gey5lf6u46sx"
-            }
-        },
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-            "namespace": "convo-core",
-            "properties": {
-                "fragment_id": "Example_4_Prompt_template",
-                "name": "Example 4 - Prompt template",
-                "elements": [
-                    {
-                        "class": "\\Convo\\Gpt\\Pckg\\SimpleMcpPromptTemplate",
-                        "namespace": "convo-gpt",
-                        "properties": {
-                            "name": "meta_desc",
-                            "description": "Generate a 155 character SEO description",
-                            "arguments": "${[{\"name\": \"postId\", \"description\": \"WP post ID\", required: true}]}",
-                            "prompt": "Create an engaging 155 character meta description for the post ${postId}.",
-                            "_component_id": "mfk4te2j-skjf-l8ux-ovvg-znbxviz8iugz"
-                        }
-                    }
-                ],
-                "_component_id": "xkcet96t-7m6s-sigl-5cuh-mbm7kqz4l4wg"
-            }
-        },
-        {
-            "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
-            "namespace": "convo-core",
-            "properties": {
-                "fragment_id": "example_5_call_user_func_function",
-                "name": "Example 5 - Call user func function",
-                "elements": [
-                    {
-                        "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
-                        "namespace": "convo-core",
-                        "properties": {
-                            "comment": "This function lets your AI call almost any PHP or WordPress function directly on your server.\n\nIt is a powerful tool, but be careful with it. It can be used to call any PHP function, including those that can modify the database or the file system.\n\nYou can use this function to call any PHP function that is available in your WordPress installation. This includes all WordPress functions, as well as any custom functions that you have defined in your theme or plugins.\n\nThe function will return a JSON object with the result of the function call.",
-                            "context": null,
-                            "_component_id": "6bfkvpgm-nsx5-9hd2-umdo-eriwnhy4bvlx"
-                        }
-                    },
-                    {
-                        "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
-                        "namespace": "convo-gpt",
-                        "properties": {
-                            "name": "call_user_func_array",
-                            "description": "This function stands as a potent gateway, enabling dynamic interaction with the live WordPress and PHP environment. It skillfully encapsulates PHP's native `call_user_func_array()` function, allowing for the direct invocation of PHP functions with an array of arguments, thereby harnessing PHP\u2019s innate capabilities and reflecting immediate changes within the system's operational sphere.\n\nEvery execution will return a JSON object, always featuring a `function_result` field, encapsulating the function's return value. This structured return format ensures a standardized, readable output, simplifying subsequent processing and interpretation.\n\nWhen a function execution concludes due to a thrown exception, the return value will be a JSON object. The exception message can be accessed through the 'error' field in this JSON object.",
-                            "parameters": {
-                                "callback": "${{\n  \"oneOf\": [\n    {\n      \"type\": \"string\",\n      \"description\": \"Specifies the name of the global PHP function to be invoked.\"\n    },\n    {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"minItems\": 2,\n      \"maxItems\": 2,\n      \"description\": \"Specifies an array with two elements. The first element is either the name of an object (as a string, e.g., \\\"$wpdb\\\") or a class name. The second element is the method to invoke on that object or class.\"\n    }\n  ],\n  \"description\": \"Specifies the operation to be executed. It can either be a string representing a global PHP function name or an array with two elements. For object method invocations, the first element must be the object name (e.g., \\\"$wpdb\\\" for the WordPress database object), and the second element must be the method name to invoke on that object.\"\n}\n}",
-                                "args": "${{\n        \"type\": \"array\",\n        \"items\": {\n          \"oneOf\": [\n            { \"type\": \"object\" },\n            {\n              \"type\": \"array\",\n              \"items\": {\n                \"oneOf\": [\n                  { \"type\": \"object\" },\n                  { \"type\": \"string\" },\n                  { \"type\": \"number\" },\n                  { \"type\": \"boolean\" },\n                  { \"type\": \"null\" }\n                ]\n              }\n            },\n            { \"type\": \"string\" },\n            { \"type\": \"number\" },\n            { \"type\": \"boolean\" },\n            { \"type\": \"null\" }\n          ]\n        },\n        \"description\": \"Represents an array encapsulating the parameters intended for the specified PHP function. Each element within this array directly corresponds to the arguments accepted by the target function. It\u2019s essential to enclose all parameters within an array to maintain a consistent structure and ensure precise argument delivery, even if there\u2019s only a single argument.\"\n      }}"
-                            },
-                            "required": "${[\"callback\"]}",
-                            "request_data": "data",
-                            "result_data": "${function_result}",
-                            "ok": [
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "scope_type": "request",
-                                        "parameters": "function",
+                                            "comment": "Use the Include Fragment element to enable one or more example fragments at once.",
+                                            "context": null,
+                                            "_component_id": "nnqq0ek8-q7tu-hrue-p9su-tut8rgtfndlf"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                        "namespace": "convo-core",
                                         "properties": {
-                                            "function_data": "${[]}",
-                                            "function_data[\"function_result\"]": "${wp_call_user_func_array( data.callback, data.args)}"
-                                        },
-                                        "_component_id": "aabkuvdv-qx7v-cvdr-4dtg-jjuewl42zody"
+                                            "fragment_id": "Example_3_External_functions",
+                                            "_component_id": "opnqcued-9y6b-mrm2-ig7a-rck674iyy624"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\ReadElementsFragment",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "fragment_id": "Example_4_Prompt_template",
+                                            "_component_id": "pkwngmaa-r2ja-angh-qcnu-3bxdvxm2palw"
+                                        }
                                     }
+                                ],
+                                "_component_id": "6p0uigl8-lbqp-8if5-diuw-xwwvijqgfbtf"
+                            }
+                        }
+                    ],
+                    "failback": [],
+                    "_component_id": "b9th0mg2-ymeo-hhkt-orif-ozjcafiqs2a0"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ConversationBlock",
+                "namespace": "convo-core",
+                "properties": {
+                    "role": "error_handler",
+                    "block_id": "Error_handler",
+                    "name": "Error handler",
+                    "pre_dispatch": [],
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "log_message": "${error.getMessage()}",
+                                "_component_id": "pqamtg9p-fdnj-tvdq-1ckm-3ynp5zznvg2n"
+                            }
+                        }
+                    ],
+                    "processors": [],
+                    "fallback": [],
+                    "_component_id": "701jr3fq-gior-sdop-w9or-cdgglgnvp1k8"
+                }
+            }
+        ],
+        "fragments": [
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
+                    "fragment_id": "Example_1_No_Code_Functions",
+                    "name": "Example 1 - No Code Functions",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "Example no\u2011code function implementation. \nInside the function body, you can use other Convoworks components to build complex flows, query the database, make HTTP requests, or even call GPT.",
+                                "context": null,
+                                "_component_id": "qpqypryk-dxpf-t9w9-sotp-8lkywsgpe7bm"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "say_hello",
+                                "description": "Returns welcome message for a given name.",
+                                "parameters": {
+                                    "name": "${{\"type\":\"string\"}}"
                                 },
-                                {
-                                    "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
-                                    "namespace": "convo-core",
-                                    "properties": {
-                                        "scope_type": "request",
-                                        "parameters": "function",
+                                "defaults": "${{}}",
+                                "required": "${[\"name\"]}",
+                                "request_data": "data",
+                                "result_data": "${function_result}",
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
                                         "properties": {
-                                            "function_result": "${function_data}"
-                                        },
-                                        "_component_id": "ali8cfjc-mkwg-dch2-4ir5-4x3ntzmgj4bz"
+                                            "parameters": "function",
+                                            "scope_type": "request",
+                                            "properties": {
+                                                "function_result": "Hello my friend, ${data.name}"
+                                            },
+                                            "_component_id": "imfqshb4-yol9-f08t-szdj-kethh2bk8did"
+                                        }
                                     }
-                                }
-                            ],
-                            "_component_id": "elpyhinh-jnfh-giu3-kr1z-3nu0wob0masc",
-                            "defaults": "${{\"args\":[]}}"
+                                ],
+                                "_component_id": "nxkipmtz-ylo9-e25u-qdii-dspyeyiz0bt7"
+                            }
                         }
-                    }
-                ],
-                "_component_id": "e9sx4lcu-c0pa-krx7-v8om-j4iurzks1zis"
+                    ],
+                    "_component_id": "zqgeknrv-d3fr-yfmc-96jg-krxwg9ryjv6n"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
+                    "fragment_id": "Example_2_WP_REST_Proxy_call",
+                    "name": "Example 2 - WP REST Proxy call",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "Example wrapping a single REST API method.\nThis is a simple example of how to wrap a REST API method. You can use the same approach to wrap any other REST API method.",
+                                "context": null,
+                                "_component_id": "rvbcztkd-vjo8-uv1y-acy6-itkjtdvejuld"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\WpRestProxyFunction",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "list_posts_manual",
+                                "description": "Lists all posts with filtering, sorting, and pagination options",
+                                "parameters": {
+                                    "page": "${{ \"type\": \"number\", \"description\": \"Page number (default 1)\" }}",
+                                    "per_page": "${{ \"type\": \"number\", \"description\": \"Items per page (default 10, max 100)\" }}",
+                                    "search": "${{ \"type\": \"string\", \"description\": \"Search term for post content or title\" }}",
+                                    "after": "${{ \"type\": \"string\", \"description\": \"ISO8601 date string to get posts published after this date\" }}",
+                                    "author": "${{ \"type\": \"number\", \"description\": \"Author ID\" }}",
+                                    "categories": "${{ \"type\": \"array\", \"items\": { \"type\": \"number\" }, \"description\": \"Category IDs\" }}",
+                                    "tags": "${{ \"type\": \"array\", \"items\": { \"type\": \"number\" }, \"description\": \"Tag IDs\" }}",
+                                    "status": "${{ \"type\": \"string\", \"enum\": [\"publish\", \"future\", \"draft\", \"pending\", \"private\"], \"description\": \"Post status\" }}",
+                                    "orderby": "${{ \"type\": \"string\", \"enum\": [\"date\", \"id\", \"include\", \"title\", \"slug\", \"modified\"], \"description\": \"Sort posts by parameter\" }}",
+                                    "order": "${{ \"type\": \"string\", \"enum\": [\"asc\", \"desc\"], \"description\": \"Order direction\" }}"
+                                },
+                                "required": "${[]}",
+                                "defaults": "${{\"per_page\": 10, \"status\": \"publish\"}}",
+                                "method": "GET",
+                                "endpoint": "posts",
+                                "pagination": true,
+                                "_component_id": "ftv5tpeb-rlia-3qtx-0sf2-9kff8h9kyg5o",
+                                "_use_var_parameters": false
+                            }
+                        }
+                    ],
+                    "_component_id": "nkdnwh9d-gxkt-6g3f-lofc-xd26xyykythn"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
+                    "fragment_id": "Example_3_External_functions",
+                    "name": "Example 3 - External functions",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "Check and modify which REST APIs are active in the Variables view. Available values:\n convo_mcp_register_wp_posts, convo_mcp_register_wp_pages, convo_mcp_register_wp_comments, convo_mcp_register_wp_users, convo_mcp_register_wp_media, convo_mcp_register_wp_plugins, convo_mcp_register_wp_taxonomies, convo_mcp_register_wp_settings.",
+                                "context": null,
+                                "_component_id": "oqsuzdtn-juqs-4snq-ea6s-uq41wx3fjsvv"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\LogElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "log_message": "Call function registration hook for each active REST API.",
+                                "log_level": "info",
+                                "disable_test_view": false,
+                                "_component_id": "8xmzqkj7-ah4g-sy8t-herv-lzntx6csvads"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "parameters": "service",
+                                "scope_type": "request",
+                                "properties": {
+                                    "chat_functions": "${[]}"
+                                },
+                                "_component_id": "8bnaiphe-rpzg-jmsx-f88s-hyfgbaokrare"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "name": null,
+                                "data_collection": "${MCP_ACTIVE_REST_APIS}",
+                                "item": "item",
+                                "elements": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "service",
+                                            "properties": {
+                                                "chat_functions": "${apply_filters(item.value, chat_functions, _workflowComponent)}"
+                                            },
+                                            "_component_id": "xupj6i1q-oykk-ppkx-ehdg-ta3e2tk2c8gk"
+                                        }
+                                    }
+                                ],
+                                "offset": null,
+                                "limit": null,
+                                "loop_until": "",
+                                "_component_id": "oc7ooyah-nlei-86vt-24at-f4weymm0zmev"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "Register each registered function.",
+                                "context": null,
+                                "_component_id": "94abjw80-mxbd-aokk-jwfq-xcuoedqwwdex"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\LoopElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "data_collection": "${chat_functions}",
+                                "item": "gpt_function",
+                                "elements": [
+                                    {
+                                        "class": "\\Convo\\Gpt\\Pckg\\ExternalChatFunctionElement",
+                                        "namespace": "convo-gpt",
+                                        "properties": {
+                                            "name": "${gpt_function.value.name}",
+                                            "description": "${gpt_function.value.description}",
+                                            "parameters": "${gpt_function.value.parameters}",
+                                            "required": "${gpt_function.value.required}",
+                                            "_component_id": "xmllmmv7-y0v7-jtg1-tzdm-qytdcro5bfd6",
+                                            "execute": "${gpt_function.value.execute}",
+                                            "defaults": "${gpt_function.value.defaults}"
+                                        }
+                                    }
+                                ],
+                                "offset": null,
+                                "limit": null,
+                                "loop_until": "",
+                                "_component_id": "tbn1cgjk-zz4x-clna-ignk-ul6fh7z3hf1n"
+                            }
+                        }
+                    ],
+                    "_component_id": "uxltzmeg-phzg-zno6-sh8f-gey5lf6u46sx"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
+                    "fragment_id": "Example_4_Prompt_template",
+                    "name": "Example 4 - Prompt template",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\SimpleMcpPromptTemplate",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "meta_desc",
+                                "description": "Generate a 155 character SEO description",
+                                "arguments": "${[{\"name\": \"postId\", \"description\": \"WP post ID\", required: true}]}",
+                                "prompt": "Create an engaging 155 character meta description for the post ${postId}.",
+                                "_component_id": "mfk4te2j-skjf-l8ux-ovvg-znbxviz8iugz"
+                            }
+                        }
+                    ],
+                    "_component_id": "xkcet96t-7m6s-sigl-5cuh-mbm7kqz4l4wg"
+                }
+            },
+            {
+                "class": "\\Convo\\Pckg\\Core\\Elements\\ElementsFragment",
+                "namespace": "convo-core",
+                "properties": {
+                    "fragment_id": "example_5_call_user_func_function",
+                    "name": "Example 5 - Call user func function",
+                    "elements": [
+                        {
+                            "class": "\\Convo\\Pckg\\Core\\Elements\\CommentElement",
+                            "namespace": "convo-core",
+                            "properties": {
+                                "comment": "This function lets your AI call almost any PHP or WordPress function directly on your server.\n\nIt is a powerful tool, but be careful with it. It can be used to call any PHP function, including those that can modify the database or the file system.\n\nYou can use this function to call any PHP function that is available in your WordPress installation. This includes all WordPress functions, as well as any custom functions that you have defined in your theme or plugins.\n\nThe function will return a JSON object with the result of the function call.",
+                                "context": null,
+                                "_component_id": "6bfkvpgm-nsx5-9hd2-umdo-eriwnhy4bvlx"
+                            }
+                        },
+                        {
+                            "class": "\\Convo\\Gpt\\Pckg\\ChatFunctionElement",
+                            "namespace": "convo-gpt",
+                            "properties": {
+                                "name": "call_user_func_array",
+                                "description": "This function stands as a potent gateway, enabling dynamic interaction with the live WordPress and PHP environment. It skillfully encapsulates PHP's native `call_user_func_array()` function, allowing for the direct invocation of PHP functions with an array of arguments, thereby harnessing PHP\u2019s innate capabilities and reflecting immediate changes within the system's operational sphere.\n\nEvery execution will return a JSON object, always featuring a `function_result` field, encapsulating the function's return value. This structured return format ensures a standardized, readable output, simplifying subsequent processing and interpretation.\n\nWhen a function execution concludes due to a thrown exception, the return value will be a JSON object. The exception message can be accessed through the 'error' field in this JSON object.",
+                                "parameters": {
+                                    "callback": "${{\n  \"oneOf\": [\n    {\n      \"type\": \"string\",\n      \"description\": \"Specifies the name of the global PHP function to be invoked.\"\n    },\n    {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"minItems\": 2,\n      \"maxItems\": 2,\n      \"description\": \"Specifies an array with two elements. The first element is either the name of an object (as a string, e.g., \\\"$wpdb\\\") or a class name. The second element is the method to invoke on that object or class.\"\n    }\n  ],\n  \"description\": \"Specifies the operation to be executed. It can either be a string representing a global PHP function name or an array with two elements. For object method invocations, the first element must be the object name (e.g., \\\"$wpdb\\\" for the WordPress database object), and the second element must be the method name to invoke on that object.\"\n}\n}",
+                                    "args": "${{\n        \"type\": \"array\",\n        \"items\": {\n          \"oneOf\": [\n            { \"type\": \"object\" },\n            {\n              \"type\": \"array\",\n              \"items\": {\n                \"oneOf\": [\n                  { \"type\": \"object\" },\n                  { \"type\": \"string\" },\n                  { \"type\": \"number\" },\n                  { \"type\": \"boolean\" },\n                  { \"type\": \"null\" }\n                ]\n              }\n            },\n            { \"type\": \"string\" },\n            { \"type\": \"number\" },\n            { \"type\": \"boolean\" },\n            { \"type\": \"null\" }\n          ]\n        },\n        \"description\": \"Represents an array encapsulating the parameters intended for the specified PHP function. Each element within this array directly corresponds to the arguments accepted by the target function. It\u2019s essential to enclose all parameters within an array to maintain a consistent structure and ensure precise argument delivery, even if there\u2019s only a single argument.\"\n      }}"
+                                },
+                                "required": "${[\"callback\"]}",
+                                "request_data": "data",
+                                "result_data": "${function_result}",
+                                "ok": [
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "function",
+                                            "properties": {
+                                                "function_data": "${[]}",
+                                                "function_data[\"function_result\"]": "${wp_call_user_func_array( data.callback, data.args)}"
+                                            },
+                                            "_component_id": "aabkuvdv-qx7v-cvdr-4dtg-jjuewl42zody"
+                                        }
+                                    },
+                                    {
+                                        "class": "\\Convo\\Pckg\\Core\\Elements\\SetParamElement",
+                                        "namespace": "convo-core",
+                                        "properties": {
+                                            "scope_type": "request",
+                                            "parameters": "function",
+                                            "properties": {
+                                                "function_result": "${function_data}"
+                                            },
+                                            "_component_id": "ali8cfjc-mkwg-dch2-4ir5-4x3ntzmgj4bz"
+                                        }
+                                    }
+                                ],
+                                "_component_id": "elpyhinh-jnfh-giu3-kr1z-3nu0wob0masc",
+                                "defaults": "${{\"args\":[]}}"
+                            }
+                        }
+                    ],
+                    "_component_id": "e9sx4lcu-c0pa-krx7-v8om-j4iurzks1zis"
+                }
             }
-        }
-    ],
-    "time_updated": 1755968464,
-    "intents_time_updated": 1745251037,
-    "properties": [],
-    "name": "MCP Server Example - Template"
+        ],
+        "properties": [],
+        "configurations": []
+    }
 }
