@@ -1,9 +1,9 @@
 {
   "convoworks-gpt/convoworks-gpt.php": {
-    "version": "0.15.0",
-    "package": "https://github.com/zef-dev/convoworks-gpt/releases/download/v0.15.0/convoworks-gpt-v0.15.0.zip",
+    "version": "0.16.0",
+    "package": "https://github.com/zef-dev/convoworks-gpt/releases/download/v0.16.0/convoworks-gpt-v0.16.0.zip",
     "requires": "5.0",
     "tested": "6.6",
-    "last_updated": "2025-06-22"
+    "last_updated": "2025-08-24"
   }
 }
