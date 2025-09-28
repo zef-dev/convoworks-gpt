@@ -897,6 +897,14 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                         'description' => 'The text content of the system message.',
                         'valueType' => 'string'
                     ],
+                    'disable_eval' => [
+                        'editor_type' => 'boolean',
+                        'editor_properties' => [],
+                        'defaultValue' => false,
+                        'name' => 'Disable evaluation',
+                        'description' => 'Disables expresseion language evaluation for the content.',
+                        'valueType' => 'boolean'
+                    ],
                     '_preview_angular' => [
                         'type' => 'html',
                         'template' => '<div class="code"><span class="statement">SYSTEM</span>' .
