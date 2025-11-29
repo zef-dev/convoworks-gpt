@@ -1,0 +1,20 @@
+{
+	"php.suggest.basic": false,
+	"intelephense.environment.includePaths": [
+		"../convoworks-wp/src",
+		"../convoworks-wp/vendor"
+	],
+	"intelephense.files.maxSize": 5000000,
+	"intelephense.files.associations": [
+		"*.php",
+		"**/*.php"
+	],
+	"intelephense.files.exclude": [
+		"**/node_modules/**",
+		"**/vendor/**",
+		"**/dist/**",
+		"**/build/**"
+	]
+}
+
+
