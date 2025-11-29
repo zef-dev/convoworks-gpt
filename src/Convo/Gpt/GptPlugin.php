@@ -100,12 +100,12 @@ class GptPlugin
         $context    =   $this->getPluginContext();
         $logger     =   $context->getLogger();
 
-        $logger->debug('Admin init ...');
+        // $logger->debug('Admin init ...');
 
         if (!empty($_POST) && isset($_REQUEST['action'])) {
-            $logger->debug('Checking should process ...');
             $processor = new SettingsProcessor($logger, $context->getSettingsViewModel(), $context->getMcpConvoworksManager());
             if ($processor->accepts()) {
+                $logger->debug('Processing settings ...');
                 $processor->run();
             }
         }
