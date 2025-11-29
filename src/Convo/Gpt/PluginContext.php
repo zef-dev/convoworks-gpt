@@ -101,7 +101,7 @@ class PluginContext
                 function () use ($container) {
                     $logger = $container->get('logger');
                     $api_factory = new GptApiFactory($logger, $container->get('httpFactory'));
-                    $stream_writer = new StreamWriter($logger, $container->get('httpFactory'));
+                    $stream_writer = new StreamWriter($logger);
                     $stream_handler = new StreamHandler($stream_writer, $logger);
 
                     $mcp_manager_factory = new McpSessionManagerFactory(
