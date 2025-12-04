@@ -234,11 +234,8 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
         ];
 
 
-        $functions[] = new ExpressionFunction(
+        $functions[] = ExpressionFunction::fromEvaluator(
             'tokenize_string',
-            function ($text, $stopWords = null) {
-                return sprintf('tokenize_string(%s, %s)', var_export($text, true), var_export($stopWords, true));
-            },
             function ($args, $text, $stopWords = null) use ($stop_words) {
 
                 if (is_null($stopWords)) {
@@ -254,44 +251,29 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
             }
         );
 
-        $functions[] = new ExpressionFunction(
-            'split_text_into_chunks', // Function name as used in expressions
-            function ($text, $maxChar = 30000, $margin = 1000) {
-                // Compile-time function, returns the PHP code to be executed
-                // This is typically used for caching or optimizing the expressions
-                return sprintf('split_text_into_chunks(%s, %s, %s)', $text, $maxChar, $margin);
-            },
+        $functions[] = ExpressionFunction::fromEvaluator(
+            'split_text_into_chunks',
             function ($arguments, $text, $maxChar = 30000, $margin = 1000) {
-                // Runtime function, the actual PHP function to execute
                 return Util::splitTextIntoChunks($text, $maxChar, $margin);
             }
         );
 
-        $functions[] = new ExpressionFunction(
+        $functions[] = ExpressionFunction::fromEvaluator(
             'serialize_gpt_messages',
-            function ($messages) {
-                return sprintf('serialize_gpt_messages(%s)', var_export($messages, true));
-            },
             function ($args, $messages) {
                 return Util::serializeGptMessages($messages);
             }
         );
 
-        $functions[] = new ExpressionFunction(
+        $functions[] = ExpressionFunction::fromEvaluator(
             'unserialize_gpt_messages',
-            function ($string) {
-                return sprintf('unserialize_gpt_messages(%s)', var_export($string, true));
-            },
             function ($args, $string) {
                 return Util::unserializeGptMessages($string);
             }
         );
 
-        $functions[] = new ExpressionFunction(
+        $functions[] = ExpressionFunction::fromEvaluator(
             'estimate_tokens',
-            function ($content) {
-                return sprintf('estimate_tokens(%s)', var_export($content, true));
-            },
             function ($args, $content) {
                 return Util::estimateTokens($content);
             }
