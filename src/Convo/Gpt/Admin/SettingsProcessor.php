@@ -9,7 +9,9 @@ class SettingsProcessor
 {
     const ACTION_ENABLE    = 'convo_mcp_enable';
     const ACTION_UPDATE    = 'convo_mcp_update';
-    const ACTION_DISABLE   = 'convo_mcp_disable';  // ← fixed typo here
+    const ACTION_DISABLE   = 'convo_mcp_disable';
+    const NONCE_ACTION     = 'convo_mcp_settings_action';
+    const NONCE_NAME       = '_wpnonce';
 
     /** @var \Psr\Log\LoggerInterface */
     private $_logger;
@@ -42,12 +44,31 @@ class SettingsProcessor
     public function getAction()
     {
         if (isset($_REQUEST['action'])) {
-            return $_REQUEST['action'];
+            return sanitize_text_field(wp_unslash($_REQUEST['action']));
         }
+        return '';
     }
 
     public function run()
     {
+        // Verify user has permission
+        if (!current_user_can('manage_convoworks')) {
+            wp_die(
+                esc_html__('You do not have sufficient permissions to access this page.', 'convoworks-gpt'),
+                esc_html__('Permission Denied', 'convoworks-gpt'),
+                ['response' => 403]
+            );
+        }
+
+        // Verify nonce
+        if (!check_admin_referer(self::NONCE_ACTION, self::NONCE_NAME)) {
+            wp_die(
+                esc_html__('Security check failed. Please try again.', 'convoworks-gpt'),
+                esc_html__('Security Error', 'convoworks-gpt'),
+                ['response' => 403]
+            );
+        }
+
         $svc = $this->_viewModel->getSelectedServiceId();
         $this->_logger->info("Processing action [{$this->getAction()}] for service [{$svc}]");
 
@@ -55,17 +76,17 @@ class SettingsProcessor
             switch ($this->getAction()) {
                 case self::ACTION_ENABLE:
                     $this->_processCreate($svc);
-                    $msg = 'MCP service configuration has been successfully created!';
+                    $msg = __('MCP service configuration has been successfully created!', 'convoworks-gpt');
                     $type = 'success';
                     break;
                 case self::ACTION_DISABLE:
                     $this->_processDisable($svc);
-                    $msg = 'MCP service configuration has been successfully disabled!';
+                    $msg = __('MCP service configuration has been successfully disabled!', 'convoworks-gpt');
                     $type = 'success';
                     break;
                 case self::ACTION_UPDATE:
                     $this->_processUpdate($svc);
-                    $msg = 'MCP service configuration has been successfully updated!';
+                    $msg = __('MCP service configuration has been successfully updated!', 'convoworks-gpt');
                     $type = 'success';
                     break;
                 default:
@@ -78,15 +99,15 @@ class SettingsProcessor
             add_settings_error('convo_mcp_settings', 'convo_mcp_settings', $e->getMessage(), 'error');
         }
 
-        set_transient('convo_mcp_settings_errors', get_settings_errors(), 30);
+        set_transient('convo_mcp_settings_errors', get_settings_errors('convo_mcp_settings'), 30);
         wp_safe_redirect($this->_viewModel->getBaseUrl($svc));
         exit;
     }
 
     private function _processCreate($serviceId)
     {
-        $this->_logger->info('Creatng mcp service for [' . $serviceId . ']');
-        $basicAuth = isset($_POST['basic_auth']) && $_POST['basic_auth'] ? true : false;
+        $this->_logger->info('Creating mcp service for [' . $serviceId . ']');
+        $basicAuth = isset($_POST['basic_auth']) && sanitize_text_field($_POST['basic_auth']) === '1';
         $this->_mcpManager->enableMcp($serviceId, $basicAuth);
     }
 
@@ -100,7 +121,7 @@ class SettingsProcessor
     private function _processUpdate($serviceId)
     {
         $this->_logger->info('Updating mcp service for [' . $serviceId . ']');
-        $basicAuth = isset($_POST['basic_auth']) && $_POST['basic_auth'] ? true : false;
+        $basicAuth = isset($_POST['basic_auth']) && sanitize_text_field($_POST['basic_auth']) === '1';
         $this->_mcpManager->updateMcp($serviceId, $basicAuth);
     }
 }

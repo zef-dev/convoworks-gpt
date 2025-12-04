@@ -32,19 +32,45 @@ class SettingsView
             self::ID,
             [$this, 'displayView']
         );
+
+        // Enqueue styles only on this specific admin page
+        add_action('admin_enqueue_scripts', [$this, 'enqueueStyles']);
+    }
+
+    public function enqueueStyles($hook)
+    {
+        // Only enqueue on our specific settings page
+        if ($hook !== 'convoworks-wp_page_' . self::ID) {
+            return;
+        }
+
+        wp_enqueue_style(
+            'convo-mcp-settings',
+            CONVO_GPT_URL . 'assets/mcp-settings.css',
+            [],
+            CONVO_GPT_VERSION
+        );
     }
 
     public function displayView()
     {
+        // Verify user has permission
+        if (!current_user_can('manage_convoworks')) {
+            wp_die(
+                esc_html__('You do not have sufficient permissions to access this page.', 'convoworks-gpt'),
+                esc_html__('Permission Denied', 'convoworks-gpt'),
+                ['response' => 403]
+            );
+        }
+
         $svcId = $this->_viewModel->getSelectedServiceId();
         $enabled = $this->_mcpManager->isServiceEnabled($svcId);
 
-        // include styles & header
-        $this->_includeStyle();
         echo '<div id="pagewrap" class="wrap" style="margin-right:10px !important;">';
 
         if (!$this->_viewModel->hasServiceSelection()) {
-            echo '<h1>' . get_admin_page_title() . ' – no Convoworks service selected</h1>';
+            echo '<h1>' . esc_html(get_admin_page_title()) . ' – ' .
+                esc_html__('no Convoworks service selected', 'convoworks-gpt') . '</h1>';
             echo '</div>';
             return;
         }
@@ -52,30 +78,31 @@ class SettingsView
         // choose action and form state based on enabled state
         if ($enabled) {
             $action   = SettingsProcessor::ACTION_UPDATE;
-            $btnTitle = 'Update';
-            $title    = 'Connected to MCP Server platform';
-            $desc     = 'Update MCP Server platform options below, or disable the platform.';
+            $btnTitle = __('Update', 'convoworks-gpt');
+            $title    = __('Connected to MCP Server platform', 'convoworks-gpt');
+            $desc     = __('Update MCP Server platform options below, or disable the platform.', 'convoworks-gpt');
             $showDisable = true;
         } else {
             $action   = SettingsProcessor::ACTION_ENABLE;
-            $btnTitle = 'Enable';
-            $title    = 'Your Convoworks service is not connected to the MCP Server yet';
-            $desc     = 'Set up the MCP Server integration below.';
+            $btnTitle = __('Enable', 'convoworks-gpt');
+            $title    = __('Your Convoworks service is not connected to the MCP Server yet', 'convoworks-gpt');
+            $desc     = __('Set up the MCP Server integration below.', 'convoworks-gpt');
             $showDisable = false;
         }
 
-        echo '<h1>' . get_admin_page_title() . ' – '
-            . $this->_mcpManager->getServiceName($svcId)
+        echo '<h1>' . esc_html(get_admin_page_title()) . ' – '
+            . esc_html($this->_mcpManager->getServiceName($svcId))
             . '</h1>';
 
-        $this->_displayNotices($this->_viewModel->getNotices());
+        // Display WordPress settings errors/notices
+        settings_errors('convo_mcp_settings');
         echo '<br>';
 
         // render form
         $actionUrl = $this->_viewModel->getActionUrl($action, ['service_id' => $svcId]);
 ?>
         <form method="post" id="convo_mcp_settings_form" action="<?php echo esc_url($actionUrl) ?>">
-            <?php wp_nonce_field();
+            <?php wp_nonce_field(SettingsViewModel::NONCE_ACTION, SettingsViewModel::NONCE_NAME);
             wp_referer_field(); ?>
             <div id="wrapbox" class="postbox" style="line-height:2em;">
                 <div class="inner" style="padding-left:20px;">
@@ -84,7 +111,7 @@ class SettingsView
                     <table class="form-table">
                         <tr>
                             <th class="settings-label" scope="row">
-                                <label for="basic_auth">Require Basic Auth</label>
+                                <label for="basic_auth"><?php esc_html_e('Require Basic Auth', 'convoworks-gpt'); ?></label>
                             </th>
                             <td class="settings-input">
                                 <input
@@ -92,13 +119,13 @@ class SettingsView
                                     id="basic_auth"
                                     name="basic_auth"
                                     value="1"
-                                    <?php if ($this->_viewModel->getBasicAuth()) echo 'checked'; ?> />
-                                <span class="settings-helper">If checked, the MCP endpoint will require HTTP Basic Authentication.</span>
+                                    <?php checked($this->_viewModel->getBasicAuth(), true); ?> />
+                                <span class="settings-helper"><?php esc_html_e('If checked, the MCP endpoint will require HTTP Basic Authentication.', 'convoworks-gpt'); ?></span>
                             </td>
                         </tr>
                         <tr>
                             <th class="settings-label" scope="row">
-                                <label for="special_role">Special role</label>
+                                <label for="special_role"><?php esc_html_e('Special role', 'convoworks-gpt'); ?></label>
                             </th>
                             <td class="settings-input">
                                 <input
@@ -108,7 +135,7 @@ class SettingsView
                                     value="mcp-server"
                                     readonly
                                     class="setting-text" />
-                                <span class="settings-helper">The MCP workflow will start from the block with this special role.</span>
+                                <span class="settings-helper"><?php esc_html_e('The MCP workflow will start from the block with this special role.', 'convoworks-gpt'); ?></span>
                             </td>
                         </tr>
                     </table>
@@ -126,10 +153,10 @@ class SettingsView
                                 value="<?php echo esc_attr(SettingsProcessor::ACTION_DISABLE); ?>"
                                 class="button-primary"
                                 style="background-color:#dc3232;border-color:#dc3232;margin-left:10px;"
-                                onclick="return confirm('Are you sure you want to disable the MCP Server?');">Disable</button>
+                                onclick="return confirm('<?php echo esc_js(__('Are you sure you want to disable the MCP Server?', 'convoworks-gpt')); ?>');"><?php esc_html_e('Disable', 'convoworks-gpt'); ?></button>
                         <?php endif; ?>
                         <a href="<?php echo esc_url($this->_viewModel->getBackToConvoworksUrl()); ?>" class="button-secondary">
-                            Back
+                            <?php esc_html_e('Back', 'convoworks-gpt'); ?>
                         </a>
                     </p>
                 </div>
@@ -137,77 +164,5 @@ class SettingsView
         </form>
     <?php
         echo '</div>';
-    }
-
-    private function _displayNotices($form_errors)
-    {
-        if (empty($form_errors)) {
-            return;
-        }
-        $this->_logger->debug('Form errors: ' . print_r($form_errors, true));
-        foreach ($form_errors as $error) {
-            printf(
-                '<div class="notice notice-%1$s is-dismissible"><p><strong>%2$s</strong></p></div>',
-                esc_attr($error['type']),
-                esc_html($error['message'])
-            );
-        }
-    }
-
-    private function _includeStyle()
-    {
-    ?>
-        <style>
-            .settings-label {
-                vertical-align: top;
-                font-weight: bold;
-                min-width: 100px;
-                max-width: 200px;
-            }
-
-            .settings-input input.setting-text {
-                width: 100%;
-            }
-
-            #special_role {
-                width: 200px;
-                display: block;
-                margin-bottom: 10px;
-            }
-
-            #wrapbox {
-                margin-right: 25px;
-            }
-
-            .settings-spacer {
-                height: 7px;
-            }
-
-            .form-invalid.form-required textarea {
-                border-color: #d63638 !important;
-                box-shadow: 0 0 2px rgba(214, 54, 56, .8);
-            }
-
-            .settings-row .settings-input textarea,
-            .settings-row .settings-input select {
-                width: 100%;
-                max-width: 100%;
-            }
-
-            .settings-helper {
-                vertical-align: top;
-                font-style: italic;
-                min-width: 200px;
-                max-width: 500px;
-                line-height: 16px;
-            }
-
-            .settings-input {
-                vertical-align: top;
-                min-width: 100px;
-                max-width: 300px;
-            }
-        </style>
-<?php
     }
 }

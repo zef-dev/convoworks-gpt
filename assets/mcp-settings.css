@@ -1,0 +1,54 @@
+/**
+ * Convoworks MCP Server Settings Page Styles
+ */
+
+.settings-label {
+    vertical-align: top;
+    font-weight: bold;
+    min-width: 100px;
+    max-width: 200px;
+}
+
+.settings-input input.setting-text {
+    width: 100%;
+}
+
+#special_role {
+    width: 200px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+#wrapbox {
+    margin-right: 25px;
+}
+
+.settings-spacer {
+    height: 7px;
+}
+
+.form-invalid.form-required textarea {
+    border-color: #d63638 !important;
+    box-shadow: 0 0 2px rgba(214, 54, 56, .8);
+}
+
+.settings-row .settings-input textarea,
+.settings-row .settings-input select {
+    width: 100%;
+    max-width: 100%;
+}
+
+.settings-helper {
+    vertical-align: top;
+    font-style: italic;
+    min-width: 200px;
+    max-width: 500px;
+    line-height: 16px;
+}
+
+.settings-input {
+    vertical-align: top;
+    min-width: 100px;
+    max-width: 300px;
+}
+

@@ -11,6 +11,9 @@ use Psr\Log\LoggerInterface;
 
 class SettingsViewModel
 {
+    const NONCE_ACTION = 'convo_mcp_settings_action';
+    const NONCE_NAME = '_wpnonce';
+
     private $_basicAuth = false;
 
 
@@ -23,10 +26,6 @@ class SettingsViewModel
      * @var IServiceDataProvider
      */
     private $_convoServiceDataProvider;
-
-    private $_submited;
-    private $_errors    =   [];
-    private $_notices   =   [];
     public function __construct($logger, $convoServiceDataProvider)
     {
         $this->_logger          =   $logger;
@@ -35,63 +34,37 @@ class SettingsViewModel
 
     public function init()
     {
-        if (!isset($_REQUEST['page']) || $_REQUEST['page'] !== SettingsView::ID) {
+        $page = isset($_REQUEST['page']) ? sanitize_text_field(wp_unslash($_REQUEST['page'])) : '';
+        if ($page !== SettingsView::ID) {
             // $this->_logger->debug('Not convoworks mcp server call. Exiting ...');
             return;
         }
 
         $this->_logger->info('Initializing convoworks mcp settings view model');
 
-        $saved = get_transient("convo_mcp_field_errors");
-        if ($saved) {
-            $this->_errors = $saved;
-            delete_transient("convo_mcp_field_errors");
-        }
-
-        if (empty($_POST)) {
-            $saved = get_transient("convo_mcp_submitted_data");
-            if ($saved) {
-                $this->_submited = $saved;
-                delete_transient("convo_mcp_submitted_data");
+        // Load basicAuth from config
+        try {
+            $svcId = $this->getSelectedServiceId();
+            $user = new \Convo\Wp\AdminUser(wp_get_current_user());
+            $config = $this->_convoServiceDataProvider->getServicePlatformConfig(
+                $user,
+                $svcId,
+                \Convo\Core\Publish\IPlatformPublisher::MAPPING_TYPE_DEVELOP
+            );
+            $platformId = \Convo\Gpt\Mcp\McpServerPlatform::PLATFORM_ID;
+            if (isset($config[$platformId]['basic_auth'])) {
+                $this->_basicAuth = $config[$platformId]['basic_auth'] ? true : false;
             }
-        } else {
-            $this->_submited = $_POST;
-        }
-
-        $saved = get_transient("convo_mcp_settings_errors");
-        if ($saved) {
-            $this->_notices = $saved;
-            delete_transient("convo_mcp_settings_errors");
-        }
-
-        // Load basicAuth from submitted data, or from config if available
-        if (!empty($this->_submited) && isset($this->_submited['basic_auth'])) {
-            $this->_basicAuth = $this->_submited['basic_auth'] ? true : false;
-        } else {
-            // Try to load from manager/config
-            try {
-                $svcId = $this->getSelectedServiceId();
-                $user = new \Convo\Wp\AdminUser(wp_get_current_user());
-                $config = $this->_convoServiceDataProvider->getServicePlatformConfig(
-                    $user,
-                    $svcId,
-                    \Convo\Core\Publish\IPlatformPublisher::MAPPING_TYPE_DEVELOP
-                );
-                $platformId = \Convo\Gpt\Mcp\McpServerPlatform::PLATFORM_ID;
-                if (isset($config[$platformId]['basic_auth'])) {
-                    $this->_basicAuth = $config[$platformId]['basic_auth'] ? true : false;
-                }
-            } catch (\Throwable $e) {
-                /** @phpstan-ignore-next-line */
-                $this->_logger->error($e);
-            }
+        } catch (\Throwable $e) {
+            /** @phpstan-ignore-next-line */
+            $this->_logger->error($e);
         }
     }
 
     public function getSelectedServiceId()
     {
         if (isset($_REQUEST['service_id'])) {
-            return $_REQUEST['service_id'];
+            return sanitize_text_field(wp_unslash($_REQUEST['service_id']));
         }
         throw new DataItemNotFoundException('No selected service found');
     }
@@ -129,7 +102,7 @@ class SettingsViewModel
             'page' => $this->getPageId(),
             'action' => $action,
         ], $params), admin_url('admin-post.php'));
-        $url = wp_nonce_url($url);
+        $url = wp_nonce_url($url, self::NONCE_ACTION, self::NONCE_NAME);
         return $url;
     }
 
@@ -138,7 +111,7 @@ class SettingsViewModel
         $url = add_query_arg([
             'page' => 'convo-plugin',
         ], admin_url('admin.php'));
-        $url .= '#!/convoworks-editor/' . $this->getSelectedServiceId() . '/configuration';
+        $url .= '#!/convoworks-editor/' . $this->getSelectedServiceId() . '/configuration/platforms';
         return $url;
     }
 
@@ -148,25 +121,6 @@ class SettingsViewModel
             'page' => $this->getPageId(),
         ], $params), admin_url('admin-post.php'));
         return $url;
-    }
-
-    public function isError($field)
-    {
-        if (isset($this->_errors[$field])) {
-            return true;
-        }
-    }
-
-    public function getError($field)
-    {
-        if (isset($this->_errors[$field])) {
-            return $this->_errors[$field];
-        }
-    }
-
-    public function getNotices()
-    {
-        return $this->_notices;
     }
 
     public function getBasicAuth()
