@@ -403,7 +403,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'chat-completion-element.html'
+                        'filename' => 'chat-completion-element.md'
                     ],
                 ]
             ),
@@ -492,7 +492,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     },
                     '_help' => [
                         'type' => 'file',
-                        'filename' => 'chat-completion-v2-element.html'
+                        'filename' => 'chat-completion-v2-element.md'
                     ],
                 ]
             ),
@@ -567,7 +567,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'embeddings-element.html'
+                        'filename' => 'embeddings-element.md'
                     ],
                 ]
             ),
@@ -642,7 +642,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'moderation-api-element.html'
+                        'filename' => 'moderation-api-element.md'
                     ],
                 ]
             ),
@@ -671,7 +671,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'conversation-messages-element.html'
+                        'filename' => 'conversation-messages-element.md'
                     ],
                 ]
             ),
@@ -794,7 +794,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     },
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'messages-limiter-element.html'
+                        'filename' => 'messages-limiter-element.md'
                     ],
                 ]
             ),
@@ -879,7 +879,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'simple-message-limiter-element.html'
+                        'filename' => 'simple-message-limiter-element.md'
                     ],
                 ]
             ),
@@ -916,7 +916,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'system-message-element.html'
+                        'filename' => 'system-message-element.md'
                     ],
                 ]
             ),
@@ -954,7 +954,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'group-system-messages-element.html'
+                        'filename' => 'group-system-messages-element.md'
                     ],
                 ]
             ),
@@ -1048,7 +1048,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'chat-function-element.html'
+                        'filename' => 'chat-function-element.md'
                     ],
                 ]
             ),
@@ -1119,7 +1119,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'external-chat-function-element.html'
+                        'filename' => 'external-chat-function-element.md'
                     ],
                 ]
             ),
@@ -1179,7 +1179,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_workflow' => 'process',
                     '_help' =>  [
                         'type' => 'file',
-                        'filename' => 'mcp-processor.html'
+                        'filename' => 'mcp-processor.md'
                     ],
                 ]
             ),
@@ -1271,7 +1271,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' => [
                         'type' => 'file',
-                        'filename' => 'wp-rest-proxy-function.html'
+                        'filename' => 'wp-rest-proxy-function.md'
                     ]
                 ]
             ),
@@ -1331,7 +1331,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
                     '_descend' => 'true',
                     '_help' => [
                         'type' => 'file',
-                        'filename' => 'simple-mcp-prompt-template.html'
+                        'filename' => 'simple-mcp-prompt-template.md'
                     ]
                 ]
             )
