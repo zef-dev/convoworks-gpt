@@ -63,7 +63,10 @@ class McpServerCommandRequest implements ISpecialRoleRequest
         return $this->_data;
     }
 
-    public function getMediaTypeRequest() {}
+    public function getMediaTypeRequest(): string
+    {
+        return '';
+    }
 
     public function getText()
     {
@@ -95,7 +98,10 @@ class McpServerCommandRequest implements ISpecialRoleRequest
         return true;
     }
 
-    public function getAccessToken() {}
+    public function getAccessToken(): string
+    {
+        return '';
+    }
 
     public function isLaunchRequest()
     {
@@ -112,7 +118,10 @@ class McpServerCommandRequest implements ISpecialRoleRequest
         return false;
     }
 
-    public function isSessionEndRequest() {}
+    public function isSessionEndRequest(): bool
+    {
+        return false;
+    }
 
     public function isSessionStart()
     {

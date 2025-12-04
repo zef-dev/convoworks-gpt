@@ -21,13 +21,13 @@ class GptPlugin
 {
 
     /**
-     * @var PluginContext
+     * @var PluginContext|null
      */
     private $_pluginContext;
 
     public function __construct() {}
 
-    public function getPluginContext()
+    public function getPluginContext(): PluginContext
     {
         if (!isset($this->_pluginContext)) {
             throw new \Exception('Not properly iinitilaized');

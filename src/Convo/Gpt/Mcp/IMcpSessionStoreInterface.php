@@ -15,10 +15,10 @@ interface IMcpSessionStoreInterface
     /**
      * Creates a new session and returns the session ID.
      *
-     * @var string $clientName
+     * @param string $clientName
      * @return string UUID or unique session identifier
      */
-    public function createSession($clientNam): string;
+    public function createSession($clientName): string;
 
     /**
      * Updates the last active time for the session.

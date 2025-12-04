@@ -158,7 +158,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
 
     private function _readNewMessageFlow(IConvoRequest $request, IConvoResponse $response, $message, $httpResponse = null)
     {
-        $this->_logger->debug('Handling new message role:[' . $message['role'] ?? '' . ']');
+        $this->_logger->debug('Handling new message role:[' . $message['role'] . ']');
 
         $this->_newMessages[] = $message;
 

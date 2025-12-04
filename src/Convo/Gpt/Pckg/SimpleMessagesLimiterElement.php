@@ -75,10 +75,10 @@ class SimpleMessagesLimiterElement extends AbstractWorkflowContainerComponent im
         $truncated = Util::getTruncatedPart($all_messages, $messages);
 
         // TRUNCATED FLOW
-        if (count($truncated)) {
+        if (\count($truncated)) {
             $this->_logger->debug('Got messages after truncation [' . print_r($messages, true) . ']. Executing truncated flow');
             $params         =  $this->getService()->getComponentParams(IServiceParamsScope::SCOPE_TYPE_REQUEST, $this);
-            $var_name       = $this->evaluateString($this->_properties['result_var']) ?? null;
+            $var_name       = $this->evaluateString($this->_properties['result_var']);
             if ($var_name) {
                 $params->setServiceParam($this->evaluateString($this->_properties['result_var']), [
                     'messages' => $messages,

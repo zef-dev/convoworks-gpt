@@ -27,7 +27,7 @@ class PluginContext
     private $_cache = [];
 
     /**
-     * @var string
+     * @var string|null
      */
     private static $_convoWPPluginClass;
 

@@ -73,6 +73,7 @@ class SettingsProcessor
             }
             add_settings_error('convo_mcp_settings', 'convo_mcp_settings', $msg, $type);
         } catch (\Exception $e) {
+            /** @phpstan-ignore-next-line */
             $this->_logger->error($e);
             add_settings_error('convo_mcp_settings', 'convo_mcp_settings', $e->getMessage(), 'error');
         }

@@ -26,7 +26,7 @@ class McpServerPlatform implements IRestPlatform
     private $_publicHandler;
 
     /**
-     * @var IPlatformPublisher
+     * @var IPlatformPublisher|null
      */
     private $_platformPublisher;
 

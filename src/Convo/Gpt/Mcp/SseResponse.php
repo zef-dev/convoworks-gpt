@@ -88,6 +88,6 @@ class SseResponse implements IConvoResponse
     // UTIL
     public function __toString()
     {
-        return get_class($this) . '[]';
+        return get_class($this) . '[' . $this->_sessionId . ']';
     }
 }

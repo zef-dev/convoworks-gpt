@@ -6,6 +6,7 @@ namespace Convo\Gpt\Admin;
 
 
 use Convo\Core\DataItemNotFoundException;
+use Convo\Core\IServiceDataProvider;
 use Psr\Log\LoggerInterface;
 
 class SettingsViewModel
@@ -81,6 +82,7 @@ class SettingsViewModel
                     $this->_basicAuth = $config[$platformId]['basic_auth'] ? true : false;
                 }
             } catch (\Throwable $e) {
+                /** @phpstan-ignore-next-line */
                 $this->_logger->error($e);
             }
         }

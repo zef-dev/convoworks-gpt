@@ -13,19 +13,24 @@ namespace Convo\Wp {
     class AdminUser implements \Convo\Core\IAdminUser
     {
         /**
-         * @param int $userId WordPress user ID
+         * @param \WP_User $user WordPress user object
          */
-        public function __construct($userId) {}
+        public function __construct(\WP_User $user) {}
 
         /**
-         * @return string
+         * @return bool
+         */
+        public function isSystem() {}
+
+        /**
+         * @return int
          */
         public function getId() {}
 
         /**
          * @return string
          */
-        public function getName() {}
+        public function getUsername() {}
 
         /**
          * @return string
@@ -35,17 +40,27 @@ namespace Convo\Wp {
         /**
          * @return string
          */
-        public function getUsername() {}
+        public function getName() {}
 
         /**
-         * @return bool
+         * @return string
          */
-        public function isAdmin() {}
+        public function getPassword() {}
 
         /**
-         * @return bool
+         * @return \WP_User
          */
-        public function isSystem() {}
+        public function getWpUser() {}
+
+        /**
+         * @return array{id: int, username: string, email: string, name: string, wpUser: \WP_User}
+         */
+        public function toArray() {}
+
+        /**
+         * @return string
+         */
+        public function __toString() {}
     }
 }
 

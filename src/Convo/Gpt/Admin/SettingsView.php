@@ -25,7 +25,7 @@ class SettingsView
     {
         $this->_logger->debug('Registering CONVO_MCP view');
         add_submenu_page(
-            null,
+            "convoworks-wp",
             'Convoworks MCP Server',
             'Convoworks MCP Server',
             'manage_convoworks',

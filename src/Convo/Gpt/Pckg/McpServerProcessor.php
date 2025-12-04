@@ -14,6 +14,7 @@ use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Core\Workflow\IConversationProcessor;
 use Convo\Core\Workflow\IConversationElement;
 use Convo\Core\Workflow\DefaultFilterResult;
+use Convo\Gpt\IChatFunction;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\Mcp\McpServerCommandRequest;
 use Convo\Gpt\Mcp\McpSessionManagerFactory;
@@ -79,6 +80,7 @@ implements IConversationProcessor, IChatFunctionContainer
         }
 
         /** @var McpServerCommandRequest $request */
+        /** @var SseResponse $response */
         $method = $request->getMethod();
         $session_id = $request->getSessionId();
 
@@ -197,7 +199,7 @@ implements IConversationProcessor, IChatFunctionContainer
         try {
             $prompt = $this->_findPrompt($name);
         } catch (DataItemNotFoundException $e) {
-            $this->_logger->warning($e);
+            $this->_logger->warning($e->getMessage());
             return $this->_throwRpcError($id, -32602, $e->getMessage(), $request);
         }
 
@@ -289,7 +291,7 @@ implements IConversationProcessor, IChatFunctionContainer
                 $function_result = $function->execute($request, $response, $function_data);
             }
         } catch (\Throwable $e) {
-            $this->_logger->warning($e);
+            $this->_logger->warning($e->getMessage());
             $function_result = json_encode(['error' => $e->getMessage()]);
             $is_error = true;
         }

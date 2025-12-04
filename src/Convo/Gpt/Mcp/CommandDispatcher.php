@@ -62,7 +62,7 @@ class CommandDispatcher
     {
         $this->_mcpSessionManagerFactory->getSessionManager($serviceId)->getActiveSession($sessionId, true);
 
-        if (is_array($data) && array_keys($data) === range(0, count($data) - 1)) {
+        if (array_keys($data) === range(0, \count($data) - 1)) {
             $this->_logger->warning('Batching not supported in 2025-06-18; processing first message only');
             $data = $data[0];
         }
@@ -103,12 +103,13 @@ class CommandDispatcher
             $this->_logger->info('Running service instance [' . $service->getId() . '] in MCP POST Handler.');
             $service->run($text_request, $text_response);
         } catch (Throwable $e) {
+            /** @phpstan-ignore-next-line */
             $this->_logger->error($e);
             return ['jsonrpc' => '2.0', 'id' => $req_id, 'error' => ['code' => -32603, 'message' => $e->getMessage()]];
         }
 
         $result = $text_response->getPlatformResponse();
-        if (is_array($result) && empty($result)) {
+        if (\is_array($result) && empty($result)) {
             $this->_logger->warning('Empty result array detected; converting to empty object');
             $result = new \stdClass();
         }
@@ -137,7 +138,7 @@ class CommandDispatcher
 
         $manager = $this->_mcpSessionManagerFactory->getSessionManager($serviceId);
 
-        if (is_array($message) && array_keys($message) === range(0, count($message) - 1)) {
+        if (array_keys($message) === range(0, \count($message) - 1)) {
             $responses = [];
             foreach ($message as $single_msg) {
                 $req_id = $single_msg['id'];

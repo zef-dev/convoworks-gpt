@@ -109,7 +109,7 @@ class WpRestProxyFunction extends AbstractWorkflowComponent implements IChatFunc
     private function _getDefaults()
     {
         $defaults = $this->evaluateString($this->_defaults);
-        if (is_array($defaults)) {
+        if (\is_array($defaults)) {
             return $defaults;
         }
         return [];
@@ -144,7 +144,9 @@ class WpRestProxyFunction extends AbstractWorkflowComponent implements IChatFunc
 
 
     // TODO: refactor separate chat from scoped function
-    public function initParams() {}
+    public function initParams() {
+        return '';
+    }
 
     public function restoreParams($executionId) {}
 

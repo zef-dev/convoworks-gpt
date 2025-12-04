@@ -237,7 +237,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
         $functions[] = new ExpressionFunction(
             'tokenize_string',
             function ($text, $stopWords = null) {
-                return sprintf('tokenize_string(%s)', var_export($text, true), var_export($stopWords, true));
+                return sprintf('tokenize_string(%s, %s)', var_export($text, true), var_export($stopWords, true));
             },
             function ($args, $text, $stopWords = null) use ($stop_words) {
 
