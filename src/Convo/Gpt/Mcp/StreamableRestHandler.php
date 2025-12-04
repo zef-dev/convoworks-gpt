@@ -18,7 +18,7 @@ use Convo\Core\Rest\InvalidRequestException;
 use Convo\Core\Rest\NotFoundException;
 use Convo\Core\Rest\RequestInfo;
 use Convo\Core\Util\IHttpFactory;
-
+use Convo\Core\Util\StrUtil;
 
 class StreamableRestHandler implements RequestHandlerInterface
 {
@@ -162,7 +162,7 @@ class StreamableRestHandler implements RequestHandlerInterface
 
         $auth = $request->getHeaderLine('Authorization');
         $this->_logger->debug('Checking auth header: ' . substr($auth, 0, 20) . '...');
-        if (empty($auth) || !str_starts_with($auth, 'Basic ')) {
+        if (empty($auth) || !StrUtil::startsWith($auth, 'Basic ')) {
             $this->_logger->warning('Missing or invalid Authorization header');
             throw new InvalidRequestException('Missing or invalid Authorization header', 401);
         }
