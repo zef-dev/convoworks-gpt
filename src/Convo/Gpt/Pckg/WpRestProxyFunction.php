@@ -43,7 +43,7 @@ class WpRestProxyFunction extends AbstractWorkflowComponent implements IChatFunc
         $container->registerFunction($this);
     }
 
-    public function execute(IConvoRequest $request, IConvoResponse $response, $data)
+    public function execute(IConvoRequest $request, IConvoResponse $response, array $data)
     {
         $this->_logger->debug('Got data decoded [' . $this->getName() . '] - [' . print_r($data, true) . ']');
         $data = array_merge($this->_getDefaults(), $data);
@@ -74,7 +74,7 @@ class WpRestProxyFunction extends AbstractWorkflowComponent implements IChatFunc
             $restRequest->set_body_params($data);
         }
 
-        /** @var WP_REST_Response $restResponse */
+        /** @var \WP_REST_Response $restResponse */
         $restResponse = rest_do_request($restRequest);
         $responseData = $restResponse->get_data();
 

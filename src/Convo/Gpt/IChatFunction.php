@@ -30,8 +30,8 @@ interface IChatFunction extends IScopedFunction
     /**
      * @param IConvoRequest $request
      * @param IConvoResponse $response
-     * @param string $data
+     * @param array $data
      * @return string
      */
-    public function execute(IConvoRequest $request, IConvoResponse $response, $data);
+    public function execute(IConvoRequest $request, IConvoResponse $response, array $data);
 }
