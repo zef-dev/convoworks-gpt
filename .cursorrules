@@ -1,0 +1,106 @@
+# Convoworks GPT - Cursor Rules
+
+Always include the following documentation files in chat context when working on this project:
+
+- AGENTS.md (project overview and navigation)
+- README.md (user-facing documentation, build instructions, features)
+- CHANGELOG.md (version history and recent changes)
+
+When relevant to PHP framework work, also reference documentation from the parent Convoworks WP plugin:
+- ../convoworks-wp/AGENTS.md (overview)
+- ../convoworks-wp/src/AGENTS_CONVOWORKS_FWRK.md (PHP framework guide)
+
+## Project-Specific Guidelines
+
+### PHP Development
+
+- This plugin extends Convoworks WP – always verify the parent plugin is available
+- Main namespace is `Convo\Gpt` – all plugin code lives in `src/Convo/Gpt/`
+- Follow Convoworks framework conventions (see parent plugin docs)
+- Components must implement appropriate workflow interfaces from `Convo\Core\Workflow`
+- Use dependency injection – services are wired in Convoworks WP's DI container
+
+### Component Help Files
+
+- Prefer Markdown (`.md`) for all new help files
+- Place help files in `src/Convo/Gpt/Pckg/Help/`
+- Follow naming convention: `component-name.html` or `component-name.md`
+- Reference Convoworks WP's component help guidelines for structure
+
+### Version Management
+
+- Version is managed in `package.json` (single source of truth)
+- Run `npm run sync-version` after version changes to update `composer.json` and `convoworks-gpt.php`
+- Update `CHANGELOG.md` for all user-facing changes
+- Follow semantic versioning (major.minor.patch)
+
+### Build & Distribution
+
+- No frontend bundles – this plugin has no JavaScript UI
+- **Local development**: No build needed, just `composer install` and activate
+- **Release builds**: Automated via GitHub Actions when tags are pushed
+- **Manual build** (if needed): `npm run build` creates distributable zip
+- Test built packages in a clean WordPress install with Convoworks WP
+- **GitHub Actions**: Push a tag (`git tag v0.16.2 && git push --tags`) to trigger automated release
+
+### MCP Server Development
+
+- MCP-related code lives in `src/Convo/Gpt/Mcp/`
+- Session storage is currently filesystem-based (may migrate to DB later)
+- Streamable HTTP implementation follows MCP 2024-11-05 spec
+- WordPress REST API tools are registered via filters for lazy loading
+
+### Testing & Code Quality
+
+- **PHPStan**: Run `vendor/bin/phpstan analyse` before committing to catch type errors
+  - Level 5 configured in `phpstan.neon`
+  - Ignores WordPress symbols (they're not available during analysis)
+  - If too many errors, consider generating a baseline: `vendor/bin/phpstan analyse --generate-baseline`
+- **PHPUnit**: Run `vendor/bin/phpunit` to execute unit tests
+  - Tests in `tests/` focus on utility functions (serialization, truncation, etc.)
+  - Add tests for new utility functions
+- **Manual testing**: Use one of the provided service templates
+  - Always test with Convoworks WP activated first
+  - Test MCP endpoints with compatible clients (cLine, Claude Desktop with proxy, etc.)
+
+### Code Style & Conventions
+
+- Follow PSR-4 autoloading (already configured in composer.json)
+- Use type hints where possible (PHP 7.2+ compatible)
+- Document public methods with PHPDoc blocks
+- Keep component classes focused – one responsibility per class
+- Use descriptive variable names (no single-letter vars except in loops)
+
+## Common Pitfalls
+
+- Don't forget to register new components in `GptPackageDefinition::_initDefintions()`
+- Don't modify Convoworks core classes – extend and compose instead
+- Don't add frontend build steps – this plugin has no UI bundle
+- Don't bundle heavy PHP dependencies – keep the plugin lightweight
+- Don't forget to update help files when adding/changing component properties
+
+## Quick Reference
+
+### Key Files
+
+- `convoworks-gpt.php` – Plugin entry point, constants, WordPress hooks
+- `src/Convo/Gpt/GptPlugin.php` – Main plugin registration
+- `src/Convo/Gpt/Pckg/GptPackageDefinition.php` – Component package definition
+- `src/Convo/Gpt/Mcp/McpServerPlatform.php` – MCP platform adapter
+- `build.js` – Build script (creates distributable zip)
+- `sync-version.js` – Version synchronization script
+
+### Common npm Commands
+
+- `npm install` – Install packaging dependencies
+- `npm run build` – Create distributable zip (usually done by GitHub Actions)
+- `npm run sync-version` – Sync version from package.json to other files
+- `npm run clean` – Remove all build artifacts
+
+### Common Composer Commands
+
+- `composer install` – Install dev dependencies (for local testing)
+- `composer update` – Update dependencies
+- `vendor/bin/phpunit` – Run unit tests
+- `vendor/bin/phpstan analyse` – Run static analysis
+

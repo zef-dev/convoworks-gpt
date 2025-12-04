@@ -20,7 +20,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
-        "zef-dev/convoworks-core": "^0.22"
+        "zef-dev/convoworks-core": "^0.22",
+        "phpstan/phpstan": "*"
     },
     "autoload-dev": {
         "psr-4": {
