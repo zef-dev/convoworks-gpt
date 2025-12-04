@@ -1,6 +1,11 @@
 
 ## Convoworks GPT WordPress plugin
 
+### 0.16.1 - 2025-12-04
+
+* Added the ability to disable expression language evaluation for system prompts.
+* Updated the method for accessing the Convoworks WP plugin.
+
 ### 0.16.0 - 2025-08-23 - MCP 2025-06-18
 
 * Updated to MCP specification 2025-06-18 and Streamable HTTP.
