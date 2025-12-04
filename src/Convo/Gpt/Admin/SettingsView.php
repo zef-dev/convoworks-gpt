@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 class SettingsView
 {
     const ID = 'convo-gpt.mcp-server.settings';
+    const PAGE_TITLE = 'Convoworks MCP Server';
 
     /** @var LoggerInterface */     private $_logger;
     /** @var SettingsViewModel */   private $_viewModel;
@@ -24,10 +25,12 @@ class SettingsView
     public function register()
     {
         $this->_logger->debug('Registering CONVO_MCP view');
+        // Hidden page - null parent means it won't appear in the menu
+        /** @phpstan-ignore-next-line */
         add_submenu_page(
-            "convoworks-wp",
-            'Convoworks MCP Server',
-            'Convoworks MCP Server',
+            "",
+            self::PAGE_TITLE,
+            self::PAGE_TITLE,
             'manage_convoworks',
             self::ID,
             [$this, 'displayView']
@@ -39,8 +42,8 @@ class SettingsView
 
     public function enqueueStyles($hook)
     {
-        // Only enqueue on our specific settings page
-        if ($hook !== 'convoworks-wp_page_' . self::ID) {
+        // For hidden pages (parent=null), the hook is 'admin_page_{page_slug}'
+        if ($hook !== 'admin_page_' . self::ID) {
             return;
         }
 
@@ -69,7 +72,7 @@ class SettingsView
         echo '<div id="pagewrap" class="wrap" style="margin-right:10px !important;">';
 
         if (!$this->_viewModel->hasServiceSelection()) {
-            echo '<h1>' . esc_html(get_admin_page_title()) . ' – ' .
+            echo '<h1>' . esc_html(self::PAGE_TITLE) . ' – ' .
                 esc_html__('no Convoworks service selected', 'convoworks-gpt') . '</h1>';
             echo '</div>';
             return;
@@ -90,7 +93,7 @@ class SettingsView
             $showDisable = false;
         }
 
-        echo '<h1>' . esc_html(get_admin_page_title()) . ' – '
+        echo '<h1>' . esc_html(self::PAGE_TITLE) . ' – '
             . esc_html($this->_mcpManager->getServiceName($svcId))
             . '</h1>';
 
