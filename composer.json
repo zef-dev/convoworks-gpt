@@ -21,7 +21,8 @@
     "require-dev": {
         "phpunit/phpunit": "^8",
         "zef-dev/convoworks-core": "^0.22",
-        "phpstan/phpstan": "*"
+        "phpstan/phpstan": "*",
+        "php-stubs/wordpress-stubs": "^6.9"
     },
     "autoload-dev": {
         "psr-4": {

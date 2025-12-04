@@ -4,18 +4,14 @@ parameters:
         - src
     excludePaths:
         - tests
-    
-    # Bootstrap file that defines WordPress constants and functions
-    # Uncomment if you have a WordPress stubs file or bootstrap
-    # bootstrapFiles:
-    #     - tests/bootstrap.php
-    
-    # Ignore errors for WordPress functions that PHPStan doesn't know about
-    ignoreErrors:
-        # Common WordPress functions
-        - '#Function (wp_|get_|set_|add_|remove_|apply_|do_|esc_|__)[a-zA-Z_]+ not found\.#'
-        # WordPress constants
-        - '#Constant (WP_|ABSPATH)[A-Z_]+ not found\.#'
-        # WordPress classes
-        - '#Class (WP_|wpdb)[a-zA-Z_]+ not found\.#'
+
+    # WordPress stubs and plugin constants for type checking
+    bootstrapFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - phpstan-bootstrap.php
+        - phpstan-stubs/convoworks-wp.php
+
+    # You can still ignore specific errors if needed
+    # ignoreErrors:
+    #     - '#specific error pattern#'
 
