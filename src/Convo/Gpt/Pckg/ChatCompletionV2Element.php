@@ -10,13 +10,13 @@ use Convo\Core\Workflow\IConvoRequest;
 use Convo\Core\Workflow\IConvoResponse;
 use Convo\Core\Workflow\AbstractWorkflowContainerComponent;
 use Convo\Core\Params\IServiceParamsScope;
+use Convo\Gpt\FunctionResultTooLargeException;
 use Convo\Gpt\GptApiFactory;
 use Convo\Gpt\IChatFunction;
 use Convo\Gpt\IChatFunctionContainer;
 use Convo\Gpt\IMessages;
 use Convo\Gpt\RefuseFunctionCallException;
 use Convo\Gpt\Util;
-use RuntimeException;
 
 class ChatCompletionV2Element extends AbstractWorkflowContainerComponent implements IConversationElement, IChatFunctionContainer, IMessages
 {
@@ -219,8 +219,21 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                             $result_size = Util::estimateTokens($result);
                             $this->_logger->debug('Function [' . $function_name . '] returned result [' . $result_size . '] tokens. Max allowed is [' . $MAX_RESULT_TOKENS . ']');
                             if ($result_size > $MAX_RESULT_TOKENS) {
-                                throw new RuntimeException('Function [' . $function_name . '] returned too large result [' . $result_size . ']. If possible, adjust the function arguments to return less data. Maximum allowed is [' . $MAX_RESULT_TOKENS . '] tokens.');
+                                $result_data = json_decode($result, true);
+                                if (json_last_error() !== JSON_ERROR_NONE) {
+                                    throw new FunctionResultTooLargeException($function_name, $result_size, $MAX_RESULT_TOKENS);
+                                }
+                                $structure = Util::scanStructure($result_data);
+                                throw new FunctionResultTooLargeException($function_name, $result_size, $MAX_RESULT_TOKENS, $structure);
+                                // throw new RuntimeException('Function [' . $function_name . '] returned too large result [' . $result_size . ']. If possible, adjust the function arguments to return less data. Maximum allowed is [' . $MAX_RESULT_TOKENS . '] tokens.');
                             }
+                        }
+                    } catch (FunctionResultTooLargeException $e) {
+                        $this->_logger->warning($e->getMessage());
+                        if ($e->getStructure()) {
+                            $result = json_encode(['error' => $e->getMessage(), 'structure' => $e->getStructure()]);
+                        } else {
+                            $result = json_encode(['error' => $e->getMessage()]);
                         }
                     } catch (\Throwable $e) {
                         $this->_logger->warning($e->getMessage());
@@ -252,7 +265,7 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
     {
         $options = $this->getService()->evaluateArgs($this->_properties['apiOptions'], $this);
 
-        if (count($this->getFunctions())) {
+        if (\count($this->getFunctions())) {
             $options['tools'] = [];
             foreach ($this->getFunctions() as $function) {
                 // $this->_logger->debug('Registering function [' . json_encode($function->getDefinition(), JSON_PRETTY_PRINT) . ']');
