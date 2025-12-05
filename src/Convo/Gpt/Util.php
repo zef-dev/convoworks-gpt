@@ -13,9 +13,9 @@ abstract class Util
     {
         $word_count = str_word_count($content);
         $char_count = mb_strlen($content);
-        $tokens_count_word_est = intval($word_count / 0.75);
-        $tokens_count_char_est = intval($char_count / 4);
-        $result = intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
+        $tokens_count_word_est = \intval($word_count / 0.75);
+        $tokens_count_char_est = \intval($char_count / 4);
+        $result = \intval(($tokens_count_word_est + $tokens_count_char_est) / 2);
         return $result;
     }
 
@@ -31,9 +31,9 @@ abstract class Util
 
         // Count tokens for content
         if (isset($message['content'])) {
-            if (is_string($message['content'])) {
+            if (\is_string($message['content'])) {
                 $message_tokens += self::estimatetokens($message['content']);
-            } elseif (is_array($message['content'])) {
+            } elseif (\is_array($message['content'])) {
                 // Handle multimodal content (text, images, etc.)
                 foreach ($message['content'] as $content_part) {
                     if (isset($content_part['text'])) {
@@ -56,7 +56,7 @@ abstract class Util
         }
 
         // Handle tool calls (assistant messages with function calls)
-        if (isset($message['tool_calls']) && is_array($message['tool_calls'])) {
+        if (isset($message['tool_calls']) && \is_array($message['tool_calls'])) {
             foreach ($message['tool_calls'] as $tool_call) {
                 // Tool call structure overhead
                 $message_tokens += 10;
@@ -129,7 +129,7 @@ abstract class Util
     {
         $total_tokens = 0;
 
-        if (!is_array($tools)) {
+        if (!\is_array($tools)) {
             return 0;
         }
 
@@ -174,7 +174,7 @@ abstract class Util
             return [];
         }
 
-        $n = count($messages);
+        $n = \count($messages);
         // If already fits, return as is
         if ($n <= $size) {
             return $messages;
@@ -187,7 +187,7 @@ abstract class Util
         foreach ($messages as $message) {
 
             if ($message['role'] === 'user') {
-                if (count($buffer) + count($truncated) < $size) {
+                if (\count($buffer) + \count($truncated) < $size) {
                     $truncated = array_merge($truncated, $buffer, [$message]);
                     $buffer = [];
                     continue;
@@ -211,7 +211,7 @@ abstract class Util
      */
     public static function truncate(array $messages, int $maxMessages, int $truncateTo): array
     {
-        if (count($messages) <= $maxMessages) {
+        if (\count($messages) <= $maxMessages) {
             // No truncation needed
             return $messages;
         }
@@ -254,14 +254,14 @@ abstract class Util
      */
     public static function getTruncatedPart(array $originalMessages, array $truncatedMessages): array
     {
-        $originalCount = count($originalMessages);
-        $truncatedCount = count($truncatedMessages);
+        $originalCount = \count($originalMessages);
+        $truncatedCount = \count($truncatedMessages);
 
         // Calculate the number of messages truncated
         $truncatedSize = $originalCount - $truncatedCount;
 
         // Return the truncated part from the start of the original array
-        return array_slice($originalMessages, 0, $truncatedSize);
+        return \array_slice($originalMessages, 0, $truncatedSize);
     }
 
     // JSON HANDLING
@@ -287,12 +287,12 @@ abstract class Util
             $constantName = $matches[2];
 
             // Check if it is a defined constant
-            if (defined($constantName)) {
+            if (\defined($constantName)) {
                 // Get the value of the constant
-                $constantValue = constant($constantName);
+                $constantValue = \constant($constantName);
 
                 // Replace with the actual value of the constant, ensuring it's JSON-encoded
-                return is_numeric($constantValue) ? $constantValue : json_encode($constantValue);
+                return \is_numeric($constantValue) ? $constantValue : json_encode($constantValue);
             }
 
             // If it's not a defined constant, leave as is
@@ -321,9 +321,9 @@ abstract class Util
     public static function resolveStringConstantValues($data)
     {
         foreach ($data as $key => $val) {
-            if (is_string($val) && defined($val)) {
+            if (\is_string($val) && \defined($val)) {
                 $data[$key] = constant($val);
-            } else if (is_array($val)) {
+            } else if (\is_array($val)) {
                 $data[$key] = self::resolveStringConstantValues($val);
             }
         }
@@ -341,7 +341,7 @@ abstract class Util
 
         $parts = preg_split('/(\.|\?|!)\s+/', $text, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         foreach ($parts as $part) {
-            if (strlen($currentChunk . $part) > $maxChar) {
+            if (\strlen($currentChunk . $part) > $maxChar) {
                 $chunks[] = $currentChunk;
                 $currentChunk = $part;
             } else {
@@ -350,11 +350,11 @@ abstract class Util
         }
 
         if (!empty(trim($currentChunk))) {
-            if (strlen($currentChunk) > $margin) {
+            if (\strlen($currentChunk) > $margin) {
                 $chunks[] = $currentChunk;
             } else {
                 // append to the last one if it is a small chunk
-                $last_index = count($chunks) - 1;
+                $last_index = \count($chunks) - 1;
                 $chunks[$last_index] .= $currentChunk;
             }
         }
@@ -384,12 +384,12 @@ abstract class Util
         }
 
         $filteredMessages = array_filter($messages, function ($message) use ($validRoles) {
-            return in_array($message['role'], $validRoles, true) && !empty(trim($message['content'] ?? ''));
+            return \in_array($message['role'], $validRoles, true) && !empty(trim($message['content'] ?? ''));
         });
 
         return implode("\n\n", array_map(function ($message) {
             $role = ucfirst($message['role']);
-            return sprintf("%s: %s", $role, $message['content']);
+            return \sprintf("%s: %s", $role, $message['content']);
         }, $filteredMessages));
     }
 
