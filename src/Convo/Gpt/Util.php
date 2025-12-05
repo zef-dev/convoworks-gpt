@@ -4,9 +4,102 @@ declare(strict_types=1);
 
 namespace Convo\Gpt;
 
+use Convo\Core\Util\ArrayUtil;
+
 abstract class Util
 {
+    // REDUCE DATA SIZE
+    /**
+     * Recursively scan array/object and detect the structure.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function scanStructure($value)
+    {
+        if (\is_array($value)) {
+            // Sequential array → inspect first element only
+            if (ArrayUtil::isArrayIndexed($value)) {
+                if (empty($value)) {
+                    return []; // empty list
+                }
+                return [ self::scanStructure($value[0]) ];
+            }
 
+            // Associative array
+            $result = [];
+            foreach ($value as $key => $item) {
+                $result[$key] = self::scanStructure($item);
+            }
+            return $result;
+        }
+
+        // Scalar or other types → describe as scalar
+        return 'scalar';
+    }
+
+    /**
+     * Apply field filtering to API response.
+     * Supports:
+     *  - data at root (list of rows)
+     *  - data inside a wrapper: ['data' => [...], 'meta' => ...]
+     *
+     * @param mixed $data
+     * @param array $fields
+     * @return mixed
+     */
+    public static function applyFields($data, array $fields)
+    {
+        // If root is a list → apply to each row
+        if (\is_array($data) && ArrayUtil::isArrayIndexed($data)) {
+            return array_map(function($row) use ($fields) {
+                return self::applyFieldsToRow($row, $fields);
+            }, $data);
+        }
+
+        // If root is wrapper with 'data'
+        if (\is_array($data) && isset($data['data']) && \is_array($data['data'])) {
+            $result = $data;
+            $result['data'] = array_map(function($row) use ($fields) {
+                return self::applyFieldsToRow($row, $fields);
+            }, $data['data']);
+            return $result;
+        }
+
+        // Unknown structure → try treating it as a row
+        return self::applyFieldsToRow($data, $fields);
+    }
+
+
+    /**
+     * Apply field selection to a single associative row.
+     * Full nested support.
+     */
+    public static function applyFieldsToRow(array $row, array $fields)
+    {
+        $result = [];
+
+        foreach ($fields as $key => $value) {
+
+            // Numeric keys: simple field: ['id','email']
+            if (\is_int($key)) {
+                $fieldName = $value;
+                if (\array_key_exists($fieldName, $row)) {
+                    $result[$fieldName] = $row[$fieldName];
+                }
+            }
+
+            // Associative: nested field: ['meta' => ['country','city']]
+            else {
+                $fieldName = $key;
+                if (isset($row[$fieldName]) && \is_array($row[$fieldName])) {
+                    $result[$fieldName] = self::applyFieldsToRow($row[$fieldName], $value);
+                }
+            }
+        }
+
+        return $result;
+    }
 
     // TOKENS ESTIMATION
     public static function estimateTokens($content)
