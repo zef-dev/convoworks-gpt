@@ -86,7 +86,7 @@ class ChatFunctionElement extends AbstractScopedFunction implements IChatFunctio
             $result = $result();
         }
 
-        if (is_string($result)) {
+        if (\is_string($result)) {
             return $result;
         }
         return json_encode($result);
@@ -95,7 +95,7 @@ class ChatFunctionElement extends AbstractScopedFunction implements IChatFunctio
     private function _getDefaults()
     {
         $defaults = $this->evaluateString($this->_defaults);
-        if (is_array($defaults)) {
+        if (\is_array($defaults)) {
             return $defaults;
         }
         return [];

@@ -140,6 +140,6 @@ class GptApi
     // UTIL
     public function __toString()
     {
-        return get_class($this) . '[' . $this->_baseUrl . ']';
+        return \get_class($this) . '[' . $this->_baseUrl . ']';
     }
 }
