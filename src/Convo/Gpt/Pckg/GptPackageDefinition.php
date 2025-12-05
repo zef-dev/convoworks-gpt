@@ -238,7 +238,7 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
             'tokenize_string',
             function ($args, $text, $stopWords = null) use ($stop_words) {
 
-                if (is_null($stopWords)) {
+                if (\is_null($stopWords)) {
                     $stopWords = $stop_words;
                 }
 
@@ -276,6 +276,21 @@ class GptPackageDefinition extends AbstractPackageDefinition implements IPlatfor
             'estimate_tokens',
             function ($args, $content) {
                 return Util::estimateTokens($content);
+            }
+        );
+
+        $functions[] = ExpressionFunction::fromEvaluator(
+            'scan_data_structure',
+            function ($args, $content) {
+                return Util::scanStructure($content);
+            }
+        );
+
+        $functions[] = ExpressionFunction::fromEvaluator(
+            'apply_fields_to_data',
+            function ($args, $data, $fields) {
+                $this->_logger->debug('Applying fields to data: ' . print_r($data, true));
+                return Util::applyFields($data, $fields);
             }
         );
 

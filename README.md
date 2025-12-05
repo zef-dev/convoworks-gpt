@@ -212,6 +212,56 @@ ${estimate_tokens(content)}
 
 This approach provides a more accurate estimate for English and similar languages, and is suitable for most GPT model tokenization needs.
 
+### `scan_data_structure`
+
+**Description:**  
+The `scan_data_structure` function recursively analyzes a data structure and returns a simplified schema or template showing its shape. This is particularly useful for understanding complex API responses or data structures before processing them.
+
+For indexed arrays, it examines only the first element. For associative arrays, it maps each key to its respective structure. Scalar values are represented as the string `'scalar'`.
+
+**Parameters:**  
+* `$content` - The data structure (array or object) to analyze.
+
+**Usage:**  
+To analyze the structure of an API response:
+```
+${scan_data_structure(api_response)}
+```
+
+**Example output:**  
+Given input: `[{"id": 1, "name": "John", "meta": {"country": "US"}}]`  
+Returns: `[{"id": "scalar", "name": "scalar", "meta": {"country": "scalar"}}]`
+
+### `apply_fields_to_data`
+
+**Description:**  
+The `apply_fields_to_data` function filters and projects data to include only specified fields, similar to SQL's SELECT statement. This is useful for reducing the size of large API responses or extracting only relevant information for GPT context.
+
+The function intelligently handles different data structures:
+- Indexed arrays: applies field selection to each row
+- Wrapper objects with a `data` key: preserves the wrapper structure while filtering nested data
+- Single rows: directly applies field selection
+
+**Parameters:**  
+* `$data` - The data structure to filter (array or object).
+* `$fields` - An array defining which fields to keep. Use numeric keys for simple fields or associative arrays for nested field selection.
+
+**Usage:**  
+To extract specific fields from an array of objects:
+```
+${apply_fields_to_data(users, ['id', 'email'])}
+```
+
+To extract nested fields:
+```
+${apply_fields_to_data(users, ['id', 'email', 'meta' => ['country', 'city']])}
+```
+
+**Example:**  
+Given input: `[{"id": 1, "name": "John", "email": "john@example.com", "meta": {"country": "US", "city": "NYC", "zip": "10001"}}]`  
+With fields: `['id', 'email', 'meta' => ['country', 'city']]`  
+Returns: `[{"id": 1, "email": "john@example.com", "meta": {"country": "US", "city": "NYC"}}]`
+
 
 ## Components
 
