@@ -219,22 +219,12 @@ class ChatCompletionV2Element extends AbstractWorkflowContainerComponent impleme
                             $result_size = Util::estimateTokens($result);
                             $this->_logger->debug('Function [' . $function_name . '] returned result [' . $result_size . '] tokens. Max allowed is [' . $MAX_RESULT_TOKENS . ']');
                             if ($result_size > $MAX_RESULT_TOKENS) {
-                                $result_data = json_decode($result, true);
-                                if (json_last_error() !== JSON_ERROR_NONE) {
-                                    throw new FunctionResultTooLargeException($function_name, $result_size, $MAX_RESULT_TOKENS);
-                                }
-                                $structure = Util::scanStructure($result_data);
-                                throw new FunctionResultTooLargeException($function_name, $result_size, $MAX_RESULT_TOKENS, $structure);
-                                // throw new RuntimeException('Function [' . $function_name . '] returned too large result [' . $result_size . ']. If possible, adjust the function arguments to return less data. Maximum allowed is [' . $MAX_RESULT_TOKENS . '] tokens.');
+                                throw new FunctionResultTooLargeException($function_name, $result_size, $MAX_RESULT_TOKENS, $result);
                             }
                         }
                     } catch (FunctionResultTooLargeException $e) {
                         $this->_logger->warning($e->getMessage());
-                        if ($e->getStructure()) {
-                            $result = json_encode(['error' => $e->getMessage(), 'structure' => $e->getStructure()]);
-                        } else {
-                            $result = json_encode(['error' => $e->getMessage()]);
-                        }
+                        $result = json_encode($e->getResponse());
                     } catch (\Throwable $e) {
                         $this->_logger->warning($e->getMessage());
                         $result = json_encode(['error' => $e->getMessage()]);
