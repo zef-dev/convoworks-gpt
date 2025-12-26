@@ -116,7 +116,7 @@ class StreamableRestHandler implements RequestHandlerInterface
 
 
             if ($info->get()) {
-                return $this->_handleSseStream($request, $variant, $serviceId);
+                $this->_handleSseStream($request, $variant, $serviceId);
             } elseif ($info->post()) {
                 return $this->_handlePostRequest($request, $variant, $serviceId);
             } elseif ($info->delete()) {
@@ -297,6 +297,6 @@ class StreamableRestHandler implements RequestHandlerInterface
     // UTIL
     public function __toString()
     {
-        return get_class($this) . '[]';
+        return \get_class($this) . '[]';
     }
 }
